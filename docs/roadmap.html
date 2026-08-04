@@ -284,6 +284,14 @@ details.more>summary:hover{color:var(--ink)}
 .codeblock pre{margin:0;border-radius:0}
 @media (prefers-reduced-motion:reduce){.code-caret{transition:none}}
 
+
+.stepchips{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 11px}
+.chip-tag{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;
+  padding:3px 9px;border-radius:99px;border:1px solid var(--rule);color:var(--ink-2);
+  background:var(--card-2);white-space:nowrap}
+.chip-tag.code{color:var(--signal);border-color:var(--signal);background:var(--signal-soft)}
+.chip-tag.term{color:var(--ink-3);border-color:var(--rule);background:var(--card)}
+
 hr.tick24{border:0;height:9px;margin:34px 0;background-image:repeating-linear-gradient(to right,var(--rule) 0 1px,transparent 1px 24px)}
 
 footer{border-top:1px solid var(--rule);margin-top:60px;padding:26px 0 0;font-family:var(--mono);font-size:11px;color:var(--ink-3);line-height:1.8}
@@ -3707,7 +3715,7 @@ Ticks are stored in this browser. Moving the file or switching browser loses the
 
 <script>
 (function(){
-  var BUILD='2026-08-04f';
+  var BUILD='2026-08-04g';
   var storageWorks=false, storageKind='memory';   // set by the probe below
   var KEY='dlam38-roadmap-v2';
   var body=document.body, root=document.documentElement, rail=document.getElementById('rail');
@@ -4002,6 +4010,35 @@ Ticks are stored in this browser. Moving the file or switching browser loses the
   sw.addEventListener('click',function(e){
     var b=e.target.closest('button'); if(!b) return;
     mem.__code=applyCodeMode(b.dataset.mode); save();
+  });
+
+  /* auto chips: CODE = a file to create/edit, TERMINAL = a command to run.
+     Detected per step from what's already there — nothing hand-labelled,
+     so nothing can drift out of sync with the actual content. */
+  [].forEach.call(document.querySelectorAll('.step'), function(step){
+    var body = step.querySelector('.step-body');
+    var h3 = body && body.querySelector('h3');
+    if(!h3) return;
+    var hasCode = step.querySelectorAll('.codeblock').length > 0;
+    var hasTerm = [].some.call(step.querySelectorAll('pre'), function(pre){
+      return !pre.closest('.code-wrap');
+    });
+    if(!hasCode && !hasTerm) return;
+    var wrap = document.createElement('div');
+    wrap.className = 'stepchips';
+    if(hasCode){
+      var c = document.createElement('span');
+      c.className = 'chip-tag code';
+      c.textContent = 'CODE — copy into your repo';
+      wrap.appendChild(c);
+    }
+    if(hasTerm){
+      var t = document.createElement('span');
+      t.className = 'chip-tag term';
+      t.textContent = 'TERMINAL — type / run this';
+      wrap.appendChild(t);
+    }
+    h3.parentNode.insertBefore(wrap, h3);
   });
 
   /* every plain code block outside a collapsible gets its own copy button */
