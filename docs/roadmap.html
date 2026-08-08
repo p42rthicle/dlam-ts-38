@@ -292,6 +292,20 @@ details.more>summary:hover{color:var(--ink)}
 .chip-tag.code{color:var(--signal);border-color:var(--signal);background:var(--signal-soft)}
 .chip-tag.term{color:var(--ink-3);border-color:var(--rule);background:var(--card)}
 
+
+.handoff{margin:0 0 40px;border:2px solid var(--signal);border-radius:6px;overflow:hidden;box-shadow:var(--shadow)}
+.handoff-head{background:var(--signal-soft);padding:16px 20px;border-bottom:1px solid var(--signal)}
+.handoff-head h2{margin:0;font-size:22px}
+.handoff-head p{margin:6px 0 0;font-size:15px;color:var(--ink-2)}
+.handoff-body{padding:18px 20px}
+.handoff-body h4{margin:20px 0 8px}
+.handoff-body h4:first-child{margin-top:0}
+.handoff-body table{margin:6px 0 4px}
+.tagp{display:inline-block;font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;
+  padding:2px 8px;border-radius:99px;background:var(--ok-soft);color:var(--ok);border:1px solid var(--ok)}
+.tags{display:inline-block;font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;
+  padding:2px 8px;border-radius:99px;background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn)}
+
 hr.tick24{border:0;height:9px;margin:34px 0;background-image:repeating-linear-gradient(to right,var(--rule) 0 1px,transparent 1px 24px)}
 
 footer{border-top:1px solid var(--rule);margin-top:60px;padding:26px 0 0;font-family:var(--mono);font-size:11px;color:var(--ink-3);line-height:1.8}
@@ -1345,6 +1359,44 @@ python -m src.train --model linear --fold 0 --epochs 20</code></pre>
 </ol>
 </div></div></div>
 </section>
+
+<div class="handoff" id="parallel">
+<div class="handoff-head">
+  <h2>Phase 4 is done &mdash; now the work splits four ways</h2>
+  <p>Until here you worked in sequence: one person built the pipeline while the others waited. That is over. Phase 4 merged with G7 passed is the fork point &mdash; from here, all four of you work at once, on separate branches, without blocking each other.</p>
+</div>
+<div class="handoff-body">
+
+<h4>What goes parallel now <span class="tagp">start today</span></h4>
+<p>Four people, four branches, all off the latest <code>main</code>. None blocks another, because each touches only <em>new</em> files or files nobody else edits.</p>
+<table>
+<tr><th>Phase</th><th>Branch</th><th>Owns (new files only)</th></tr>
+<tr><td><strong>5</strong> &mdash; MLP, LSTM, covariate head</td><td><code>feat/mlp-lstm</code></td><td><code>src/models/mlp.py</code>, <code>lstm.py</code>, <code>covariate_head.py</code></td></tr>
+<tr><td><strong>6</strong> &mdash; PatchTST</td><td><code>feat/patchtst</code></td><td><code>src/models/patchtst.py</code></td></tr>
+<tr><td><strong>8</strong> &mdash; ETT adapter</td><td><code>feat/ett</code></td><td><code>scripts/prepare_ett.py</code></td></tr>
+<tr><td><strong>9 prep</strong> &mdash; <code>predict.py</code>, requirements</td><td><code>feat/infra</code></td><td><code>predict.py</code>, <code>requirements.txt</code></td></tr>
+</table>
+
+<h4>What is NOT parallel <span class="tags">must wait</span></h4>
+<ul>
+<li><strong>Phase 7 (ablations)</strong> waits for <em>both</em> 5 and 6 to be merged into <code>main</code>. Not because they depend on each other &mdash; they don't &mdash; but you cannot ablate a model that isn't on <code>main</code> yet. When the second of {5, 6} lands, that is the trigger to open the Phase 7 issue and start.</li>
+<li><strong>Phase 9 (final submission)</strong> waits for Phase 7 &mdash; you need the ablation numbers to know which config you are actually shipping.</li>
+<li><strong>Phase 10 (report)</strong> is the one exception that starts early: Related Work and Method 3.1&ndash;3.3 can be drafted as soon as the PatchTST design is settled, in parallel with Phase 7 running. Only the Experiments section &mdash; the numbers, tables, discussion &mdash; has to wait for 7 to finish.</li>
+</ul>
+
+<h4>The one collision to guard against</h4>
+<p>Everyone will be tempted to add a new <code>--flag</code> to <code>train.py</code>'s argparse from inside their own branch &mdash; <code>--channel-mixing</code> from whoever does PatchTST, <code>--series-id</code> from whoever does the covariate head. <strong><code>train.py</code> is shared, so do not edit it silently inside a model branch.</strong> If you need a new flag, open a two-line PR against <code>main</code> for just that, get it reviewed fast, then rebase your model branch on top. Otherwise you get merge conflicts in the one file everyone touches &mdash; exactly what branches are meant to prevent.</p>
+
+<h4>Practically, today</h4>
+<ol>
+<li>Open one GitHub issue per phase (5, 6, 8, 9-prep), assign one person each. Paste that phase's gate checklist into the issue body as <code>- [ ]</code> items.</li>
+<li>Each person branches off the latest <code>main</code> and works independently.</li>
+<li><strong>Nobody merges their own PR</strong> &mdash; someone else reviews first. Same rule as before.</li>
+<li>Whoever finishes 5 or 6 first does <em>not</em> start Phase 7 alone. Wait for the second one to merge, then open the Phase 7 issue together so <code>ablate.sh</code> covers both finished architectures.</li>
+</ol>
+
+</div>
+</div>
 
 <!-- ============================== PHASE 5 ============================== -->
 <section class="phase" id="p5">
@@ -3715,7 +3767,7 @@ Ticks are stored in this browser. Moving the file or switching browser loses the
 
 <script>
 (function(){
-  var BUILD='2026-08-04g';
+  var BUILD='2026-08-04i';
   var storageWorks=false, storageKind='memory';   // set by the probe below
   var KEY='dlam38-roadmap-v2';
   var body=document.body, root=document.documentElement, rail=document.getElementById('rail');
@@ -4146,8 +4198,19 @@ Ticks are stored in this browser. Moving the file or switching browser loses the
 
   /* ---------- boot ---------- */
   var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  // Phases 0-4 are officially complete for Group 38. On a FIRST visit (no saved
+  // state yet) they show as checked. Once anyone has their own saved progress,
+  // that always wins -- this never overwrites real ticks.
+  var DONE_BY_DEFAULT = ['c0-1','c0-2','c0-3','c0-4','c0-5','c0-6','c0-7',
+    'c1-1','c1-2','c1-3','c1-4','c1-5','c1-6','c1-7','c1-8','c1-9',
+    'c2-1','c2-2','c2-3','c2-4','c2-5','c2-6',
+    'c3-1','c3-2','c3-3','c3-4','c3-5',
+    'c4-1','c4-2','c4-3','c4-4','c4-5','c4-6'];
+
   store.get().then(function(raw){
+    var firstVisit = !raw;
     try{ mem = raw?JSON.parse(raw):{}; }catch(e){ mem={}; }
+    if(firstVisit){ DONE_BY_DEFAULT.forEach(function(id){ mem[id]=true; }); save(); }
     setTheme(mem.__theme || (prefersDark?'dark':'light'));
     applyCodeMode(mem.__code);
     setView(mem.__view || 'roadmap');
