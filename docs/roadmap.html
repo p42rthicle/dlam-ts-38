@@ -1402,8 +1402,8 @@ python -m src.train --model linear --fold 0 --epochs 20</code></pre>
 <!-- ====================== PHASE 4.5 (REMEDIAL) ======================= -->
 <div class="handoff" id="p4b">
 <div class="handoff-head">
-  <h2>Phase 4.5 &mdash; the forum answered our open question (remedial)</h2>
-  <p>Back at <a href="#s1-9">step 1.9</a> we closed the "does the horizon file carry history?" question as a <em>design decision under uncertainty</em>, because staff were unreachable at the time. They are no longer unreachable: the question was answered on the course forum (M.&nbsp;Kraus, 26&nbsp;May&nbsp;2026; R.&nbsp;H&auml;rle, 8&nbsp;June&nbsp;2026). <strong>The answer matches what we already built.</strong> This short phase records exactly what the confirmation changes &mdash; two tiny retrofits to the 1&ndash;4 code you have already committed, and how it sharpens Phases 5&ndash;10. Do the two retrofits before you start Phase 5.</p>
+  <h2>Phase 4.5 &mdash; the forum answered our open question (remedial) <span class="pill" style="background:var(--ok-soft);color:var(--ok);border:1px solid var(--ok);vertical-align:middle">DONE &middot; merged to main</span></h2>
+  <p>Back at <a href="#s1-9">step 1.9</a> we closed the "does the horizon file carry history?" question as a <em>design decision under uncertainty</em>, because staff were unreachable at the time. They are no longer unreachable: the question was answered on the course forum (M.&nbsp;Kraus, 26&nbsp;May&nbsp;2026; R.&nbsp;H&auml;rle, 8&nbsp;June&nbsp;2026). <strong>The answer matches what we already built.</strong> This short phase records exactly what the confirmation changes &mdash; two tiny retrofits to the 1&ndash;4 code you have already committed, and how it sharpens Phases 5&ndash;10. The gap=336 retrofit is now <strong>merged to <code>main</code> (PR&nbsp;#8)</strong> &mdash; <strong>Phase&nbsp;5 starts next.</strong></p>
 </div>
 <div class="handoff-body">
 
@@ -1422,7 +1422,7 @@ python -m src.train --model linear --fold 0 --epochs 20</code></pre>
 <h4>The one ruling that sounds scary but doesn't hit us</h4>
 <p>H&auml;rle told the other group "you should not bake any data into your checkpoint." In context that answers their specific question: can we bundle <code>validation_input.csv</code>'s covariate columns and reuse them as the known-future inputs while rolling across the gap? <strong>We don't do that.</strong> We use a direct multi-horizon model (no gap rollout at all), we bake only train-derived state &mdash; which Kraus explicitly permits &mdash; and we read the output-block covariates <em>live</em> from the input directory at inference. So the ruling confirms our design rather than breaking it. The only action it implies is one sentence in the report Method saying we deliberately do <em>not</em> bake period-specific covariates; a marker who read this thread will be looking for exactly that.</p>
 
-<h4>Two retrofits to your completed 1&ndash;4 code <span class="tags">do before Phase 5</span></h4>
+<h4>Two retrofits to your completed 1&ndash;4 code <span class="tags">merged &middot; PR #8</span></h4>
 <p>Almost nothing in 1&ndash;4 changes. The harness you copied is already gap-parametrised end to end &mdash; <code>WindowDataset</code>, <code>validation_batch</code>, <code>train.py --gap</code>, and <code>predict.py</code>'s auto-detected origin all thread the same flag, and <code>fold_bounds</code> is correct as written. Only two small things need a touch, both because they currently sit at gap=0 while the graded task is gap=336:</p>
 <ol>
 <li><strong><code>scripts/score_baselines.py</code> &mdash; score the baselines at gap=336.</strong> The fold loop hands each baseline a history that ends exactly where the scored block starts (gap=0). Your Phase-5 models are scored at gap=336, so a gap=0 baseline ladder makes your model look <em>worse</em> than it is &mdash; the baselines get the easy task and your model the hard one. Push the history back by the gap so both sit on the same task:
@@ -1443,7 +1443,7 @@ GAP = <span class="s">336</span>                                     <span class
         <span class="k">assert</span> m.prediction.notna().all(), f<span class="s">"{name}: missing rows"</span>
         rows.append({<span class="s">"model"</span>: name, <span class="s">"fold"</span>: fold, **all_metrics(m.target, m.prediction)})</code></pre></div></div>
 Then re-run <code>python -m scripts.score_baselines</code>. It is a 30-second re-run, and you have no results to throw away &mdash; you haven't selected a model yet. (All fold widths and the gap are multiples of 168, so the weekly phase of <code>lag24</code>/<code>lag168</code> stays aligned; the baselines are fairly harder, not artificially broken.)</li>
-<li><strong><code>README.md</code> data contract &mdash; one line.</strong> You wrote <code>test_input.csv schema: UNCONFIRMED, staff unreachable</code>. Replace it with the confirmed version from <a href="#s1-9">step 1.9</a>'s updated block: covariates-only, no target, test follows validation &rarr; gap=336, cite Kraus 26&nbsp;May and H&auml;rle 8&nbsp;June.</li>
+<li><strong><code>README.md</code> data contract &mdash; one line.</strong> You wrote <code>test_input.csv schema: UNCONFIRMED, staff unreachable</code>. Replace it with the confirmed version from <a href="#s1-9">step 1.9</a>'s updated block: covariates-only, no target, test follows validation &rarr; gap=336, cite Kraus 26&nbsp;May and H&auml;rle 8&nbsp;June. <em>(Left as-is by choice &mdash; the confirmed schema lives here and in the decision log, not in <code>README.md</code>. The gap=336 code retrofit is what actually matters, and it is merged.)</em></li>
 </ol>
 <div class="check"><b>That is the complete list of changes to Phases 1&ndash;4.</b><p>Everything else you committed stands exactly as merged. We are <strong>not</strong> re-opening <code>main</code> for a new branch or redoing any completed work &mdash; these two edits go in as a small normal PR.</p></div>
 
@@ -1462,8 +1462,8 @@ Then re-run <code>python -m scripts.score_baselines</code>. It is a 30-second re
 <li><strong>Phase 10 (report):</strong> Method now states the confirmed gap=336 geometry (effective test horizon 672 steps) with a forum citation, adds the "we don't bake period-specific covariates" sentence, and notes the leaderboard is a gap-0 <em>optimistic</em> proxy for the graded gap-336 test.</li>
 </ul>
 
-<h4>Done when</h4>
-<p><code>scripts/score_baselines.py</code> is re-run at gap=336 and <code>README.md</code>'s data-contract line is updated. Then start Phase 5 on the parallel branches above &mdash; nothing else blocks you.</p>
+<h4>Done &mdash; 09 Aug <span class="pill" style="background:var(--ok-soft);color:var(--ok);border:1px solid var(--ok);vertical-align:middle">merged &middot; PR #8</span></h4>
+<p><code>scripts/score_baselines.py</code> is re-run at gap=336, and the validation path is now gap-aware too (<code>validation_batch</code> in <code>data.py</code>, wired through <code>train.py</code>, so <code>--gap 336</code> trains <em>and</em> scores at 336) &mdash; all merged to <code>main</code> in PR&nbsp;#8. The <code>README.md</code> line was deliberately left as-is. <strong>Phase&nbsp;5 starts tomorrow</strong> on the parallel branches above &mdash; nothing blocks you. First checkpoint is <a href="#g7">G7</a>: the linear model must beat seasonal-mean at <code>--gap 336</code>.</p>
 
 </div>
 </div>
