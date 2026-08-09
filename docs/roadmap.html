@@ -2029,6 +2029,83 @@ Parth Takkar        — ...
 </div></div></div>
 </section>
 
+<!-- ============================== PHASE 9.5 ============================== -->
+<section class="phase" id="p9b">
+<div class="phase-head">
+  <div class="phase-tag"><span class="chip">Phase 9.5</span><span class="chip time">reference &middot; use throughout</span><span>how to test &amp; run</span></div>
+  <h2>Are we beating the baseline? How to check, in plain English</h2>
+  <p class="lede" style="font-size:17px;margin-top:8px">You do not need the leaderboard to know whether a model is good. Everything you need is one command you run on your own laptop. This is the one-screen answer to "how do I test my model, and am I winning?"</p>
+</div>
+
+<h3>First: you are probably already winning &mdash; watch the units</h3>
+<p>WAPE means "how wrong the predictions are." <strong>Lower is better.</strong> The one thing that trips everyone up: the two places you read it use different scales.</p>
+<ul>
+<li>The <strong>leaderboard</strong> writes it as a <strong>percentage</strong>: <code>48.10</code> means 48% wrong.</li>
+<li>Our own <strong>scripts</strong> write it as a <strong>fraction</strong>: <code>0.30</code> means 30% wrong.</li>
+</ul>
+<p>Same number, times 100. Put them on the same scale and it is obvious:</p>
+<table>
+<tr><th>Model</th><th>WAPE (same scale)</th></tr>
+<tr><td>naive_last_value (a baseline)</td><td>~48%</td></tr>
+<tr><td>lag24 / lag168 / seasonal baselines</td><td>~47%</td></tr>
+<tr><td><strong>our linear model</strong></td><td><strong>~30% &mdash; clearly better</strong></td></tr>
+</table>
+<div class="note"><b>Rule of thumb</b><p>Our scripts print something like <code>0.30</code>. Multiply by 100 to compare with the leaderboard's <code>30</code>. A model at 30% error beats a baseline at 48% error &mdash; lower always wins.</p></div>
+
+<h3>gap&nbsp;0 vs gap&nbsp;336, and offline vs online &mdash; the whole thing on one screen</h3>
+<p>Picture your data as a long line of hourly readings, and the job is to predict the next two weeks.</p>
+<ul>
+<li><strong>gap&nbsp;0</strong> &mdash; predict the two weeks that start <em>right after</em> your last reading. Easier.</li>
+<li><strong>gap&nbsp;336</strong> &mdash; predict a two-week window that starts <em>two weeks after</em> your last reading, with a two-week blind spot in between. Harder. <strong>This is the one we are graded on.</strong></li>
+</ul>
+<p>And two ways to check a model:</p>
+<table>
+<tr><th></th><th>Offline (your laptop)</th><th>Online (leaderboard)</th></tr>
+<tr><td>What it is</td><td>Hide the last chunk of your own data, predict it, check against the chunk you hid</td><td>Upload predictions; the website scores them against answers only staff have</td></tr>
+<tr><td>Which gap</td><td><strong>gap&nbsp;336</strong> &mdash; matches the graded test</td><td>gap&nbsp;0 only &mdash; easier, feedback only</td></tr>
+<tr><td>Do we need it?</td><td><strong>Yes &mdash; this is what matters</strong></td><td>No &mdash; nice-to-have, and locked for us right now</td></tr>
+</table>
+<div class="check"><b>The takeaway</b><p>The gap-336 test you run <strong>offline</strong> is the real practice exam. The leaderboard is a different, easier one that is only feedback (and locked for us right now). <strong>Choose your models on the offline gap-336 numbers, not the leaderboard.</strong></p></div>
+
+<h3>How to run it and see for yourself &mdash; two commands</h3>
+<p><strong>1. Print the baseline scores (the numbers to beat):</strong></p>
+<pre><code>python -m scripts.score_baselines</code></pre>
+<p><strong>2. Train a model and print its score:</strong></p>
+<pre><code>python -m src.train --model linear --fold 0 --gap 336</code></pre>
+<p>It prints one line per round, each with a <code>val WAPE</code>. <strong>Take the lowest one</strong> &mdash; that is the model's score. Compare it to the baseline from command&nbsp;1. Lower wins. (Want leaderboard-style %? Multiply by 100.)</p>
+
+<h3>How to test at each stage, 5 &rarr; 9</h3>
+<p>Same move every time: run at <code>--gap 336</code>, read the lowest <code>val WAPE</code>, lower is better, compare.</p>
+
+<h4>Now &mdash; linear works</h4>
+<pre><code>python -m src.train --model linear --fold 0 --gap 336</code></pre>
+<p>Compare to the baseline. Already winning: ~30% vs ~31&ndash;48%.</p>
+
+<h4>When Phase 5 is done &mdash; MLP + LSTM exist</h4>
+<pre><code>python -m src.train --model mlp  --fold 0 --gap 336
+python -m src.train --model lstm --fold 0 --gap 336</code></pre>
+<p>Compare each one's lowest <code>val WAPE</code> to linear's. Lower is the better model.</p>
+
+<h4>When Phase 6 is done &mdash; PatchTST exists</h4>
+<pre><code>python -m src.train --model patchtst --fold 0 --gap 336 --patience 8</code></pre>
+<p>Compare to the others. <code>--patience 8</code> just stops it quitting too early.</p>
+
+<h4>Phase 7 &mdash; make the comparison trustworthy</h4>
+<p>Run your best models on all three slices of the data by changing the fold number, then average the three:</p>
+<pre><code>python -m src.train --model patchtst --fold 0 --gap 336
+python -m src.train --model patchtst --fold 1 --gap 336
+python -m src.train --model patchtst --fold 2 --gap 336</code></pre>
+<p>Those averages are the results table for the report.</p>
+
+<h4>Phase 8 &mdash; second dataset</h4>
+<p>Same kind of runs, on a different dataset, to show the model is not a one-trick pony. Separate track &mdash; it does not wait on 5 or 6.</p>
+
+<h4>Phase 9 &mdash; submission</h4>
+<p>Take the winning model and wrap it into a <code>predict.py</code> plus a saved model file, so it can predict on brand-new data. That is the package that gets graded &mdash; and what you would upload if the leaderboard were open.</p>
+
+<div class="check"><b>One move, every stage</b><p>Run at <code>--gap 336</code> &rarr; read the lowest <code>val WAPE</code> &rarr; lower is better &rarr; compare to the baseline and to your other models. That is the whole testing loop, start to finish.</p></div>
+</section>
+
 <!-- ============================== PHASE 10 ============================== -->
 <section class="phase" id="p10">
 <div class="phase-head">
