@@ -1800,26 +1800,79 @@ t2[<span class="s">"above_noise"</span>]  = (t2.wape - base).abs() > <span class
 <div class="phase-head">
   <div class="phase-tag"><span class="chip">Phase 8</span><span class="chip time">Days 22–26 · ~6 hours</span><span>second dataset · conditional</span></div>
   <h2>ETT — the transfer test you promised</h2>
+  <p class="lede" style="font-size:17px;margin-top:8px">One claim, worth a paragraph and a table row: the <em>same</em> architecture, on a <em>different</em> dataset, with <em>no</em> retuning, still forecasts well. Four small steps — a download, an adapter, two one-line code edits, and a run.</p>
 </div>
 
 <div class="step" id="s8-1"><div class="step-head"><input type="checkbox" class="tick" id="c8-1"><div class="step-num">8.1</div><div class="step-body">
 <h3>Adapt, don't rebuild</h3>
 <div class="why"><b>Why</b><p>Your exposé commits to ETT. The point is not another leaderboard — it's evidence that your architecture generalises rather than being tuned to one dataset. That's a real claim worth making, and it costs a day if you planned for it.</p></div>
 <p>ETT is a single long series with 7 columns, six load variables plus oil temperature as the target. Your pipeline expects long format with a <code>series_id</code>. So write an adapter, not a new pipeline:</p>
-<div class="codeblock"><div class="code-head"><span class="code-caret">&#9656;</span><span class="code-file">scripts/prepare_ett.py</span><span class="code-tag">python</span><button class="code-copy" type="button">copy</button></div><div class="code-wrap"><pre><code><span class="k">import</span> pandas <span class="k">as</span> pd
-df = pd.read_csv(<span class="s">"data/ett/ETTh1.csv"</span>, parse_dates=[<span class="s">"date"</span>])
-df = df.rename(columns={<span class="s">"date"</span>: <span class="s">"timestamp"</span>, <span class="s">"OT"</span>: <span class="s">"target"</span>})
-df[<span class="s">"series_id"</span>] = <span class="s">"ett_h1"</span>                       <span class="c"># one "unit"</span>
-df.to_csv(<span class="s">"data/ett/long.csv"</span>, index=<span class="k">False</span>)</code></pre></div></div>
-<div class="gotcha"><b>What breaks, and the fix</b>
-<ul>
-<li><strong>One series, not 96.</strong> Channel independence still works. A learned per-series embedding does not — disable it.</li>
-<li><strong>Different feature count.</strong> Your model must take <code>n_feat</code> as a constructor argument, not hardcode 22. If you followed the code above, it already does.</li>
-<li><strong>No known-future covariates.</strong> ETT has none. Run with <code>--covariates 0</code> and say so.</li>
-<li><strong>Different horizon convention.</strong> ETT benchmarks use 96/192/336/720. Use 336 so the comparison to your main result is direct.</li>
-</ul></div>
-<div class="note"><b>If you're behind schedule, cut this</b><p>Order of value: submission works &gt; ablations &gt; report quality &gt; ETT. If it's 28 August and the ablations aren't done, drop ETT and write one honest paragraph in Limitations explaining that you scoped it out. That is a defensible engineering decision. A broken submission is not.</p></div>
+<div class="codeblock"><div class="code-head"><span class="code-caret">&#9656;</span><span class="code-file">scripts/prepare_ett.py</span><span class="code-tag">python</span><button class="code-copy" type="button">copy</button></div><div class="code-wrap"><pre><code>import pandas as pd, numpy as np, os
+
+df = pd.read_csv("data/ett/ETTh1.csv", parse_dates=["date"])
+df = df.rename(columns={"date": "timestamp", "OT": "target"})
+df["series_id"] = "ett_h1"                      # a single "unit"
+
+# calendar features, the same ones the main dataset ships with
+h = df["timestamp"].dt.hour
+d = df["timestamp"].dt.dayofweek
+df["hour_sin"] = np.sin(2*np.pi*h/24); df["hour_cos"] = np.cos(2*np.pi*h/24)
+df["dow_sin"]  = np.sin(2*np.pi*d/7);  df["dow_cos"]  = np.cos(2*np.pi*d/7)
+df["is_weekend"] = (d &gt;= 5).astype("float32")
+
+os.makedirs("data/ett", exist_ok=True)
+df.to_csv("data/ett/long.csv", index=False)
+print(df.shape, "-&gt; wrote data/ett/long.csv")</code></pre></div></div>
+<p>That produces the six ETT load columns, the calendar features, and <code>target</code> — a drop-in for <code>load_cube</code>. Steps 8.2–8.4 get the file, make the pipeline accept it, and run it.</p>
 </div></div></div>
+
+<div class="step" id="s8-2"><div class="step-head"><input type="checkbox" class="tick" id="c8-2"><div class="step-num">8.2</div><div class="step-body">
+<h3>Get the ETT file</h3>
+<p>ETT is public and small (~2.5&nbsp;MB) — nothing like your 170&nbsp;MB main data. Download <code>ETTh1.csv</code> from the ETDataset repo (folder <code>ETT-small</code>) into <code>data/ett/</code>:</p>
+<pre><code>mkdir -p data/ett
+curl -L -o data/ett/ETTh1.csv \
+  https://raw.githubusercontent.com/zhouhaoyi/ETDataset/main/ETT-small/ETTh1.csv</code></pre>
+<p>If that URL 404s, the repo's default branch may be <code>master</code> instead of <code>main</code> — or just open <a href="https://github.com/zhouhaoyi/ETDataset">github.com/zhouhaoyi/ETDataset</a>, go into <code>ETT-small/</code>, and download <code>ETTh1.csv</code> by hand into <code>data/ett/</code>. Then build the long file:</p>
+<pre><code>python scripts/prepare_ett.py</code></pre>
+<div class="check"><b>Done when</b><p><code>data/ett/long.csv</code> exists (~17,420 rows; columns <code>series_id, timestamp, HUFL … LULL, hour_sin … is_weekend, target</code>). Data is gitignored — never commit it.</p></div>
+</div></div></div>
+
+<div class="step" id="s8-3"><div class="step-head"><input type="checkbox" class="tick" id="c8-3"><div class="step-num">8.3</div><div class="step-body">
+<h3>Two edits so the pipeline accepts any dataset</h3>
+<div class="why"><b>Why</b><p>Almost nothing changes. Your models already take <code>n_feat</code> as a constructor argument, and none of them use a per-series embedding or the static columns — so a single series with a different feature count just works. Only two things are still wired to the main dataset: <code>load_cube</code> insists the static columns exist, and <code>train.py</code> hardcodes the data path and the 4,320-hour length.</p></div>
+<p><strong>Edit 1 — <code>src/data.py</code>:</strong> let <code>load_cube</code> tolerate a dataset with no static columns. Replace the single static line near the end of <code>load_cube</code>:</p>
+<div class="codeblock"><div class="code-head"><span class="code-caret">&#9656;</span><span class="code-file">src/data.py &mdash; inside load_cube</span><span class="code-tag">python</span><button class="code-copy" type="button">copy</button></div><div class="code-wrap"><pre><code># replace this single line:
+#   St = df.groupby("series_id")[STATIC].first().loc[series].to_numpy("float32")
+
+have = [c for c in STATIC if c in df.columns]
+if have:
+    St = df.groupby("series_id")[have].first().loc[series].to_numpy("float32")
+else:
+    St = np.zeros((S, 0), "float32")   # ETT has no static cols; St is unused downstream</code></pre></div></div>
+<p><strong>Edit 2 — <code>src/train.py</code>:</strong> add a <code>--data</code> flag, then use it and the dataset's real length.</p>
+<div class="codeblock"><div class="code-head"><span class="code-caret">&#9656;</span><span class="code-file">src/train.py</span><span class="code-tag">python</span><button class="code-copy" type="button">copy</button></div><div class="code-wrap"><pre><code># add one argument next to the other ap.add_argument(...) lines:
+ap.add_argument("--data", default="data/raw/train.csv")
+
+# then use a.data instead of the hardcoded path, and pass the real length:
+X, Y, series, hours, feats, St = load_cube(
+    a.data, use_trend=bool(a.use_trend), fill=a.fill, add_mask=bool(a.add_mask))
+train_end, s0, s1 = fold_bounds(a.fold, total=len(hours))</code></pre></div></div>
+<div class="gotcha"><b>Ignore the old "disable the per-series embedding" advice</b><p>That was written for a model design that never got built. The models you actually shipped (linear, mlp, lstm, patchtst) have no per-series embedding and never read the static columns, so there is nothing to disable — the two edits above are the whole change. Default <code>--data</code> stays your main dataset, so nothing else in the project is affected, and your <code>--gap 336</code> path is untouched.</p></div>
+</div></div></div>
+
+<div class="step" id="s8-4"><div class="step-head"><input type="checkbox" class="tick" id="c8-4"><div class="step-num">8.4</div><div class="step-body">
+<h3>Run it and read the result</h3>
+<p>Same commands you always use (see <a href="#p9b">Phase&nbsp;9.5</a>), just pointed at the ETT file, with covariates off (ETT has no known-future covariates) and horizon 336 so the number is directly comparable to your main result:</p>
+<pre><code>python -m src.train --model linear   --data data/ett/long.csv --covariates 0 --gap 336 --lookback 336
+python -m src.train --model patchtst --data data/ett/long.csv --covariates 0 --gap 336 --lookback 336 --patience 8</code></pre>
+<p>Read the lowest <code>val WAPE</code> printed during the run — that is the score, exactly as in <a href="#p9b">Phase&nbsp;9.5</a>. For a clean number, run all three folds and average:</p>
+<pre><code>for f in 0 1 2; do
+  python -m src.train --model patchtst --data data/ett/long.csv --covariates 0 --gap 336 --lookback 336 --patience 8 --fold $f
+done</code></pre>
+<div class="check"><b>Done when</b><p>Both models train to completion on <code>data/ett/long.csv</code> and you have their WAPE. The report claim is one sentence + one table row: "the same models, on ETT, with no retuning, reach WAPE X — and PatchTST beats / ties linear here too." You are not chasing a record; you are showing the architecture travels.</p></div>
+</div></div></div>
+
+<div class="note"><b>If you're behind schedule, cut this</b><p>Order of value: submission works &gt; ablations &gt; report quality &gt; ETT. If it's 28 August and the ablations aren't done, drop ETT and write one honest paragraph in Limitations explaining that you scoped it out. That is a defensible engineering decision. A broken submission is not.</p></div>
 </section>
 
 <!-- ============================== PHASE 9 ============================== -->
@@ -4354,12 +4407,14 @@ Ticks are stored in this browser. Moving the file or switching browser loses the
   // Once it has run, the flag is set for good, so every later edit wins:
   // un-checking any of 0-4, or a full Reset, is never redone on the next load.
   // Bump the flag's version suffix if a future build needs to re-run this.
-  var DONE04_FLAG = '__done04v1';
+  var DONE04_FLAG = '__done06v1';
   var DONE_BY_DEFAULT = ['c0-1','c0-2','c0-3','c0-4','c0-5','c0-6','c0-7',
     'c1-1','c1-2','c1-3','c1-4','c1-5','c1-6','c1-7','c1-8','c1-9',
     'c2-1','c2-2','c2-3','c2-4','c2-5','c2-6',
     'c3-1','c3-2','c3-3','c3-4','c3-5',
-    'c4-1','c4-2','c4-3','c4-4','c4-5','c4-6'];
+    'c4-1','c4-2','c4-3','c4-4','c4-5','c4-6',
+    'c5-1','c5-2','c5-3','c5-4','c5-5',
+    'c6-1','c6-2','c6-3','c6-4'];
 
   store.get().then(function(raw){
     try{ mem = raw?JSON.parse(raw):{}; }catch(e){ mem={}; }
