@@ -2156,6 +2156,93 @@ python -m src.train --model patchtst --fold 2 --gap 336</code></pre>
 <h4>Phase 9 &mdash; submission</h4>
 <p>Take the winning model and wrap it into a <code>predict.py</code> plus a saved model file, so it can predict on brand-new data. That is the package that gets graded &mdash; and what you would upload if the leaderboard were open.</p>
 
+<h3>Run the whole ladder and compare (graded + ETT)</h3>
+<p>When you want the actual answer — is linear &lt; MLP &lt; LSTM &lt; PatchTST, on each dataset — train all four across all three folds in one go. Early stopping is built in (<code>--patience</code>): each run stops when val WAPE stops improving and keeps the best epoch, so you never have to babysit it.</p>
+<p><strong>1. Graded data</strong> (your main dataset, the one you're marked on):</p>
+<pre><code>for model in linear mlp lstm patchtst; do
+  for f in 0 1 2; do
+    echo "=== $model  fold $f  (graded) ==="
+    python -m src.train --model $model --fold $f --gap 336 \
+      --lookback 336 --patience 8 --notes graded
+  done
+done</code></pre>
+<p><strong>2. ETT data</strong> (the transfer test — needs the two <a href="#s8-3">Phase&nbsp;8.3</a> edits, which live on the <code>feat/ett</code> branch):</p>
+<pre><code>for model in linear mlp lstm patchtst; do
+  for f in 0 1 2; do
+    echo "=== $model  fold $f  (ett) ==="
+    python -m src.train --model $model --fold $f --gap 336 \
+      --lookback 336 --patience 8 --covariates 0 \
+      --data data/ett/long.csv --notes ett
+  done
+done</code></pre>
+<p><strong>3. See the comparison.</strong> Every run appends to <code>experiments/runs.csv</code>; the <code>--notes</code> tag keeps this batch separate from older runs. Print the ranked table:</p>
+<div class="codeblock"><div class="code-head"><span class="code-caret">&#9656;</span><span class="code-file">compare.py (or a notebook cell)</span><span class="code-tag">python</span><button class="code-copy" type="button">copy</button></div><div class="code-wrap"><pre><code>import pandas as pd
+F = ["ts","run_id","model","fold","seed","lookback","loss","revin","covariates",
+     "patch_len","d_model","layers","lr","epochs","wape","mae","rmse","mse",
+     "mape","smape","minutes","notes"]
+df = pd.read_csv("experiments/runs.csv", names=F, header=None)
+df = df[df.notes.isin(["graded", "ett"])]          # just this comparison's runs
+tbl = df.groupby(["notes", "model"]).wape.agg(["mean", "std", "count"]).round(4)
+print(tbl.sort_values(["notes", "mean"]))          # lower WAPE = better</code></pre></div></div>
+<p>You get one small table per dataset, models ranked by mean WAPE across the three folds. That table — next to the seasonal-mean baseline from <code>score_baselines</code> — is exactly what goes in your report's results section.</p>
+<div class="note"><b>How long it takes, and what actually limits it</b><p>On your Apple-Silicon Mac the models run on the <strong>MPS</strong> GPU automatically — nothing to configure, <code>train.py</code> picks MPS when it's available. Rough wall-clock: <strong>linear</strong> and <strong>MLP</strong> are minutes per fold; <strong>LSTM</strong> is the slow one (~25–35&nbsp;min/fold on the graded data); <strong>PatchTST</strong> is heavy too (tens of minutes/fold). So the full graded sweep is a <strong>long/overnight job</strong> (~3–6&nbsp;h); the ETT sweep is quick (one series, ~15–20&nbsp;min total). The limiter is <strong>GPU compute, not memory</strong> — the job needs only a few GB of RAM, so on 24&nbsp;GB you're never memory-bound and freeing RAM won't speed it up (your instinct is right). What <em>does</em> help: keep the Mac plugged in (a fanless Air throttles when hot), and don't run other GPU-heavy work alongside it. If it's too slow, push LSTM/PatchTST to Colab's free GPU (~3&times; faster) or run fewer folds.</p></div>
+<h3>Run it on Colab's free GPU (the ~2–3× option)</h3>
+<p>Colab's free NVIDIA T4 trains the heavy models (LSTM, PatchTST) roughly 2–3&times; faster than the Mac. From a <em>blank</em> notebook it's six cells. (Accounts and sign-in assumed — this is just the run.)</p>
+<p><strong>Cell 0 — turn the GPU on.</strong> Menu: <em>Runtime → Change runtime type → T4 GPU → Save</em>. Then confirm:</p>
+<pre><code>import torch
+print(torch.cuda.is_available(), torch.cuda.get_device_name(0))
+# expect:  True Tesla T4</code></pre>
+<p><strong>Cell 1 — get the code.</strong> Clone the repo and switch to the branch that carries the ETT edits (<code>feat/ett</code> has everything <code>main</code> has plus the <code>--data</code> flag):</p>
+<pre><code>!git clone https://github.com/p42rthicle/dlam-ts-38.git
+%cd dlam-ts-38
+!git checkout feat/ett</code></pre>
+<p>Private repo? Use a read-only token: <code>!git clone https://&lt;TOKEN&gt;@github.com/p42rthicle/dlam-ts-38.git</code>. Or skip git: zip the repo on your Mac, drag the zip into Colab's file panel, <code>!unzip dlam-ts-38.zip</code>.</p>
+<p><strong>Cell 2 — get the data.</strong> Torch, pandas and numpy are already on Colab, so there is nothing to <code>pip install</code> — you only need the data files:</p>
+<pre><code># graded data — drag train.csv into the file panel (left), then:
+!mkdir -p data/raw && mv /content/train.csv data/raw/train.csv
+# (better for the 170 MB file: put it in Drive once and reuse)
+# from google.colab import drive; drive.mount('/content/drive')
+# !mkdir -p data/raw && cp "/content/drive/MyDrive/dlam/train.csv" data/raw/train.csv
+
+# ETT — small, just download and adapt:
+!mkdir -p data/ett
+!curl -L -o data/ett/ETTh1.csv https://raw.githubusercontent.com/zhouhaoyi/ETDataset/main/ETT-small/ETTh1.csv
+!python scripts/prepare_ett.py</code></pre>
+<p><strong>Cell 3 — run the ladder. The one thing that matters: <code>--device cuda</code></strong>. Without it the code auto-detects the Mac's MPS, finds none on Colab, and silently runs on CPU — zero speedup. Force the GPU:</p>
+<pre><code>%%bash
+cd /content/dlam-ts-38
+for model in linear mlp lstm patchtst; do
+  for f in 0 1 2; do
+    echo "=== $model fold $f (graded) ==="
+    python -m src.train --model $model --fold $f --gap 336 \
+      --lookback 336 --patience 8 --device cuda --notes graded
+  done
+done</code></pre>
+<p><strong>Cell 4 — the ETT ladder</strong> (same, plus the ETT flags):</p>
+<pre><code>%%bash
+cd /content/dlam-ts-38
+for model in linear mlp lstm patchtst; do
+  for f in 0 1 2; do
+    echo "=== $model fold $f (ett) ==="
+    python -m src.train --model $model --fold $f --gap 336 \
+      --lookback 336 --patience 8 --device cuda \
+      --covariates 0 --data data/ett/long.csv --notes ett
+  done
+done</code></pre>
+<p><strong>Cell 5 — save results OUT before the session dies.</strong> Colab is ephemeral: when it disconnects, its disk is wiped. Copy the logbook and checkpoints to Drive (or download them):</p>
+<pre><code>from google.colab import drive; drive.mount('/content/drive')
+!mkdir -p /content/drive/MyDrive/dlam
+!cp experiments/runs.csv /content/drive/MyDrive/dlam/runs.csv
+!cp -r experiments/checkpoints /content/drive/MyDrive/dlam/
+# or one file at a time:  from google.colab import files; files.download('experiments/runs.csv')</code></pre>
+<p>Then run the <code>compare.py</code> snippet above on the downloaded <code>runs.csv</code> — same ranked table, produced ~2–3× sooner.</p>
+<div class="gotcha"><b>Two Colab gotchas that bite everyone</b><ul>
+<li><strong><code>--device cuda</code> is not optional.</strong> Leave it off and every run uses CPU on Colab — no speedup, hours wasted.</li>
+<li><strong>Free Colab disconnects</strong> after ~90&nbsp;min of inactivity and caps long sessions. Keep the tab open, save <code>runs.csv</code>/checkpoints to Drive after each model, and if it drops just re-run the models that didn't finish (the <code>--notes</code> tag keeps the table clean).</li>
+</ul></div>
+
+<div class="gotcha"><b>Covariates are a separate axis — and your biggest lever on the graded data</b><p>This ladder is target-only (<code>--covariates 0</code>) so it's a fair architecture comparison. But your logbook already shows <code>linear --covariates 1</code> reaching WAPE&nbsp;~0.18 vs ~0.30 without — a big jump. Once you've picked the best architecture, re-run your top one or two with <code>--covariates 1</code>; that's likely your real submission model. (ETT has no known-future covariates, so it stays at 0.)</p></div>
+
 <div class="check"><b>One move, every stage</b><p>Run at <code>--gap 336</code> &rarr; read the lowest <code>val WAPE</code> &rarr; lower is better &rarr; compare to the baseline and to your other models. That is the whole testing loop, start to finish.</p></div>
 </section>
 
