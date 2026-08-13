@@ -1741,11 +1741,11 @@ tokens:  512 -> 63           attention cost: 262,144 -> 3,969  (66x cheaper)</co
 <div class="why"><b>Why</b><p>Roughly 25 runs. Scripted, overnight, no supervision. Each appends one row to <code>runs.csv</code>.</p></div>
 <div class="codeblock"><div class="code-head"><span class="code-caret">&#9656;</span><span class="code-file">scripts/ablate.sh</span><span class="code-tag">shell</span><button class="code-copy" type="button">copy</button></div><div class="code-wrap"><pre><code>#!/usr/bin/env bash
 set -e
-BEST=<span class="s">"--model patchtst --lookback 512 --patch-len 16 --loss huber --revin 1 --covariates 1"</span>
+BEST=<span class="s">"--model patchtst --lookback 512 --patch-len 16 --loss huber --revin 1 --covariates 1 --gap 336"</span>   <span class="c"># set to your ladder-winning config; --gap 336 is the graded task</span>
 
 <span class="c"># --- Table 1: model comparison, fold 0 -----------------------------</span>
 <span class="k">for</span> m <span class="k">in</span> linear mlp lstm patchtst; <span class="k">do</span>
-  python -m src.train --model $m --fold 0 --notes <span class="s">"table1"</span>
+  python -m src.train --model $m --fold 0 --gap 336 --notes <span class="s">"table1"</span>
 <span class="k">done</span>
 
 <span class="c"># --- Table 2: one factor at a time ---------------------------------</span>
@@ -1774,7 +1774,8 @@ python -m src.train $BEST --fill mean      --notes <span class="s">"abl:fill"</s
 <div class="why"><b>Why</b><p>Neural network training is stochastic. Two runs with identical settings and different seeds will differ. If seed-to-seed variation is ±2% and your ablation shows a 1% effect, <strong>you have measured nothing</strong> — and a good examiner will spot it.</p></div>
 <p>Run your final configuration with three seeds and report mean ± std. Then use that std as the noise floor for reading every other row.</p>
 <div class="codeblock"><div class="code-head"><span class="code-caret">&#9656;</span><span class="code-file">scripts/tables.py</span><span class="code-tag">python</span><button class="code-copy" type="button">copy</button></div><div class="code-wrap"><pre><code><span class="k">import</span> pandas <span class="k">as</span> pd
-r = pd.read_csv(<span class="s">"experiments/runs.csv"</span>)
+F = [<span class="s">"ts"</span>,<span class="s">"run_id"</span>,<span class="s">"model"</span>,<span class="s">"fold"</span>,<span class="s">"seed"</span>,<span class="s">"lookback"</span>,<span class="s">"loss"</span>,<span class="s">"revin"</span>,<span class="s">"covariates"</span>,<span class="s">"patch_len"</span>,<span class="s">"d_model"</span>,<span class="s">"layers"</span>,<span class="s">"lr"</span>,<span class="s">"epochs"</span>,<span class="s">"wape"</span>,<span class="s">"mae"</span>,<span class="s">"rmse"</span>,<span class="s">"mse"</span>,<span class="s">"mape"</span>,<span class="s">"smape"</span>,<span class="s">"minutes"</span>,<span class="s">"notes"</span>]
+r = pd.read_csv(<span class="s">"experiments/runs.csv"</span>, names=F, header=<span class="k">None</span>)   <span class="c"># runs.csv has no header row</span>
 
 t1 = (r[r.notes == <span class="s">"table1"</span>]
       .groupby(<span class="s">"model"</span>)[[<span class="s">"wape"</span>,<span class="s">"mae"</span>,<span class="s">"rmse"</span>,<span class="s">"smape"</span>]]
