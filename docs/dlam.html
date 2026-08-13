@@ -1,0 +1,1493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>DLAM — Exam Roadmap</title>
+<script>
+  window.MathJax = { tex:{inlineMath:[['\\(','\\)']], displayMath:[['\\[','\\]']]}, svg:{fontCache:'global'} };
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+<style>
+:root{
+  --bg:#0c0f14; --panel:#12161d; --panel2:#171c25; --line:#232a35;
+  --tx:#d6dde6; --mut:#8b97a7; --dim:#5f6b7a;
+  --acc:#6aa9ff; --acc2:#7ee0c0; --good:#5fd08a; --warn:#e5b96b; --bad:#e57373;
+  --kw:#ffd479; --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+}
+[data-theme="light"]{
+  --bg:#f6f7f9; --panel:#fff; --panel2:#eef1f5; --line:#dde2e9;
+  --tx:#1b222c; --mut:#5a6675; --dim:#8b97a7; --kw:#8a5a00;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--tx);font-family:var(--sans);font-size:15px;line-height:1.6}
+a{color:var(--acc);text-decoration:none}
+a:hover{text-decoration:underline}
+code{font-family:var(--mono);font-size:.9em;background:var(--panel2);padding:.08em .35em;border-radius:4px}
+.kw{color:var(--kw);font-weight:600}
+.layout{display:grid;grid-template-columns:250px 1fr;min-height:100vh}
+/* rail */
+#rail{border-right:1px solid var(--line);background:var(--panel);padding:16px 12px;position:sticky;top:0;height:100vh;overflow:auto}
+.brand{font-weight:700;letter-spacing:.5px;font-size:15px;margin:2px 6px 4px}
+.brand small{display:block;color:var(--mut);font-weight:400;font-size:11px;letter-spacing:.3px}
+.railgrp{margin-top:14px}
+.railgrp h4{margin:0 6px 6px;font-size:10.5px;text-transform:uppercase;letter-spacing:1.2px;color:var(--dim)}
+.rbtn{display:flex;justify-content:space-between;gap:8px;align-items:center;width:100%;text-align:left;background:none;border:0;color:var(--tx);
+  padding:6px 8px;border-radius:6px;cursor:pointer;font-size:12.5px;font-family:var(--sans);border-left:2px solid transparent}
+.rbtn:hover{background:var(--panel2)}
+.rbtn.on{background:var(--panel2);border-left-color:var(--acc);color:var(--acc)}
+.rbtn .pt{color:var(--dim);font-size:10px;font-family:var(--mono)}
+.rbtn.pending{color:var(--dim)}
+.rbtn.pending::after{content:"·";color:var(--warn)}
+/* main */
+#main{padding:34px 40px 90px;max-width:920px}
+h1{font-size:26px;margin:0 0 4px;letter-spacing:-.3px}
+h2{font-size:19px;margin:34px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+h3{font-size:15.5px;margin:22px 0 6px;color:var(--acc2)}
+.sub{color:var(--mut);font-size:13px}
+.tag{display:inline-block;font-family:var(--mono);font-size:10.5px;padding:2px 7px;border:1px solid var(--line);border-radius:20px;color:var(--mut);margin:0 4px 4px 0}
+.tag.a{color:var(--acc);border-color:var(--acc)}
+.tag.b{color:var(--acc2);border-color:var(--acc2)}
+.pill{font-family:var(--mono);font-size:10px;padding:1px 6px;border-radius:4px}
+.pill.t1{background:#3a2330;color:#ffb0c8}.pill.t2{background:#2a2740;color:#c3b6ff}
+.pill.t3{background:#1f3340;color:#8fd0ff}.pill.t4{background:#1f3a2f;color:#8fe6bd}
+.pill.t5{background:#3a331f;color:#f0d79a}.pill.t6{background:#2c2c34;color:#c3c9d4}
+.lede{font-size:15px;color:var(--tx);background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--acc);padding:12px 16px;border-radius:8px;margin:14px 0}
+.why{color:var(--mut);font-size:14px;margin:10px 0 6px}
+.sec{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin:14px 0}
+.sec .src{float:right;font-family:var(--mono);font-size:11px;color:var(--dim)}
+.sec h3{margin-top:0}
+.note{border-radius:8px;padding:10px 14px;margin:12px 0;background:var(--panel2);border:1px solid var(--line)}
+.note .h{font-size:11px;text-transform:uppercase;letter-spacing:.8px;color:var(--mut);margin-bottom:3px}
+.note.acc{border-color:var(--acc)}.note.good{border-color:var(--good)}
+.note.warn{border-color:var(--warn)}.note.bad{border-color:var(--bad)}
+table{border-collapse:collapse;width:100%;margin:10px 0;font-size:13.5px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--panel2);font-weight:600;color:var(--mut)}
+.worked{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin:14px 0}
+.worked .q{background:var(--panel2);border-left:3px solid var(--acc2);padding:8px 12px;border-radius:6px;font-size:13.5px;margin-bottom:10px}
+.step{margin:10px 0;padding:2px 0 6px 14px;border-left:2px solid var(--line)}
+.step > b{color:var(--acc2)}
+.stepsub{font-size:12px;text-transform:uppercase;letter-spacing:.6px;color:var(--mut);margin:16px 0 4px}
+.examwrite{margin:14px 0 2px;border:1px solid var(--good);border-radius:8px;padding:10px 14px;background:var(--panel2)}
+.examwrite .h{font-size:11px;text-transform:uppercase;letter-spacing:.8px;color:var(--good);margin-bottom:6px}
+.examwrite .mono{font-family:var(--mono);font-size:12px;white-space:pre-wrap}
+.gradtab td{font-family:var(--mono);text-align:center}
+.drill{border:1px dashed var(--warn);border-radius:8px;padding:10px 14px;margin:12px 0;font-size:13.5px}
+.drill .h{color:var(--warn);font-size:11px;text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px}
+.checks{list-style:none;padding:0;margin:14px 0}
+.checks li{padding:6px 0;border-bottom:1px solid var(--line);display:flex;gap:10px;align-items:flex-start;cursor:pointer}
+.checks input{margin-top:4px}
+.checks li.done span{color:var(--dim);text-decoration:line-through}
+.anki{background:#0a0d12;border:1px solid var(--line);border-radius:8px;padding:0;margin:10px 0;overflow:hidden}
+.anki .hd{background:var(--panel2);padding:7px 12px;font-family:var(--mono);font-size:11px;color:var(--mut);display:flex;justify-content:space-between}
+.anki pre{margin:0;padding:12px;overflow:auto;font-family:var(--mono);font-size:11.5px;color:var(--tx);white-space:pre;max-height:340px}
+.copy{cursor:pointer;border:1px solid var(--line);background:none;color:var(--acc);border-radius:4px;font-size:10px;padding:2px 8px;font-family:var(--mono)}
+.topbar{display:flex;gap:8px;align-items:center;margin-bottom:6px}
+.topbar .grow{flex:1}
+.btn{border:1px solid var(--line);background:var(--panel);color:var(--tx);border-radius:6px;padding:5px 10px;font-size:12px;cursor:pointer;font-family:var(--sans)}
+.btn:hover{border-color:var(--acc)}
+.progress{height:6px;background:var(--panel2);border-radius:4px;overflow:hidden;margin:4px 0}
+.progress > i{display:block;height:100%;background:var(--good)}
+.regrow{display:grid;grid-template-columns:44px 1fr 150px 70px;gap:8px;align-items:center;padding:7px 8px;border-bottom:1px solid var(--line);font-size:13px}
+.regrow:hover{background:var(--panel)}
+.regrow .ex{font-family:var(--mono);font-size:10.5px;color:var(--dim)}
+.gate{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:12px 0}
+.gate .cond{color:var(--warn);font-weight:600}
+.mono{font-family:var(--mono)}
+.hr{height:1px;background:var(--line);margin:18px 0;border:0}
+@media(max-width:780px){.layout{grid-template-columns:1fr}#rail{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line)}#main{padding:22px 16px 80px}.regrow{grid-template-columns:38px 1fr;}.regrow .ex,.regrow .ptc{display:none}}
+</style>
+</head>
+<body>
+<div class="layout">
+  <nav id="rail"></nav>
+  <main id="main"></main>
+</div>
+
+<script>
+/* =========================================================================
+   DLAM EXAM ROADMAP  —  build: PASS 1
+   Spine: DLAM_progress_tracker.md (Tier 1-6, 31 question types).
+   Self-contained. Model answers embedded. Anki = theory (Bank B) only.
+   Later passes append via RM.blocks.push(...) above the SPLICE marker.
+   ========================================================================= */
+const BUILD = "pass4 · 2026-08-10";
+const RM = { blocks: [] };
+
+/* ---- REGISTER (full, static, from tracker). blockId links to a block.
+        A row is "built" iff a block with that id exists in RM.blocks. ---- */
+const REGISTER = [
+ {tier:1, type:"Backprop: fill gradients on a computation graph", exams:"SS21 Q3 · MT22/23 Q8 · 2024 Q3 · SoSe25 Q5a · WiSe25/26 Q5", pts:"12–18", bank:"A", blockId:"t1-backprop"},
+
+ {tier:2, type:"ResNet: idea + comp-graph + advantages", exams:"SS21 Q5 · MT22/23 Q12 · 2024 Q7 · SoSe25 Q7", pts:"4–6", bank:"B", blockId:"t2-resnet"},
+ {tier:2, type:"Vanishing / dying gradient (math) + does max-pool contribute", exams:"MT22/23 Q6 · 2024 Q9 · SoSe25 Q10 · WiSe25/26 Q10", pts:"4–6", bank:"B", blockId:"t2-vanish"},
+ {tier:2, type:"GAN: diagram + generation process", exams:"SS21 Q10 · MT22/23 Q14 · SoSe25 Q11 · WiSe25/26 Q11", pts:"4–6", bank:"B", blockId:"t2-gan"},
+
+ {tier:3, type:"Conv: find missing kernel values", exams:"SS21 Q1 · 2024 Q2a · SoSe25 Q1 · WiSe25/26 Q1", pts:"3–5", bank:"A", blockId:"t3-convkernel"},
+ {tier:3, type:"Pooling: output size + apply", exams:"SS21 Q2 · 2024 Q2b/c · SoSe25 Q2 · WiSe25/26 Q2", pts:"2–4", bank:"A", blockId:"t3-pool"},
+ {tier:3, type:"SPN queries (EVI / MAR / MAP)", exams:"SS21 Q6 · 2024 Q6 · SoSe25 Q9 · WiSe25/26 Q9", pts:"4", bank:"A", blockId:"t3-spn"},
+ {tier:3, type:"Attention: formula + apply", exams:"SS21 Q14 · 2024 Q11a · SoSe25 Q12a · WiSe25/26 Q12", pts:"4–6", bank:"A", blockId:"t3-attn"},
+ {tier:3, type:"RNN problems solved by Transformer + complexity", exams:"SS21 Q15 · 2024 Q11b · SoSe25 Q12b · WiSe25/26 Q15", pts:"3–4", bank:"B", blockId:"t3-rnn2tf"},
+ {tier:3, type:"Ethical issues of large-scale LLMs", exams:"SS21 Q16 · 2024 Q11c · SoSe25 Q12c · WiSe25/26 Q15c", pts:"~5", bank:"B", blockId:"t3-ethics"},
+
+ {tier:4, type:"Build comp-graph for act(w·x+b)", exams:"SS21 Q4 · SoSe25 Q5b · WiSe25/26 Q5b", pts:"8", bank:"A", blockId:"t4-buildgraph"},
+ {tier:4, type:"Activation functions: sigmoid + Leaky ReLU", exams:"2024 Q1 · SoSe25 Q3 · WiSe25/26 Q3", pts:"7", bank:"B", blockId:"t4-activ"},
+ {tier:4, type:"BatchNorm: definition + advantages", exams:"2024 Q10a-b · SoSe25 Q6c · WiSe25/26 Q7", pts:"4–5", bank:"B", blockId:"t4-bn"},
+ {tier:4, type:"Bias–variance vs number of hidden units", exams:"MT22/23 Q1 · SoSe25 Q4", pts:"3", bank:"B", blockId:"t4-biasvar"},
+
+ {tier:5, type:"Param counting (CONV / Pool / FC)", exams:"MT22/23 Q4", pts:"3", bank:"A", blockId:"t5-params"},
+ {tier:5, type:"Comp-graph incl. SiLU + BatchNorm", exams:"2024 Q5 · WiSe25/26 Q5-graph", pts:"—", bank:"A", blockId:"t5-silubn"},
+ {tier:5, type:"Max-gate backprop", exams:"MT22/23 Q5", pts:"—", bank:"A", blockId:"t5-maxgate"},
+ {tier:5, type:"tanh derivative range", exams:"MT22/23 Q3", pts:"—", bank:"B", blockId:"t5-tanh"},
+ {tier:5, type:"GD vs minibatch GD", exams:"SoSe25 Q6 · WiSe25/26 Q6", pts:"—", bank:"B", blockId:"t5-gd"},
+ {tier:5, type:"Newton / AdaGrad / RMSprop directions", exams:"MT22/23 Q10", pts:"—", bank:"B", blockId:"t5-optim"},
+ {tier:5, type:"Grid vs random search", exams:"MT22/23 Q11", pts:"—", bank:"B", blockId:"t5-search"},
+ {tier:5, type:"Weight-init — flat-loss prime suspect", exams:"MT22/23 Q7", pts:"—", bank:"B", blockId:"t5-init"},
+ {tier:5, type:"LSTM: fill gates + explain", exams:"2024 Q8 · WiSe25/26 Q8", pts:"—", bank:"A", blockId:"t5-lstm"},
+ {tier:5, type:"Bidirectional RNN", exams:"MT22/23 Q13", pts:"—", bank:"B", blockId:"t5-birnn"},
+ {tier:5, type:"Autoencoder: architecture + purpose", exams:"SS21 Q11 · SoSe25 Q8a", pts:"—", bank:"B", blockId:"t5-ae"},
+ {tier:5, type:"VAE explicit vs implicit (vs GAN)", exams:"SS21 Q12 · SoSe25 Q8b", pts:"—", bank:"B", blockId:"t5-vae"},
+ {tier:5, type:"Reparameterization trick", exams:"SS21 Q13 · WiSe25/26 Q7-VAE", pts:"—", bank:"B", blockId:"t5-reparam"},
+
+ {tier:6, type:"Sigmoid neuron df/dw (+L2)", exams:"SS21 Q7–8", pts:"—", bank:"A", blockId:"t6-signeuron"},
+ {tier:6, type:"Overfitting + early stopping", exams:"SS21 Q9", pts:"—", bank:"B", blockId:"t6-earlystop"},
+ {tier:6, type:"Dropout ≈ bagging", exams:"2024 Q10d-e", pts:"—", bank:"B", blockId:"t6-dropout"},
+ {tier:6, type:"LR curves — drawing/reading", exams:"2024 Q4", pts:"8", bank:"A", blockId:"t6-lrcurves"},
+];
+
+/* ============================ TIER 1 ============================ */
+RM.blocks.push({
+ id:"t1-backprop", tier:1, code:"T1", bank:"A",
+ title:"Backprop — fill gradients on a computation graph",
+ exams:"SS21 Q3 · MT22/23 Q8 · 2024 Q3 · SoSe25 Q5a · WiSe25/26 Q5",
+ points:"12–18 (single biggest procedural item; in 6/6 sittings)",
+ lede:"The one question you cannot afford to fumble — 6/6 sittings, 12–18 marks, pure mechanics. A gradient flows in from the right, you multiply by a local derivative, you write a number, you move one node left. There are only two graph families the examiner has ever used: a ReLU chain with a skip (SS21, WiSe, MT), and a logistic-sigmoid circuit (2024, SoSe25). Below, both are worked end-to-end, every position, in the exact order and format you write on the sheet.",
+ why:"6/6 sittings and the largest block of fully-deterministic marks in the paper. Once the gate rules are reflex this question is just careful arithmetic — and careful arithmetic is a guaranteed 12–18 points. Highest-leverage hour in the plan.",
+ sections:[
+  {h:"The gate rules — these ARE the question", src:"tracker T1 · Anki 3_backpropagation", note:{c:"acc",h:"Nothing else is being tested",b:"Every graph reduces to these rules applied node by node, right to left. If they are reflex, the question is arithmetic. If you have to think about them, you will run out of time or slip — and a slip is a full miss."},
+   body:"Backprop runs <b>right → left</b>. Each node takes the <span class='kw'>upstream gradient</span> \\(g\\) arriving on its output edge, multiplies by its own <span class='kw'>local derivative</span> (evaluated at the forward value), and sends the product up each input edge.<br><br>"+
+   "<table><tr><th>Gate</th><th>Local derivative</th><th>What you send upstream</th></tr>"+
+   "<tr><td><b>+</b> add</td><td>\\(\\partial(x+y)/\\partial x = 1\\)</td><td><b>Copy</b> \\(g\\) unchanged to <i>every</i> input. (Add = gradient distributor.)</td></tr>"+
+   "<tr><td><b>×</b> mult</td><td>\\(\\partial(xy)/\\partial x = y\\)</td><td>Each input gets \\(g\\times\\) the <b>other</b> input's forward value. (Mult = value switcher.)</td></tr>"+
+   "<tr><td><b>max</b></td><td>\\(1\\) to the winner, \\(0\\) else</td><td>Route \\(g\\) to whichever input <b>was</b> larger in the forward pass; \\(0\\) to the rest. (Max = router.)</td></tr>"+
+   "<tr><td><b>ReLU</b></td><td>\\(1\\) if input \\(>0\\), else \\(0\\)</td><td>\\(g\\) if the node's forward input was \\(>0\\), else \\(0\\). (Leaky/PReLU: \\(g\\cdot\\alpha\\) on the negative side.)</td></tr>"+
+   "<tr><td><b>sigmoid</b> \\(\\sigma\\)</td><td>\\(\\sigma(z)(1-\\sigma(z))\\)</td><td>\\(g\\cdot \\sigma(z)(1-\\sigma(z))\\). Shortcut: if the node's forward <i>output</i> is \\(o\\), local deriv \\(=o(1-o)\\).</td></tr>"+
+   "<tr><td><b>\\(e^{x}\\)</b> exp</td><td>\\(e^{x}\\)</td><td>\\(g\\cdot e^{x}\\) = \\(g\\times\\) the node's own forward <i>output</i>.</td></tr>"+
+   "<tr><td><b>\\(1/x\\)</b></td><td>\\(-1/x^2\\)</td><td>\\(g\\cdot(-1/x^2)\\), \\(x\\) = forward input to the gate.</td></tr>"+
+   "<tr><td><b>\\(c+x\\)</b> const-add</td><td>\\(1\\)</td><td>\\(g\\) unchanged (the \\(+1\\) node in a sigmoid circuit).</td></tr>"+
+   "<tr><td><b>\\(a\\cdot x\\)</b> scale by const</td><td>\\(a\\)</td><td>\\(g\\cdot a\\) (the \\(\\times(-1)\\) node in a sigmoid circuit sends \\(-g\\)).</td></tr>"+
+   "</table>"+
+   "<div class='note warn'><div class='h'>The branch rule — the single most-missed step</div>When one node's output feeds <b>two</b> downstream edges (a skip connection, or a variable reused twice in the formula), the two paths each send a gradient back. You <b>add them</b> before going further upstream. Miss this and every gradient upstream of the branch is wrong.</div>"+
+   "<div class='note'><div class='h'>Why it's just the chain rule</div>Conceptually you already know this: \\(\\frac{\\partial L}{\\partial x}=\\frac{\\partial L}{\\partial u}\\frac{\\partial u}{\\partial x}\\). \"Upstream gradient\" is \\(\\partial L/\\partial u\\); \"local derivative\" is \\(\\partial u/\\partial x\\). The graph just lets you do it one multiply at a time instead of expanding a giant expression. That's the entire trick — the rest is bookkeeping.</div>"},
+  {h:"The procedure you run every time", src:"tracker T1",
+   body:"<ol>"+
+   "<li><b>Recompute the forward pass first.</b> You need every node's forward value for the mult/ReLU/sigmoid rules. Do this even if values are printed — it's your sanity check and it's fast.</li>"+
+   "<li><b>Start from the given gradient</b> (usually the output, \\(=1.0\\)) and walk right → left.</li>"+
+   "<li>At each node: local derivative × incoming gradient = gradient to write on each input edge.</li>"+
+   "<li><b>At any branch, sum</b> the gradients returning from the two paths.</li>"+
+   "<li>Write your answers in the exact numbered order the question lists (\"14:, 13:, … 1:\"). Label them so the marker can follow — partial credit is per-position.</li>"+
+   "</ol>"}
+ ],
+ worked:[
+  {h:"WORKED EXAMPLE 1 — SS21 Q3 (12 p) · ReLU chain with a skip connection",
+   q:"\"Execute a back-propagation step and fill in the missing gradients underneath the forward-pass values in the following computation graph. The gradient at position 13 has a value of 1.0. (12 points)\" — this is the real, fully-numbered graph; positions 1–13 are the blanks you fill.",
+   pre:
+"        (skip edge, carries the value 4.0) ──────────── pos 3 ─┐\n"+
+"       ┌──────────────────────────────────────────────────────┤\n"+
+"  x=4.0│  ┌4.0                                                  │\n"+
+"  ──[ReLU]┴─┬─ pos4 ─[×]─ -2.0 ─[ReLU]─ 0.0 ─[+]─ 2.0 ─[×]─ -1.0 ─[+]─ 3.0 ─[ReLU]─ 3.0\n"+
+"  pos1    pos2      │      pos6        pos7    │   pos9    │   pos11   pos12      pos13=1.0\n"+
+"                 w1=-0.5(pos5)          b1=2.0(pos8)  w2=-0.5(pos10)\n"+
+"\n"+
+"  node order (L→R): x → ReLU → [branches: skip + into ×] → ×(·w1) → ReLU → +(·+b1)\n"+
+"                    → ×(·w2) → +(·+skip) → ReLU → output",
+   intro:"Read the graph as a straight chain with one skip: the first ReLU's output (4.0) goes two places — down into the first <code>×</code> gate, and along the top skip edge into the last <code>+</code>. That branch is where the sum-rule bites.",
+   fwd:[["x → ReLU","4.0"],["×w1","-2.0"],["ReLU","0.0"],["+b1","2.0"],["×w2","-1.0"],["+skip","3.0"],["ReLU out","3.0"]],
+   steps:[
+    ["Forward check (do this in ~20 s).","\\(4.0>0\\Rightarrow\\text{ReLU}=4.0\\). Then \\(4.0\\cdot(-0.5)=-2.0\\); \\(\\text{ReLU}(-2.0)=0.0\\); \\(0.0+2.0=2.0\\); \\(2.0\\cdot(-0.5)=-1.0\\); \\(-1.0+4.0(\\text{skip})=3.0\\); \\(\\text{ReLU}(3.0)=3.0\\). Matches the printed values, so the graph is read correctly."],
+    ["pos 13 (given).","\\(g_{13}=1.0\\). Write it down; it's the anchor."],
+    ["pos 12 — final ReLU.","Its forward input was \\(3.0>0\\Rightarrow\\) local deriv \\(=1\\). \\(g_{12}=g_{13}\\cdot 1=\\mathbf{1.0}\\)."],
+    ["pos 11 and pos 3 — the last + gate.","Add copies the gradient to both inputs. Its inputs are the \\(×w2\\) output (pos 11) and the skip edge (pos 3). So \\(g_{11}=1.0\\) and \\(g_{3}=1.0\\). Park \\(g_3\\) — it comes back at the branch."],
+    ["pos 9 and pos 10 — the \\(×w2\\) gate.","Mult switches the other input's forward value. Inputs: the \\(+b1\\) output (forward \\(2.0\\), pos 9) and \\(w2\\) (forward \\(-0.5\\), pos 10). Incoming \\(g_{11}=1.0\\).<br>\\(g_{9}=1.0\\cdot(w2\\text{ fwd})=1.0\\cdot(-0.5)=\\mathbf{-0.5}\\).<br>\\(g_{10}=1.0\\cdot(\\text{other input fwd}=2.0)=\\mathbf{2.0}\\) ← this is \\(\\partial L/\\partial w2\\)."],
+    ["pos 7 and pos 8 — the \\(+b1\\) gate.","Add copies through. Inputs: the second ReLU's output (pos 7) and \\(b1\\) (pos 8). Incoming \\(g_9=-0.5\\).<br>\\(g_{7}=\\mathbf{-0.5}\\), \\(g_{8}=\\mathbf{-0.5}\\) ← \\(\\partial L/\\partial b1\\)."],
+    ["pos 6 — the second ReLU.","Its forward input was \\(-2.0<0\\Rightarrow\\) local deriv \\(=0\\). \\(g_{6}=g_{7}\\cdot 0=\\mathbf{0.0}\\). Everything upstream of a dead ReLU on this path is now zero."],
+    ["pos 4 and pos 5 — the \\(×w1\\) gate.","Inputs: the first ReLU's output (forward \\(4.0\\), pos 4) and \\(w1\\) (forward \\(-0.5\\), pos 5). Incoming \\(g_6=0.0\\).<br>\\(g_{4}=0.0\\cdot(-0.5)=\\mathbf{0.0}\\); \\(g_{5}=0.0\\cdot 4.0=\\mathbf{0.0}\\) ← \\(\\partial L/\\partial w1\\)."],
+    ["pos 2 — THE BRANCH. Sum the two paths.","The first ReLU's output fed both the \\(×w1\\) edge (returning \\(g_4=0.0\\)) and the skip edge (returning \\(g_3=1.0\\)). Add them: \\(g_{2}=g_{4}+g_{3}=0.0+1.0=\\mathbf{1.0}\\). <b>This is the step everyone drops.</b>"],
+    ["pos 1 — the first ReLU.","Forward input \\(x=4.0>0\\Rightarrow\\) deriv \\(1\\). \\(g_{1}=g_{2}\\cdot 1=\\mathbf{1.0}\\)."]
+   ],
+   answer:[["13","1.0*"],["12","1.0"],["11","1.0"],["10 (w2)","2.0"],["9","-0.5"],["8 (b1)","-0.5"],["7","-0.5"],["6","0.0"],["5 (w1)","0.0"],["4","0.0"],["3 (skip)","1.0"],["2","1.0"],["1","1.0"]],
+   examwrite:"<div class='mono'>13: 1.0   12: 1.0   11: 1.0   10: 2.0    9: -0.5\n 8: -0.5   7: -0.5   6: 0.0    5: 0.0    4: 0.0\n 3: 1.0    2: 1.0    1: 1.0</div><p style='margin:6px 0 0'>Just the numbered list, matching the question's format. No prose needed — the marker checks positions against the key. Label every line; a correct number on an unlabelled line can be marked wrong.</p>"},
+
+  {h:"WORKED EXAMPLE 2 — logistic-sigmoid circuit (the 2024 / SoSe25 form) · sigmoid, exp, 1/x, and a reused variable",
+   q:"2024 Q3 / SoSe25 Q5a use the sigmoid form \\(f=\\sigma(\\dots)\\), written out as the low-level circuit \\(f=\\frac{1}{1+e^{-(w_0x_0+w_1x_1+w_2)}}\\). The protocol didn't preserve the exam's exact numbers, so this is worked on the standard values the course's slides use — the <i>mechanics are identical</i>; only the arithmetic changes. New gates vs Example 1: \\(×(-1)\\), \\(e^{x}\\), \\(+1\\), \\(1/x\\).",
+   pre:
+"  w0=2.0 ─[×]─ -2.0 ┐\n"+
+"  x0=-1.0    │      ├─[+]─ 4.0 ─[+]─ 1.0 ─[×(-1)]─ -1.0 ─[exp]─ 0.37 ─[+1]─ 1.37 ─[1/x]─ 0.73\n"+
+"  w1=-3.0 ─[×]─ 6.0 ┘        w2=-3.0                                                    (output)\n"+
+"  x1=-2.0",
+   intro:"Same right-to-left walk. The only new moves are the four scalar gates. Sigmoid has a shortcut (below) but the exam version writes it out as this circuit, so you must know each gate's local derivative.",
+   fwd:[["×: w0·x0","-2.0"],["×: w1·x1","6.0"],["+","4.0"],["+w2","1.0"],["×(-1)","-1.0"],["exp","0.37"],["+1","1.37"],["1/x (out)","0.73"]],
+   steps:[
+    ["Output gradient (given).","\\(g_{\\text{out}}=1.0\\) on the \\(1/x\\) node's output."],
+    ["\\(1/x\\) gate.","Local deriv \\(=-1/x^2\\), with \\(x=\\) its forward <i>input</i> \\(=1.37\\). \\(-1/1.37^2=-0.53\\). Upstream to the \\(+1\\) node: \\(1.0\\cdot(-0.53)=\\mathbf{-0.53}\\)."],
+    ["\\(+1\\) gate (const-add).","Deriv \\(1\\), copies through. Gradient on the exp output: \\(\\mathbf{-0.53}\\)."],
+    ["exp gate.","Local deriv \\(=e^{x}=\\) the node's own forward output \\(=0.37\\). \\(-0.53\\cdot 0.37=\\mathbf{-0.20}\\) on the \\(×(-1)\\) node's output."],
+    ["\\(×(-1)\\) gate.","Scale-by-constant, deriv \\(=-1\\). \\(-0.20\\cdot(-1)=\\mathbf{+0.20}\\) on the \\(+w_2\\) node."],
+    ["\\(+w_2\\) gate (add).","Copies through to both inputs: gradient \\(0.20\\) onto the first \\(+\\) output, and \\(\\partial L/\\partial w_2=\\mathbf{0.20}\\)."],
+    ["First \\(+\\) gate (add).","Copies through: \\(0.20\\) onto each mult's output (both the \\(w_0x_0\\) and \\(w_1x_1\\) products)."],
+    ["\\(×\\): \\(w_0\\cdot x_0\\).","Switch values. \\(\\partial L/\\partial w_0=0.20\\cdot x_0=0.20\\cdot(-1.0)=\\mathbf{-0.20}\\); \\(\\partial L/\\partial x_0=0.20\\cdot w_0=0.20\\cdot 2.0=\\mathbf{0.40}\\)."],
+    ["\\(×\\): \\(w_1\\cdot x_1\\).","\\(\\partial L/\\partial w_1=0.20\\cdot x_1=0.20\\cdot(-2.0)=\\mathbf{-0.40}\\); \\(\\partial L/\\partial x_1=0.20\\cdot w_1=0.20\\cdot(-3.0)=\\mathbf{-0.60}\\)."],
+    ["Sigmoid shortcut (know both).","If the exam draws \\(\\sigma\\) as ONE node instead of the four-gate circuit, use \\(\\sigma'(z)=\\sigma(z)(1-\\sigma(z))=o(1-o)\\) where \\(o\\) is the node output. Here \\(o=0.73\\Rightarrow 0.73\\cdot0.27=0.20\\) — exactly the gradient that arrives at the \\(+w_2\\) node above. Same answer, one step instead of four."],
+    ["If a variable is REUSED (2024's \\((w_1x_1+\\sigma(w_2x_2))+(w_1x_1)\\)).","\\(w_1x_1\\) feeds the graph in two places, so its node is a branch. Compute the gradient coming back along each of the two paths and <b>add them</b> — same branch rule as the skip in Example 1. This is the whole reason that variant is worth mentioning."]
+   ],
+   answer:[["out","1.0*"],["1/x in","-0.53"],["exp out","-0.53"],["×(-1) out","-0.20"],["+w2 → w2","0.20"],["w0","-0.20"],["x0","0.40"],["w1","-0.40"],["x1","-0.60"]],
+   examwrite:"<div class='mono'>1/x:   -0.53      +1:  -0.53     exp: -0.20\n×(-1): +0.20      +w2: 0.20      w2:  0.20\nw0: -0.20   x0: 0.40   w1: -0.40   x1: -0.60</div><p style='margin:6px 0 0'>Write each node's gradient next to its label, in the question's numbering. If you used the one-node sigmoid shortcut, still show the \\(o(1-o)\\) value so the marker sees the local derivative.</p>"}
+ ],
+ variations:[
+  {ex:"SS21 Q3 (12 p)", d:"<b>Worked in full above (Example 1).</b> ReLU chain, one skip connection, 13 positions, integer/half arithmetic. The canonical ReLU-family question."},
+  {ex:"MT22/23 Q8", d:"Same <b>logistic-sigmoid circuit</b> as Example 2 (the solution key lists gates \\(1/x, +1, +, ×, w_0, x_0, w_1, x_1\\) — the exact circuit above). Mechanically it's Example 2 with the exam's own forward values. Drill Example 2 and this is a re-run."},
+  {ex:"2024 Q3 (13 p)", d:"Sigmoid form \\((w_1x_1+\\sigma(w_2x_2))+(w_1x_1)\\) → Example 2's gates <b>plus a reused-variable branch</b> (last step above: sum the two returning gradients at \\(w_1x_1\\)). 13 positions, output pos 14 = 1.0. [Corrected: earlier note tying this to Leaky-ReLU α=0.04 was wrong — α=0.04 is 2024 Q1, activation functions.]"},
+  {ex:"SoSe25 Q5a (13 p)", d:"The paper states verbatim: 13 gradients, rightmost upstream (pos 14) = 1.0, <i>\"just see the protocol from summer 2024.\"</i> ⇒ identical to 2024 Q3. Its Q5b (build the graph for \\(act(x)=\\max(0,\\alpha x)\\)) is the separate Tier-4 build-graph type."},
+  {ex:"WiSe25/26 Q5 (18 p)", d:"Largest instance: <b>14 gradient positions</b>, ReLU throughout — Example 1's rules on a longer chain, so budget more time and don't rush the branch. (Exact grid didn't survive the protocol scan; rebuild from your copy of the paper — the method is unchanged.)"}
+ ],
+ drill:"<b>Now solve these yourself — cover the worked steps and reproduce them cold.</b><ol>"+
+   "<li><b>SS21 Q3</b> from the graph alone: write positions 13→1 in under 4 minutes, no hesitation on any gate. Check against the answer table above.</li>"+
+   "<li><b>Logistic-sigmoid circuit (Example 2)</b> from the forward values alone: reproduce every gradient. Then redo it using the one-node \\(o(1-o)\\) sigmoid shortcut and confirm you get the same number at the \\(+w_2\\) node.</li>"+
+   "<li><b>2024 Q3 reused-variable twist:</b> take Example 2's circuit, feed \\(w_1x_1\\) into a second downstream \\(+\\), and verify you correctly sum the two gradients returning to the \\(w_1x_1\\) node.</li>"+
+   "<li>When you have your <b>WiSe25/26</b> paper: run the 14-position ReLU chain under a 6-minute timer.</li>"+
+   "</ol>Procedural type ⇒ no Anki. Drilling here means re-solving until the gate rules and the branch-sum are automatic.",
+ checks:[
+  "Recite all gate rules cold: + copies, × switches, max routes, ReLU 0/1, sigmoid o(1-o), exp = own output, 1/x = -1/x²",
+  "State the branch rule unprompted (sum the returning gradients) and point to where it bites in both worked examples",
+  "Reproduce SS21 Q3 end-to-end, all 13 positions, matching the answer table, in under 4 min",
+  "Reproduce the sigmoid circuit end-to-end, both the four-gate way and the o(1-o) shortcut",
+  "Handle the 2024 reused-variable branch correctly (sum the two paths at w₁x₁)"
+ ]
+});
+
+/* ============================ TIER 2 ============================ */
+RM.blocks.push({
+ id:"t2-resnet", tier:2, code:"T2", bank:"B",
+ title:"ResNet — idea + comp-graph + advantages",
+ exams:"SS21 Q5 · MT22/23 Q12 · 2024 Q7 · SoSe25 Q7",
+ points:"4–6 (5/6 sittings)",
+ lede:"A theory + tiny-diagram question. One-line idea, a three-node graph, two–three named advantages. Marks are lost by drawing the block without the skip edge, or by listing advantages without tying them to the gradient path.",
+ why:"5/6 sittings. Cheap, reliable points if the skip-connection idea and the gradient-path advantage are stated crisply.",
+ sections:[
+  {h:"Idea + comp-graph", src:"tracker T2 · L6/L7 CNNs",
+   body:"Learn the <b>residual</b> \\(F(x)=H(x)-x\\) instead of the full mapping \\(H(x)\\); output \\(=F(x)+x\\) via a <span class='kw'>skip connection</span>.<br><br>Graph: <code>x → [conv–ReLU–conv] → F(x)</code>, plus a direct edge <code>x → (+)</code>, then <code>F(x)+x</code>. The skip edge is the whole point — draw it explicitly."},
+  {h:"Advantages (state 2–3)", src:"tracker T2",
+   body:"<ul><li><b>Mitigates vanishing gradient:</b> the skip gives the gradient a path with derivative 1 straight back to earlier layers (this is the answer they want — link it to the add-gate pass-through from T1).</li>"+
+   "<li><b>Enables very deep nets:</b> identity is easy to learn, so extra layers can't hurt; empirically trains 100+ layers.</li>"+
+   "<li><b>Eases optimization:</b> smoother loss landscape.</li></ul>"}
+ ],
+ worked:[],
+ variations:[
+  {ex:"SS21 Q5", d:"Asks idea + comp-graph + advantages together."},
+  {ex:"2024 Q7 / SoSe25 Q7", d:"Same; sometimes only advantages or only the graph — answer the part asked, keep the skip edge central."},
+  {ex:"MT22/23 Q12", d:"Same type."}
+ ],
+ anki:{
+  basic:[
+   ["What does a ResNet block learn, and what is the output?","Learns the residual \\(F(x)=H(x)-x\\); output \\(=F(x)+x\\) via a skip connection.","t2_resnet"],
+   ["ResNet: why does the skip connection help gradients?","It gives the gradient a path with local derivative 1 (add-gate pass-through) straight back to earlier layers → mitigates vanishing gradient.","t2_resnet"]
+  ],
+  cloze:[
+   ["A ResNet block outputs {{c1::F(x) + x}}, where {{c2::F(x)}} is the residual and the {{c3::skip/identity}} connection carries x forward.","","t2_resnet"],
+   ["Three ResNet advantages: {{c1::mitigates vanishing gradient}}, {{c2::enables very deep networks}}, {{c3::eases optimization / smoother landscape}}.","","t2_resnet"]
+  ]
+ },
+ drill:"",
+ checks:["One-line residual idea + output formula","Draw the block with the skip edge","Name 3 advantages, gradient-path one first"]
+});
+
+RM.blocks.push({
+ id:"t2-vanish", tier:2, code:"T2", bank:"B",
+ title:"Vanishing / dying gradient + does max-pool contribute",
+ exams:"MT22/23 Q6 · 2024 Q9 · SoSe25 Q10 · WiSe25/26 Q10",
+ points:"4–6 (in 4 sittings, tightly recurring)",
+ lede:"Distinguish vanishing (saturating activations) from dying (ReLU stuck at 0), give the derivative-range argument, and answer the trick sub-part: max-pooling does NOT cause vanishing gradient.",
+ why:"Recurs with a fixed structure and a fixed trap (the max-pool sub-question). Know the derivative ranges and the max-pool answer verbatim.",
+ sections:[
+  {h:"Vanishing vs dying", src:"tracker T2 · L4/L5 training",
+   body:"<b>Vanishing:</b> the chain rule multiplies many derivative terms across layers. Sigmoid deriv \\(\\in(0,0.25]\\), tanh deriv \\(\\in(0,1]\\); repeatedly multiplying values \\(<1\\) drives the gradient → 0 in early layers ⇒ they stop learning.<br><br>"+
+   "<b>Dying (ReLU):</b> ReLU deriv is 0 for \\(x<0\\). A neuron whose input is always negative has permanently-0 gradient ⇒ weight never updates ⇒ \"dead\"."},
+  {h:"Does max-pooling contribute to vanishing gradient?", src:"tracker T2", note:{c:"good",h:"The trap sub-part",b:"Answer: NO. Backprop through max-pool routes the gradient unchanged (×1) to whichever input was the max and 0 to the others — it does not shrink gradient magnitude the way saturating activations do."},
+   body:"State it as: max-pool is a <b>router</b>, not a <b>shrinker</b>. It passes the full gradient to one input; it never multiplies by a factor \\(<1\\), so it cannot cause vanishing."}
+ ],
+ worked:[],
+ variations:[
+  {ex:"MT22/23 Q6 · 2024 Q9", d:"Math of vanishing/dying + the max-pool sub-question."},
+  {ex:"SoSe25 Q10 · WiSe25/26 Q10", d:"Same; may ask only for the derivative-range reason or only max-pool — the max-pool answer is the reliable point."}
+ ],
+ anki:{
+  basic:[
+   ["Why do gradients vanish with sigmoid/tanh activations?","Chain rule multiplies many derivative terms; sigmoid' ∈(0,0.25], tanh' ∈(0,1]; repeatedly multiplying values <1 drives early-layer gradients → 0.","t2_vanish"],
+   ["What is a 'dying ReLU'?","A neuron whose input is always <0: ReLU' = 0 there, so its gradient is permanently 0 and its weights never update.","t2_vanish"],
+   ["Does max-pooling contribute to vanishing gradient? Why?","No. Backprop routes the gradient unchanged (×1) to the max input and 0 to the rest — it routes, not shrinks, so it can't cause vanishing.","t2_vanish"]
+  ],
+  cloze:[
+   ["Sigmoid derivative range is {{c1::(0, 0.25]}}; tanh derivative range is {{c2::(0, 1]}}.","","t2_vanish"]
+  ]
+ },
+ drill:"",
+ checks:["Define vanishing vs dying with the derivative-range reason","State the sigmoid (0,0.25] and tanh (0,1] ranges","Answer the max-pool sub-question: NO, it routes not shrinks"]
+});
+
+RM.blocks.push({
+ id:"t2-gan", tier:2, code:"T2", bank:"B",
+ title:"GAN — diagram + generation process",
+ exams:"SS21 Q10 · MT22/23 Q14 · SoSe25 Q11 · WiSe25/26 Q11",
+ points:"4–6 (4 sittings)",
+ lede:"Draw the training diagram (noise→G→fake; data + fake → D → real/fake), then the key insight for the 'generation' sub-part: at inference you use ONLY noise→G→image; D and the training set are training-only.",
+ why:"Recurs with the same two parts. The generation-time answer (discard D) is the discriminating point most students miss.",
+ sections:[
+  {h:"Training diagram", src:"tracker T2 · L9 GANs",
+   body:"<code>noise z → Generator → fake images</code>; <code>training set → Discriminator</code>; <code>fake images → Discriminator</code>; D outputs <b>real / fake</b>. Adversarial: G tries to fool D, D tries to tell them apart."},
+  {h:"Generation process (post-training)", src:"tracker T2", note:{c:"good",h:"Discriminating point",b:"At generation time you need only: noise vector → Generator → fake image. The Discriminator and the training set are NOT used — they exist only during training."},
+   body:"Say explicitly which components are dropped at inference. That contrast (train uses D + data; generate uses only G) is what earns the sub-part."}
+ ],
+ worked:[],
+ variations:[
+  {ex:"SS21 Q10 · MT22/23 Q14", d:"Diagram + generation process."},
+  {ex:"SoSe25 Q11 · WiSe25/26 Q11", d:"Same; may add 'what is D's role' — answer: binary real/fake classifier trained against G."}
+ ],
+ anki:{
+  basic:[
+   ["GAN training: what are the components and their roles?","Generator maps noise z → fake images; Discriminator classifies real (training set) vs fake; adversarial game — G fools D, D distinguishes.","t2_gan"],
+   ["GAN at generation time — which components are used?","Only noise → Generator → fake image. Discriminator and training set are training-only and are dropped at inference.","t2_gan"]
+  ],
+  cloze:[
+   ["In a GAN the {{c1::Generator}} turns noise into fakes and the {{c2::Discriminator}} classifies real vs fake; at inference only the {{c3::Generator}} is used.","","t2_gan"]
+  ]
+ },
+ drill:"",
+ checks:["Draw the training diagram with both D inputs","State the adversarial objective in one line","Name what is dropped at generation time (D + data)"]
+});
+
+/* ============================ TIER 3 (Pass 2) ============================ */
+
+RM.blocks.push({
+ id:"t3-convkernel", tier:3, code:"T3", bank:"A",
+ title:"Convolution — apply a kernel / recover missing kernel values",
+ exams:"SS21 Q1 · 2024 Q2a · SoSe25 Q1 · WiSe25/26 Q1",
+ points:"3–6 (in 4 sittings; SoSe25 gives the whole 6 to this one item)",
+ lede:"Two faces of one skill. FORWARD (SS21): the full kernel is given, slide it over the input, write the feature map. INVERSE (2024/SoSe25/WiSe25/26): the kernel has a blank row of \\(?\\)s, the output is given, and you back out the unknowns — set up one linear equation per output cell and solve. The remarkable thing: SS21 and 2024 use the <i>identical</i> 5×5 input and the <i>identical</i> kernel — 2024 just hides SS21's bottom row. Master the forward pass and the inverse is three equations.",
+ why:"4/6 sittings, and the professor reuses the exact grid. Cheap, deterministic marks — but a single arithmetic slip on a 9-cell feature map costs the lot, so the drill is accuracy under a clock, not understanding.",
+ sections:[
+  {h:"The convolution operation — what one output cell is", src:"tracker T3 · L6/L7 CNNs",
+   note:{c:"acc",h:"'Convolution' here = correlation",b:"This course (like almost every DL course) does NOT flip the kernel. You overlay the kernel on the window as-drawn, multiply cell-by-cell, and sum. Do not rotate 180°."},
+   body:"For a window \\(W\\) (same size as the kernel \\(K\\)), one output cell is the elementwise product summed to a scalar: \\[\\text{out}=\\sum_{i,j} W_{ij}\\,K_{ij}.\\]"+
+   "Slide the window by the <b>stride</b> \\(S\\); pad the border with \\(P\\) zeros if asked. Output side length: \\[N_{out}=\\Big\\lfloor\\tfrac{N+2P-F}{S}\\Big\\rfloor+1.\\]"+
+   "SS21/2024: \\(N=5,\\;F=3,\\;S=1,\\;P=0\\Rightarrow N_{out}=\\lfloor(5-3)/1\\rfloor+1=3\\). A 3×3 feature map, 9 windows."},
+  {h:"The inverse trick (missing-kernel questions)", src:"tracker T3",
+   body:"<ol><li>Count the unknowns (usually the 3 cells of one kernel row).</li>"+
+   "<li>Split each output cell into <b>known part</b> (windows × the given kernel cells) + <b>unknown part</b> (the same window cells × the \\(?\\)s).</li>"+
+   "<li>Pick the fewest output cells whose unknown parts, together, involve every \\(?\\). Each gives one linear equation \\(\\text{known}+(\\text{lin. combo of }?\\text{s})=\\text{output}\\).</li>"+
+   "<li>Solve the tiny system by substitution. Binary kernels make the coefficients 0/1, so it is addition, not algebra.</li></ol>"}
+ ],
+ worked:[
+  {h:"WORKED 1 — SS21 Q1 (3p) · FORWARD: apply the full kernel, all 9 cells",
+   q:"\"Apply the filter (kernel) to the input and fill in the resulting values in the feature map (3p). b) stride? c) padding?\" Input is 5×5, kernel 3×3, all values given.",
+   pre:
+"INPUT (5x5)          KERNEL (3x3)     FEATURE MAP (3x3)\n"+
+" 0 1 0 1 0            1 0 1            o00 o01 o02\n"+
+" 1 0 1 0 1            0 1 0            o10 o11 o12\n"+
+" 1 1 0 1 1            1 0 1            o20 o21 o22\n"+
+" 0 1 0 1 0\n"+
+" 0 0 1 0 1\n"+
+"kernel picks the 4 corners + centre (an X-mask).",
+   intro:"With \\(S=1,P=0\\) the top-left window is input rows 0–2, cols 0–2; step right one column for the next cell, then down one row. Because the kernel is the 4 corners + centre, each cell is just: (four corner input values) + (centre input value). I use that shortcut below and write the arithmetic in full.",
+   fwd:[["N,F,S,P","5, 3, 1, 0"],["N_out","3 ⇒ 3×3"],["stride (b)","1"],["padding (c)","0"]],
+   steps:[
+    ["o00 — rows0-2, cols0-2.","Corners \\(0,0,1,0\\) + centre \\(0\\): \\(0+0+1+0+0=\\mathbf{1}\\).<br><span class='sub'>window \\(\\begin{smallmatrix}0&1&0\\\\1&0&1\\\\1&1&0\\end{smallmatrix}\\): corners \\(0,0,1,0\\), centre \\(0\\).</span>"],
+    ["o01 — rows0-2, cols1-3.","Corners \\(1,1,1,1\\) + centre \\(1\\): \\(1+1+1+1+1=\\mathbf{5}\\)."],
+    ["o02 — rows0-2, cols2-4.","Corners \\(0,0,0,1\\) + centre \\(0\\): \\(0+0+0+1+0=\\mathbf{1}\\)."],
+    ["o10 — rows1-3, cols0-2.","Corners \\(1,1,0,0\\) + centre \\(1\\): \\(1+1+0+0+1=\\mathbf{3}\\)."],
+    ["o11 — rows1-3, cols1-3.","Corners \\(0,1,1,1\\)? recompute: window \\(\\begin{smallmatrix}0&1&0\\\\1&0&1\\\\1&0&1\\end{smallmatrix}\\), corners \\(0,0,1,1\\), centre \\(0\\): \\(0+0+1+1+0=\\mathbf{2}\\)."],
+    ["o12 — rows1-3, cols2-4.","window \\(\\begin{smallmatrix}1&0&1\\\\0&1&1\\\\0&1&0\\end{smallmatrix}\\), corners \\(1,1,0,0\\), centre \\(1\\): \\(1+1+0+0+1=\\mathbf{3}\\)."],
+    ["o20 — rows2-4, cols0-2.","window \\(\\begin{smallmatrix}1&1&0\\\\0&1&0\\\\0&0&1\\end{smallmatrix}\\), corners \\(1,0,0,1\\), centre \\(1\\): \\(1+0+0+1+1=\\mathbf{3}\\)."],
+    ["o21 — rows2-4, cols1-3.","window \\(\\begin{smallmatrix}1&0&1\\\\1&0&1\\\\0&1&0\\end{smallmatrix}\\), corners \\(1,1,0,0\\), centre \\(0\\): \\(1+1+0+0+0=\\mathbf{2}\\)."],
+    ["o22 — rows2-4, cols2-4.","window \\(\\begin{smallmatrix}0&1&1\\\\0&1&0\\\\1&0&1\\end{smallmatrix}\\), corners \\(0,1,1,1\\), centre \\(1\\): \\(0+1+1+1+1=\\mathbf{4}\\)."]
+   ],
+   answer:[["o00","1"],["o01","5"],["o02","1"],["o10","3"],["o11","2"],["o12","3"],["o20","3"],["o21","2"],["o22","4"]],
+   examwrite:"<div class='mono'>Feature map:      stride = 1\n 1 5 1            padding = 0\n 3 2 3\n 3 2 4</div><p style='margin:6px 0 0'>Write the 3×3 grid exactly, plus the two one-word answers for (b) and (c). Show one worked window if they ask for steps — the marker wants to see the multiply-and-sum.</p>"},
+
+  {h:"WORKED 2 — 2024 Q2a · INVERSE: recover the missing kernel row",
+   q:"\"Complete the missing elements of the kernel.\" Same 5×5 input as SS21. Kernel = \\(\\begin{smallmatrix}1&0&1\\\\0&1&0\\\\?&?&?\\end{smallmatrix}\\). Output given = \\(\\begin{smallmatrix}1&5&1\\\\3&2&3\\\\3&2&4\\end{smallmatrix}\\). Find \\(?_1,?_2,?_3\\) (the bottom row).",
+   intro:"The bottom kernel row multiplies the <b>bottom row of each window</b>. Split every output cell into: (contribution of the two KNOWN kernel rows) + \\(?_1\\!\\cdot\\!a+?_2\\!\\cdot\\!b+?_3\\!\\cdot\\!c\\), where \\((a,b,c)\\) is the window's bottom row. Use the top output row (o00,o01,o02) — three cells, three unknowns.",
+   fwd:[["unknowns","?₁ ?₂ ?₃ (bottom kernel row)"],["known kernel rows","[1 0 1] , [0 1 0]"],["cells used","o00, o01, o02"]],
+   steps:[
+    ["o00: window rows0-2 cols0-2, bottom row \\((1,1,0)\\).","Known part = row0·[1,0,1] + row1·[0,1,0] = \\((0{+}0{+}0)+(0)=0\\). So \\(0+?_1(1)+?_2(1)+?_3(0)=1\\Rightarrow ?_1+?_2=1\\)."],
+    ["o01: window rows0-2 cols1-3, bottom row \\((1,0,1)\\).","Known part = row0·[1,0,1]+row1·[0,1,0] = \\((1{+}0{+}1)+(1)=3\\). So \\(3+?_1(1)+?_2(0)+?_3(1)=5\\Rightarrow ?_1+?_3=2\\Rightarrow ?_1=1,\\,?_3=1\\) (binary)."],
+    ["o02: window rows0-2 cols2-4, bottom row \\((0,1,1)\\).","Known part = \\((0)+(0)=0\\). So \\(?_2+?_3=1\\Rightarrow ?_2=0\\) (since \\(?_3=1\\)). And check against o00: \\(?_1+?_2=1+0=1\\) ✓."],
+    ["Solve.","\\(?_1=1,\\;?_2=0,\\;?_3=1\\). Bottom row \\(=[1\\;0\\;1]\\) — i.e. the kernel is SS21's X-mask, as expected."]
+   ],
+   answer:[["?₁","1"],["?₂","0"],["?₃","1"]],
+   examwrite:"<div class='mono'>Missing kernel row:  1 0 1\n\nfrom:  ?1+?2 = 1   (o00)\n       ?1+?3 = 2   (o01)  -> ?1=1, ?3=1\n       ?2+?3 = 1   (o02)  -> ?2=0</div><p style='margin:6px 0 0'>Show the three equations and the substitution — that IS the marked work. Don't just state the row.</p>"}
+ ],
+ variations:[
+  {ex:"SS21 Q1 (3p)", d:"<b>Forward, worked above (Ex 1).</b> Full kernel given → compute the 3×3 map; also asks stride (1) and padding (0)."},
+  {ex:"2024 Q2a", d:"<b>Inverse, worked above (Ex 2).</b> Same input+kernel as SS21 with the bottom row blanked; output given → solve 3 equations."},
+  {ex:"SoSe25 Q1 (6p)", d:"Inverse, same shape as 2024: 5×5 input, kernel top two rows \\(\\begin{smallmatrix}1&1&0\\\\0&1&0\\end{smallmatrix}\\), bottom row \\(?\\,?\\,?\\), 3×3 output given → recover the bottom row. <b>Method identical to Ex 2</b>; only the numbers differ. Worth 6 points alone. <span class='sub'>The protocol did not preserve SoSe25's input/output grids — drill the method on 2024 (Ex 2), which is mechanically the same.</span>"},
+  {ex:"WiSe25/26 Q1 (6p)", d:"Inverse again: \"provide the missing kernel values consistent with the feature map\", binary kernel, one blank row. <span class='sub'>Grids not preserved in the protocol (blank cells). Same procedure as Ex 2.</span>"}
+ ],
+ drill:"<b>Solve these yourself — cover the steps and reproduce them cold:</b><ol>"+
+  "<li><b>SS21 Q1 forward</b> from the input+kernel alone: write all 9 feature-map cells in under 3 minutes, then check against the answer table. Do it twice; the failure mode is arithmetic, not method.</li>"+
+  "<li><b>2024 Q2a inverse</b> from scratch: rederive the three equations \\(?_1+?_2=1,\\;?_1+?_3=2,\\;?_2+?_3=1\\) and solve. Then verify by plugging \\([1,0,1]\\) back and recomputing o10..o22 — all must match \\(\\begin{smallmatrix}3&2&3\\\\3&2&4\\end{smallmatrix}\\).</li>"+
+  "<li>Redo SS21 as if it were inverse: blank the bottom kernel row yourself and recover it from your own output. This is the exact SoSe25/WiSe task.</li>"+
+  "</ol>Procedural ⇒ no Anki; drill = re-solve until the window-indexing and the equation setup are automatic.",
+ checks:[
+  "State N_out=⌊(N+2P−F)/S⌋+1 and get 3×3 for the SS21/2024 grid",
+  "Compute all 9 SS21 feature-map cells correctly in one pass",
+  "Set up one linear equation per output cell for a missing-kernel question",
+  "Recover 2024's [1,0,1] bottom row and verify by forward-substitution"
+ ]
+});
+
+RM.blocks.push({
+ id:"t3-pool", tier:3, code:"T3", bank:"A",
+ title:"Pooling — output size + apply (avg / max)",
+ exams:"SS21 Q2 · 2024 Q2b/c · SoSe25 Q2 · WiSe25/26 Q2",
+ points:"2–4 (in 4 sittings)",
+ lede:"The smallest reliable procedural item. One formula for the size, then a 2×2 window stepped by 2 (non-overlapping) — average the four numbers (SS21) or take their max (2024/WiSe). Two marks for the size, two for the grid. Do not lose them to arithmetic.",
+ why:"4/6 sittings, trivial once the size formula is reflex. Same \\(N_{out}\\) formula as convolution, so it doubles as size-formula practice for the conv question.",
+ sections:[
+  {h:"Output size — one formula, shared with convolution", src:"tracker T3 · WiSe25/26 Q2 solution",
+   body:"\\[N_{out}=\\Big\\lfloor\\tfrac{N+2P-F}{S}\\Big\\rfloor+1.\\]"+
+   "For a 4×4 input, 2×2 window, stride 2, no padding (all four sittings): \\(N_{out}=\\lfloor(4+0-2)/2\\rfloor+1=\\lfloor1\\rfloor+1=\\mathbf{2}\\Rightarrow 2\\times2\\). With \\(S=F=2\\) the windows are non-overlapping and tile the input exactly."},
+  {h:"Apply", src:"tracker T3",
+   body:"Slide the \\(F\\times F\\) window by \\(S\\). <b>Average pooling</b> (SS21): output = mean of the window. <b>Max pooling</b> (2024, WiSe25/26): output = max of the window. The four windows of a 4×4 → 2×2 tiling are the four 2×2 quadrants (top-left, top-right, bottom-left, bottom-right)."}
+ ],
+ worked:[
+  {h:"WORKED 1 — SS21 Q2 · AVERAGE pooling, full numbers",
+   q:"\"Average Pooling, 2×2 window, stride 2. a) size of the result? b) compute the values.\"",
+   pre:
+"INPUT (4x4)        quadrants (S=F=2, non-overlapping)\n"+
+" 9 1 | 4 5         TL = {9,1,2,7}   TR = {4,5,5,6}\n"+
+" 2 7 | 5 6         BL = {8,1,2,2}   BR = {1,2,7,5}\n"+
+" ----+----\n"+
+" 8 1 | 1 2\n"+
+" 2 2 | 7 5",
+   intro:"Size first via the formula, then average each quadrant.",
+   fwd:[["N,F,S,P","4, 2, 2, 0"],["N_out","⌊(4−2)/2⌋+1 = 2 ⇒ 2×2"]],
+   steps:[
+    ["Top-left = mean{9,1,2,7}.","\\((9+1+2+7)/4=19/4=\\mathbf{4.75}\\)."],
+    ["Top-right = mean{4,5,5,6}.","\\((4+5+5+6)/4=20/4=\\mathbf{5.0}\\)."],
+    ["Bottom-left = mean{8,1,2,2}.","\\((8+1+2+2)/4=13/4=\\mathbf{3.25}\\)."],
+    ["Bottom-right = mean{1,2,7,5}.","\\((1+2+7+5)/4=15/4=\\mathbf{3.75}\\)."]
+   ],
+   answer:[["TL","4.75"],["TR","5.0"],["BL","3.25"],["BR","3.75"]],
+   examwrite:"<div class='mono'>size = 2 x 2\n 4.75  5.00\n 3.25  3.75</div><p style='margin:6px 0 0'>Give the size (with the one-line formula) and the 2×2 grid. Keep the two decimals; the marker checks exact values.</p>"},
+
+  {h:"WORKED 2 — MAX pooling (the 2024 Q2b/c & WiSe25/26 Q2 variant), same grid",
+   q:"2024/WiSe ask Max Pooling, 2×2, stride 2: state the output size, then compute it. The protocols did not preserve their input grids, so this is worked on SS21's grid to show the ONLY difference from Ex 1: take max, not mean.",
+   pre:
+" 9 1 | 4 5     TL max{9,1,2,7}=9   TR max{4,5,5,6}=6\n"+
+" 2 7 | 5 6     BL max{8,1,2,2}=8   BR max{1,2,7,5}=7\n"+
+" 8 1 | 1 2\n"+
+" 2 2 | 7 5",
+   intro:"Size is identical (2×2 — the formula doesn't care about avg vs max). Only the per-window reduction changes.",
+   fwd:[["N_out","⌊(4−2)/2⌋+1 = 2 ⇒ 2×2"]],
+   steps:[
+    ["TL = max{9,1,2,7}.","\\(\\mathbf{9}\\)."],
+    ["TR = max{4,5,5,6}.","\\(\\mathbf{6}\\)."],
+    ["BL = max{8,1,2,2}.","\\(\\mathbf{8}\\)."],
+    ["BR = max{1,2,7,5}.","\\(\\mathbf{7}\\)."]
+   ],
+   answer:[["TL","9"],["TR","6"],["BL","8"],["BR","7"]],
+   examwrite:"<div class='mono'>size = 2 x 2\n 9 6\n 8 7</div><p style='margin:6px 0 0'>For the real 2024/WiSe question, read THEIR 4×4 grid off the sheet and take the max of each quadrant — the mechanics are exactly this.</p>"}
+ ],
+ variations:[
+  {ex:"SS21 Q2", d:"<b>Average pooling, worked above (Ex 1)</b>, full numbers preserved."},
+  {ex:"2024 Q2b/c", d:"<b>Max pooling</b>, 4×4 → 2×2 (Ex 2 mechanics). b) state size (2×2), c) apply. Grid not preserved in the protocol."},
+  {ex:"WiSe25/26 Q2", d:"Max pooling, 4×4 → 2×2. The protocol preserved the <i>size derivation</i> verbatim (\\((4+2\\cdot0-2)/2+1=2\\)) but left the value grid blank. Same as Ex 2."},
+  {ex:"SoSe25 Q2", d:"\"4×4 input, 2×2 filter, max pooling — state size, write output.\" Identical type; grid not preserved."}
+ ],
+ drill:"<b>Solve these yourself:</b><ol>"+
+  "<li><b>SS21 Q2</b> from the grid alone: size via the formula + all four averages, under 90 seconds.</li>"+
+  "<li>Redo the same grid as <b>max</b> pooling and confirm \\(\\begin{smallmatrix}9&6\\\\8&7\\end{smallmatrix}\\).</li>"+
+  "<li>Invent a 6×6 grid and do 2×2 stride-2 and 3×3 stride-3 pooling to make the \\(N_{out}\\) formula reflexive for odd sizes.</li>"+
+  "</ol>Procedural ⇒ no Anki.",
+ checks:[
+  "Get 2×2 from the size formula for 4×4 / F2 / S2 / P0",
+  "Compute the four SS21 averages exactly (4.75, 5.0, 3.25, 3.75)",
+  "Switch to max on the same grid without re-deriving the size"
+ ]
+});
+
+RM.blocks.push({
+ id:"t3-spn", tier:3, code:"T3", bank:"A",
+ title:"Sum-Product Networks — EVI / MAR / MAP queries",
+ exams:"SS21 Q6 · 2024 Q6 · SoSe25 Q9 · WiSe25/26 Q9",
+ points:"4 (in 4 sittings)",
+ lede:"A pure bottom-up evaluation. Set each leaf indicator (1 if consistent with the query, 0 if not; 1 for a variable being summed out), then propagate: × nodes multiply their children, + nodes take the weighted sum of their children. EVI = full evidence, MAR = set summed-out leaves to 1, MAP = evaluate for each value of the target variable and pick the argmax. SS21's network (below) is worked for all five sub-queries.",
+ why:"4/6 sittings, 4 marks, and it is arithmetic with a fixed recipe — no modelling judgement required. The only ways to lose marks are mislabelling a leaf indicator, forgetting to set summed-out leaves to 1, or not showing the intermediate node values.",
+ sections:[
+  {h:"The three leaf rules + two node rules", src:"tracker T3 · L10 Deep Prob. Models",
+   note:{c:"acc",h:"Leaf indicators are the whole game",b:"\\(x_i=1\\) means \"\\(X_i\\) is TRUE\", \\(\\bar x_i=1\\) means \"\\(X_i\\) is FALSE\". For a query you SET these: consistent→1, inconsistent→0, summed-out→BOTH =1."},
+   body:"<b>Leaf setting</b> for variable \\(X_i\\):<ul>"+
+   "<li>observed TRUE: \\(x_i=1,\\;\\bar x_i=0\\).</li>"+
+   "<li>observed FALSE: \\(x_i=0,\\;\\bar x_i=1\\).</li>"+
+   "<li>not mentioned (marginalise / sum out): \\(x_i=1,\\;\\bar x_i=1\\).</li></ul>"+
+   "<b>Node rules</b> (evaluate bottom-up): a <b>product</b> node outputs \\(\\prod\\) of its children; a <b>sum</b> node outputs \\(\\sum_k w_k\\cdot(\\text{child}_k)\\) with the edge weights \\(w_k\\).<br><br>"+
+   "<b>Query types:</b> <b>EVI</b> — all variables observed, read the root. <b>MAR</b> — some variables summed out (their leaves =1), read the root. <b>MAP/argmax</b> — evaluate the network once per candidate value of the target variable(s), pick the value giving the largest root."},
+  {h:"SS21 network (used in the worked examples)", src:"SS21 Q6 (scanned)",
+   body:"<pre style='font-family:var(--mono);font-size:11.5px;background:#0a0d12;padding:10px;border-radius:6px'>"+
+"                 (+)  root:  0.7*L + 0.3*R\n"+
+"           0.7 /     \\ 0.3\n"+
+"          (x)L         (x)R\n"+
+"        / |             | \\\n"+
+"      x1  S1   S3     S2  S4   x1bar\n"+
+"           (over X2/X3, see below)\n"+
+"\n"+
+"  L = x1 * S1 * S3        R = x1bar * S2 * S4\n"+
+"  S1 = 0.7*x2 + 0.3*x2bar     S2 = 0.5*x2 + 0.5*x2bar\n"+
+"  S3 = 0.9*x3 + 0.1*x3bar     S4 = 0.6*x3 + 0.4*x3bar</pre>"+
+   "Each product node is complete/decomposable: one \\(X_1\\) leaf, one sum over \\(X_2\\), one sum over \\(X_3\\). Left product uses \\(x_1,S_1,S_3\\); right uses \\(\\bar x_1,S_2,S_4\\)."}
+ ],
+ worked:[
+  {h:"WORKED — SS21 Q6, all five sub-queries on the network above",
+   q:"a) \\(P(X_1{=}1,X_2{=}0,X_3{=}0)\\)  b) \\(P(X_1{=}1,X_2{=}1)\\)  c) \\(P(X_1{=}0)\\)  d) \\(\\arg\\max_x P(X_2{=}x)\\)  e) \\(\\arg\\max_{x,y} P(X_2{=}x,X_3{=}y)\\). \"Write all the steps.\"",
+   intro:"For every sub-query: set the six leaves, evaluate \\(S_1..S_4\\), then the two product nodes, then the root. Do it mechanically.",
+   fwd:[["S-nodes","S1,S2 over X2 · S3,S4 over X3"],["products","L=x1·S1·S3 , R=x1bar·S2·S4"],["root","0.7·L + 0.3·R"]],
+   steps:[
+    ["a) EVI \\(P(X_1{=}1,X_2{=}0,X_3{=}0)\\).","Leaves: \\(x_1{=}1,\\bar x_1{=}0\\); \\(x_2{=}0,\\bar x_2{=}1\\); \\(x_3{=}0,\\bar x_3{=}1\\).<br>\\(S_1=0.3,\\,S_2=0.5,\\,S_3=0.1,\\,S_4=0.4\\).<br>\\(L=1\\cdot0.3\\cdot0.1=0.03\\); \\(R=0\\cdot0.5\\cdot0.4=0\\).<br>root \\(=0.7(0.03)+0.3(0)=\\mathbf{0.021}\\)."],
+    ["b) MAR \\(P(X_1{=}1,X_2{=}1)\\) — sum out \\(X_3\\).","Leaves: \\(x_1{=}1,\\bar x_1{=}0\\); \\(x_2{=}1,\\bar x_2{=}0\\); \\(x_3{=}1,\\bar x_3{=}1\\).<br>\\(S_1=0.7,\\,S_2=0.5,\\,S_3=0.9{+}0.1=1.0,\\,S_4=0.6{+}0.4=1.0\\).<br>\\(L=1\\cdot0.7\\cdot1.0=0.7\\); \\(R=0\\).<br>root \\(=0.7(0.7)=\\mathbf{0.49}\\)."],
+    ["c) MAR \\(P(X_1{=}0)\\) — sum out \\(X_2,X_3\\).","Leaves: \\(x_1{=}0,\\bar x_1{=}1\\); all others \\(=1\\).<br>\\(S_1=S_2=S_3=S_4=1.0\\).<br>\\(L=0\\cdot1\\cdot1=0\\); \\(R=1\\cdot1\\cdot1=1\\).<br>root \\(=0.7(0)+0.3(1)=\\mathbf{0.3}\\). (Sanity: \\(P(X_1{=}1)=0.7\\), so \\(P(X_1{=}0)=0.3\\).)"],
+    ["d) MAP \\(\\arg\\max_x P(X_2{=}x)\\) — sum out \\(X_1,X_3\\), try both \\(x\\).","<b>\\(X_2{=}1\\):</b> \\(x_2{=}1,\\bar x_2{=}0\\); \\(x_1{=}\\bar x_1{=}1\\); \\(x_3{=}\\bar x_3{=}1\\).<br>\\(S_1=0.7,S_2=0.5,S_3=1,S_4=1\\); \\(L=1\\cdot0.7\\cdot1=0.7\\), \\(R=1\\cdot0.5\\cdot1=0.5\\); root \\(=0.7(0.7)+0.3(0.5)=0.49+0.15=0.64\\).<br><b>\\(X_2{=}0\\):</b> \\(S_1=0.3,S_2=0.5\\); \\(L=0.3\\), \\(R=0.5\\); root \\(=0.7(0.3)+0.3(0.5)=0.21+0.15=0.36\\).<br>\\(0.64>0.36\\Rightarrow \\arg\\max=\\mathbf{X_2{=}1}\\)."],
+    ["e) MAP \\(\\arg\\max_{x,y} P(X_2{=}x,X_3{=}y)\\) — sum out \\(X_1\\), try all 4.","With \\(x_1{=}\\bar x_1{=}1\\), root \\(=0.7(S_1S_3)+0.3(S_2S_4)\\). Note \\(S_2=0.5\\) always.<br>\\((1,1)\\): \\(0.7(0.7\\cdot0.9)+0.3(0.5\\cdot0.6)=0.441+0.09=\\mathbf{0.531}\\)<br>\\((1,0)\\): \\(0.7(0.7\\cdot0.1)+0.3(0.5\\cdot0.4)=0.049+0.06=0.109\\)<br>\\((0,1)\\): \\(0.7(0.3\\cdot0.9)+0.3(0.5\\cdot0.6)=0.189+0.09=0.279\\)<br>\\((0,0)\\): \\(0.7(0.3\\cdot0.1)+0.3(0.5\\cdot0.4)=0.021+0.06=0.081\\)<br>Sum \\(=1.0\\) ✓. \\(\\arg\\max=\\mathbf{(X_2{=}1,\\,X_3{=}1)}\\), \\(P=0.531\\)."]
+   ],
+   answer:[["a","0.021"],["b","0.49"],["c","0.3"],["d","X2=1 (.64)"],["e","X2=1,X3=1 (.531)"]],
+   examwrite:"<div class='mono'>a) 0.021    b) 0.49    c) 0.3\nd) argmax P(X2): X2=1 (0.64 vs 0.36)\ne) argmax P(X2,X3): X2=1,X3=1 (0.531)</div><p style='margin:6px 0 0'>Show S1..S4, both products, and the root for each part — the marks are for the intermediate node values, not just the final number. For MAP show BOTH (all) candidates so the comparison is explicit.</p>"}
+ ],
+ variations:[
+  {ex:"SS21 Q6 (a–e, 12p total)", d:"<b>Worked in full above.</b> The only sitting whose network + weights survived intact — treat it as the canonical SPN."},
+  {ex:"2024 Q6", d:"Same style, asks \\(P(X_1{=}1,X_2{=}0,X_3{=}1)\\) (EVI) and \\(\\arg\\max_x P(X_2{=}x)\\) (MAP). Network diagram not preserved in the protocol. On SS21's network the EVI query evaluates to <b>0.189</b> (\\(S_1{=}0.3,S_3{=}0.9\\Rightarrow L{=}0.27,\\,R{=}0\\Rightarrow0.7\\cdot0.27\\)) — use it as a drill for that evidence pattern."},
+  {ex:"SoSe25 Q9 (4p)", d:"Identical queries to 2024: \\(P(X_1{=}1,X_2{=}0,X_3{=}1)\\) and \\(\\arg\\max_x P(X_2{=}x)\\). Diagram not preserved — same recipe."},
+  {ex:"WiSe25/26 Q9", d:"\"SPN over binary RVs, compute the following and write all steps.\" Same instruction wording as SS21; specific queries/diagram not preserved. Method unchanged."}
+ ],
+ drill:"<b>Solve these yourself on SS21's network:</b><ol>"+
+  "<li>Reproduce all five SS21 sub-queries (a–e) from the diagram alone, showing \\(S_1..S_4\\), L, R, root each time.</li>"+
+  "<li>Compute the 2024/SoSe25 EVI query \\(P(X_1{=}1,X_2{=}0,X_3{=}1)\\); confirm \\(0.189\\).</li>"+
+  "<li>Verify normalisation: the four \\((X_2,X_3)\\) roots in part (e) sum to 1.0 — a free correctness check you should run in the exam.</li>"+
+  "<li>Compute \\(P(X_2{=}1)\\) and \\(P(X_2{=}0)\\) and confirm they sum to 1 (they do: 0.64+0.36).</li>"+
+  "</ol>Procedural ⇒ no Anki.",
+ checks:[
+  "State the three leaf-setting rules (true→(1,0), false→(0,1), sum-out→(1,1))",
+  "Evaluate S-nodes, product nodes, then root — bottom-up, showing intermediates",
+  "Do a MAP by evaluating every candidate and taking the argmax",
+  "Use the sum-to-1 check on a full joint marginal"
+ ]
+});
+
+RM.blocks.push({
+ id:"t3-attn", tier:3, code:"T3", bank:"A",
+ title:"Attention — formula, the three steps, and applying it",
+ exams:"SS21 Q14 · 2024 Q11a · SoSe25 Q12a · WiSe25/26 Q12",
+ points:"4–6 (in 4 sittings)",
+ lede:"Every sitting asks the same three things: (4) the score formula and what it measures, (5) the normalisation, (6) how attention is applied. State \\(\\text{Attention}(Q,K,V)=\\text{softmax}\\!\\big(\\tfrac{QK^\\top}{\\sqrt{d_k}}\\big)V\\), explain each step, and — if given vectors — compute it. A fully-worked numeric pass is below so the mechanics are automatic.",
+ why:"4/6 sittings and the marks are for precise statements: the \\(\\sqrt{d_k}\\) scaling and its reason, row-wise softmax, weighted sum of V. SoSe25 warns the inputs may be named differently (given as \\(q,k,v\\) vectors) — so know the mechanics, not just the letters.",
+ sections:[
+  {h:"The formula and the three marked steps", src:"tracker T3 · L12 Attention / L13 Transformers",
+   note:{c:"warn",h:"Order of the transpose matters",b:"It is \\(QK^\\top\\) (queries × keysᵀ), giving an \\(n\\times n\\) score matrix — NOT \\(Q^\\top K\\). Some protocols mis-transcribe this; write \\(QK^\\top\\)."},
+   body:"\\[\\text{Attention}(Q,K,V)=\\operatorname{softmax}\\!\\left(\\frac{QK^\\top}{\\sqrt{d_k}}\\right)V,\\quad Q\\in\\mathbb R^{n\\times d_k},K\\in\\mathbb R^{n\\times d_k},V\\in\\mathbb R^{n\\times d_v}.\\]"+
+   "<b>Step 4 — scores:</b> \\(QK^\\top\\) is the dot product of every query with every key; entry \\((i,j)\\) measures how relevant token \\(j\\) is to token \\(i\\). <b>Step 5 — normalise:</b> divide by \\(\\sqrt{d_k}\\) (keeps the dot products from growing with dimension and pushing softmax into saturation / tiny gradients), then <b>row-wise softmax</b> → each row is attention weights summing to 1. <b>Step 6 — apply:</b> multiply the weight matrix by \\(V\\) — each output row is the weighted average of the value vectors."},
+  {h:"Why scale by √dₖ", src:"tracker T3",
+   body:"If query/key entries are ~unit-variance and independent, a dot product of \\(d_k\\) terms has variance \\(\\sim d_k\\). Large magnitudes make softmax nearly one-hot, so its gradient ≈ 0. Dividing by \\(\\sqrt{d_k}\\) restores ~unit variance and healthy gradients."}
+ ],
+ worked:[
+  {h:"WORKED — apply attention to a 2-token example (dₖ=2)",
+   q:"The exams ask you to STATE the formulas for steps 4–5 and describe step 6; SoSe25 notes inputs may be handed to you as \\(q,k,v\\) to plug in. No sitting preserved numeric matrices, so this clean 2-token pass drills the exact computation you'd run on given values.",
+   pre:
+"Q = [1 0 ; 0 1]      K = [1 0 ; 0 1]      V = [1 2 ; 3 4]\n"+
+"d_k = 2  ->  sqrt(d_k) = 1.414",
+   intro:"Follow the four operations in order: \\(QK^\\top\\), scale, softmax per row, \\(\\times V\\).",
+   fwd:[["d_k","2"],["√d_k","≈1.414"],["shapes","Q,K,V all 2×2"]],
+   steps:[
+    ["Step 4 — scores \\(QK^\\top\\).","\\(QK^\\top=\\begin{bmatrix}1&0\\\\0&1\\end{bmatrix}\\begin{bmatrix}1&0\\\\0&1\\end{bmatrix}=\\begin{bmatrix}1&0\\\\0&1\\end{bmatrix}\\). (Here \\(K^\\top=K\\).)"],
+    ["Step 5a — scale by \\(1/\\sqrt{d_k}\\).","\\(\\tfrac{1}{1.414}\\begin{bmatrix}1&0\\\\0&1\\end{bmatrix}=\\begin{bmatrix}0.707&0\\\\0&0.707\\end{bmatrix}\\)."],
+    ["Step 5b — row-wise softmax.","Row 1: \\(e^{0.707}{=}2.028,\\;e^{0}{=}1\\Rightarrow[2.028,1]/3.028=[0.67,0.33]\\). Row 2 by symmetry \\(=[0.33,0.67]\\). Weight matrix \\(W=\\begin{bmatrix}0.67&0.33\\\\0.33&0.67\\end{bmatrix}\\) (rows sum to 1)."],
+    ["Step 6 — apply \\(W\\,V\\).","Row 1: \\(0.67[1,2]+0.33[3,4]=[1.66,2.66]\\). Row 2: \\(0.33[1,2]+0.67[3,4]=[2.34,3.34]\\)."]
+   ],
+   answer:[["out row1","[1.66, 2.66]"],["out row2","[2.34, 3.34]"]],
+   examwrite:"<div class='mono'>4) scores  = QKᵀ = [[1,0],[0,1]]\n5) scale   /√2, softmax rows -> [[.67,.33],[.33,.67]]\n6) output  = WV = [[1.66,2.66],[2.34,3.34]]</div><p style='margin:6px 0 0'>If the question only asks for the formulas (SS21/2024/WiSe usually do): write \\(\\text{softmax}(QK^\\top/\\sqrt{d_k})V\\), name the \\(\\sqrt{d_k}\\) reason, and describe step 6 as \"weighted sum of value vectors\". If it hands you vectors, run exactly the four operations above.</p>"}
+ ],
+ variations:[
+  {ex:"SS21 Q14 (6p)", d:"State the step-4 score formula + its purpose (2p), the step-5 normalisation (2p), and describe step-6 apply (2p). Descriptive — the formula and the \\(\\sqrt{d_k}\\) reason are the marks."},
+  {ex:"2024 Q11a", d:"Same three-part description. Part of the combined Transformer question (b = RNN problems, c = ethics)."},
+  {ex:"SoSe25 Q12a", d:"i) step-4 formula, ii) step-5 formula. <b>Sidenote in the protocol:</b> inputs were given as \\(q(q),q(k),q(v)\\) — you had to plug those in, not just recite \\(QK^\\top/\\sqrt{d_k}\\). This is why the worked numeric pass matters."},
+  {ex:"WiSe25/26 Q12", d:"Same attention description block; grouped with the Transformer/RNN/ethics questions."}
+ ],
+ drill:"<b>Solve these yourself:</b><ol>"+
+  "<li>Write the full formula and one sentence each for steps 4, 5, 6 from memory, including why \\(\\sqrt{d_k}\\).</li>"+
+  "<li>Recompute the 2-token example above from Q,K,V alone; confirm the weight rows sum to 1 and the output is \\([[1.66,2.66],[2.34,3.34]]\\).</li>"+
+  "<li>Change \\(V\\) to \\([[2,0],[0,2]]\\) and recompute the output with the SAME weights (\\(W\\) unchanged since Q,K unchanged) — checks you understand which matrix the softmax acts on.</li>"+
+  "</ol>Procedural ⇒ no Anki.",
+ checks:[
+  "Write softmax(QKᵀ/√dₖ)V with the transpose in the right place",
+  "Give the √dₖ reason (variance ~dₖ → softmax saturation → vanishing gradient)",
+  "Compute a 2-token attention output end-to-end, weights summing to 1"
+ ]
+});
+
+/* ---- Tier 3 theory (Bank B) ---- */
+
+RM.blocks.push({
+ id:"t3-rnn2tf", tier:3, code:"T3", bank:"B",
+ title:"RNN problems solved by the Transformer + complexity",
+ exams:"SS21 Q15 · 2024 Q11b · SoSe25 Q12b · WiSe25/26 Q15",
+ points:"3–4 (in 4 sittings)",
+ lede:"Name two RNN problems the Transformer fixes, plus the per-layer complexities. Two crisp bullets + two big-O expressions = full marks.",
+ why:"4/6 sittings, always \"name two\". Cheap if the two problems and the O(·) figures are memorised exactly.",
+ sections:[
+  {h:"The two problems", src:"tracker T3 · L13 Transformers",
+   body:"<ul><li><b>Long-range dependencies / vanishing gradient over long sequences.</b> RNNs carry information step-by-step, so distant tokens are many multiplications apart and the signal decays (short-term memory). Self-attention connects any two positions in a single step (path length \\(O(1)\\)), so long-range relations are learned directly.</li>"+
+   "<li><b>No parallelism.</b> An RNN must process token \\(t\\) before \\(t{+}1\\) (sequential). The Transformer processes all positions simultaneously → far better hardware utilisation and faster training.</li></ul>"},
+  {h:"Complexity (per layer)", src:"tracker T3",
+   body:"RNN: \\(O(n\\,d^2)\\). Self-attention: \\(O(n^2 d)\\). (\\(n\\) = sequence length, \\(d\\) = representation dim.) Trade-off: attention wins on long-range modelling and parallelism but costs \\(O(n^2)\\) in sequence length — expensive for very long \\(n\\)."}
+ ],
+ worked:[],
+ variations:[
+  {ex:"SS21 Q15", d:"\"Name two\" + complexity comparison (n·d² vs n²·d). The canonical phrasing."},
+  {ex:"2024 Q11b · SoSe25 Q12b", d:"Same \"name two\" as part of the combined Transformer question."},
+  {ex:"WiSe25/26 Q15", d:"Same type; grouped with attention + ethics sub-parts."}
+ ],
+ anki:{
+  basic:[
+   ["Two RNN problems the Transformer solves?","(1) Long-range dependencies / vanishing gradient over long sequences — self-attention links any two positions in one step (path length O(1)). (2) No parallelism — RNN is sequential; Transformer processes all positions in parallel.","t3_rnn2tf"],
+   ["Per-layer complexity: RNN vs self-attention?","RNN O(n·d²); self-attention O(n²·d). n=seq length, d=representation dim.","t3_rnn2tf"]
+  ],
+  cloze:[
+   ["Self-attention gives a path length of {{c1::O(1)}} between any two tokens, vs {{c2::O(n)}} for an RNN.","","t3_rnn2tf"],
+   ["Complexity per layer: RNN {{c1::O(n·d²)}}, self-attention {{c2::O(n²·d)}}.","","t3_rnn2tf"]
+  ]
+ },
+ drill:"",
+ checks:["Name the two problems with the one-line reason each","State O(n·d²) vs O(n²·d) and which wins when"]
+});
+
+RM.blocks.push({
+ id:"t3-ethics", tier:3, code:"T3", bank:"B",
+ title:"Ethical issues of large-scale LLMs",
+ exams:"SS21 Q16 · 2024 Q11c · SoSe25 Q12c · WiSe25/26 Q15c",
+ points:"~5 (in 4 sittings)",
+ lede:"Open-ended ~5-marker. Name 3–4 distinct issues, one crisp sentence each — a checklist answer, not an essay. Distinct issues beat depth on one.",
+ why:"4/6 sittings, always ~5 points, always open. Guaranteed marks for a well-organised list; the trap is writing a paragraph on one issue and running out of distinct points.",
+ sections:[
+  {h:"The menu — pick 3–4, one line each", src:"tracker T3 · L4 intermezzo / L11 DeepNLP",
+   body:"<ul>"+
+   "<li><b>Bias & toxicity:</b> models absorb and amplify prejudice present in scraped training data.</li>"+
+   "<li><b>Misinformation / hallucination at scale:</b> fluent but false output, cheap to mass-produce.</li>"+
+   "<li><b>Misuse:</b> disinformation, impersonation, spam, phishing, non-consensual deepfakes.</li>"+
+   "<li><b>Data privacy:</b> training on scraped personal data; memorisation and regurgitation of private text.</li>"+
+   "<li><b>Environmental cost:</b> large energy/carbon footprint of training and serving.</li>"+
+   "<li><b>Labour & fairness:</b> job displacement; reliance on low-paid, sometimes traumatic data-annotation work.</li>"+
+   "<li><b>Transparency & accountability:</b> opaque models; unclear who is responsible for harms; concentration of power in a few well-resourced labs.</li></ul>"+
+   "<div class='note good'><div class='h'>Exam tactic</div>Bullet 3–4 of the above, each a full sentence naming the issue and its harm. For ~5 marks, breadth of distinct issues scores; a single deep paragraph does not.</div>"}
+ ],
+ worked:[],
+ variations:[
+  {ex:"SS21 Q16", d:"\"Large-scale Transformers trained self-supervised on huge datasets — elaborate on the ethical issues.\" (references the DeepMind large-LM blog)."},
+  {ex:"2024 Q11c · SoSe25 Q12c · WiSe25/26 Q15c", d:"Identical open-ended prompt, ~5 points, as the (c) part of the Transformer question. No variation in substance."}
+ ],
+ anki:{
+  basic:[
+   ["Name four ethical issues of large-scale LLMs.","Bias/toxicity from training data; misinformation/hallucination at scale; misuse (disinfo, impersonation, deepfakes); data privacy (scraped/memorised personal data). Also: energy/carbon cost, labour displacement + annotation labour, opacity/accountability.","t3_ethics"],
+   ["Ethics ~5-marker: answer strategy?","List 3–4 DISTINCT issues, one full sentence each (issue + its harm). Breadth scores; don't write one deep paragraph.","t3_ethics"]
+  ],
+  cloze:[
+   ["Four LLM ethics issues: {{c1::bias/toxicity}}, {{c2::misinformation/hallucination}}, {{c3::misuse (deepfakes/spam)}}, {{c4::data privacy}}.","","t3_ethics"]
+  ]
+ },
+ drill:"",
+ checks:["List 3–4 distinct issues, one sentence each","Keep it a checklist, not a single-topic essay"]
+});
+
+
+/* ============================ TIER 4 (Pass 3) ============================ */
+
+RM.blocks.push({
+ id:"t4-buildgraph", tier:4, code:"T4", bank:"A",
+ title:"Build the computation graph for act(w·x+b)",
+ exams:"SS21 Q4 · SoSe25 Q5b · WiSe25/26 Q5b",
+ points:"8 (the inverse of the T1 backprop question)",
+ lede:"The mirror image of Tier 1. There you were handed the graph and filled gradients; here you are handed a formula, \\(\\text{act}(w\\cdot x+b)\\), and must <b>draw</b> the low-level graph node by node. Same vocabulary of gates, opposite direction. The pre-activation \\(w\\cdot x+b\\) is always the same skeleton — one \\(\\times\\) per \\(w_ix_i\\), a \\(+\\) tree to sum them, one \\(+\\) for the bias — and only the activation wrapper changes between papers. SoSe25 Q5b is confirmed \\(\\text{act}(x)=\\max(0,\\alpha x)\\) over three inputs; that is worked in full below, and the sigmoid wrapper (the exact inverse of the T1 sigmoid circuit) is worked as the second family.",
+ why:"8 marks, and mechanically trivial once you see it as backprop-in-reverse: the marks are per node/edge, so the whole thing is 'draw one multiply per product, sum them, add bias, apply the nonlinearity as primitive gates, label everything.' The only way to lose marks is to draw the activation as an unopened black box when the question wants the primitive gates, or to forget the bias node.",
+ sections:[
+  {h:"The recipe — every act(w·x+b) graph is these four stages", src:"tracker T4 · L3 backprop (inverse of T1)",
+   note:{c:"acc",h:"This is the T1 graph, drawn forward",b:"In T1 you read a graph right-to-left multiplying local derivatives. Here you write the same graph left-to-right. The gate inventory is identical: \\(\\times\\), \\(+\\), and whatever the activation unpacks into (\\(\\max\\); or \\(\\times(-1),\\exp,+1,1/x\\) for sigmoid). If you can backprop it, you can draw it."},
+   body:"Read the formula inside-out and lay it left-to-right:<ol>"+
+   "<li><b>Products</b> — one \\(\\times\\) gate for each term \\(w_ix_i\\). \\(n\\) inputs \\(\\Rightarrow n\\) multiply nodes, each fed by one \\(x_i\\) leaf and one \\(w_i\\) leaf.</li>"+
+   "<li><b>Sum</b> — a \\(+\\) tree combining the products. \\(+\\) is binary, so \\(n\\) products need \\(n-1\\) add nodes (a single \\(n\\)-ary \\(+\\) is only safe if the paper draws it that way).</li>"+
+   "<li><b>Bias</b> — one more \\(+\\) node adding \\(b\\). Output of this node is the pre-activation \\(z=w\\cdot x+b\\).</li>"+
+   "<li><b>Activation</b> — apply \\(\\text{act}\\) to \\(z\\). If it is \\(\\max/\\)ReLU/Leaky, that is one gate; if it is sigmoid and they ask for primitive operations, unpack it into four gates (see Worked 2).</li></ol>"+
+   "<div class='note warn'><div class='h'>Two mark-bleeders</div>(1) Missing the bias \\(+\\) node. (2) Leaving \\(\\sigma\\) as a black box when the question says 'low-level' / 'primitive' / 'basic operations'. Label every leaf (\\(x_i,w_i,b\\)) and every intermediate edge — marks are per node and per edge.</div>"}
+ ],
+ worked:[
+  {h:"WORKED 1 — SoSe25 Q5b (8p) · CONFIRMED · build the graph for act(x)=max(0,αx), x = x1w1+x2w2+x3w3+b",
+   q:"\"Draw the computation graph for \\(\\text{act}(x)=\\max(0,\\alpha x)\\) where \\(x=x_1w_1+x_2w_2+x_3w_3+b\\).\" Three inputs, a scaled-ReLU activation. (Confirmed verbatim from the SoSe25 OCR.)",
+   pre:
+"  x1,w1 ─[×]─ p1 ┐\n"+
+"  x2,w2 ─[×]─ p2 ┼─[+]─[+]─ s ─[+ b]─ z ─[× α]─ αz ─[max(0, ·)]─ out\n"+
+"  x3,w3 ─[×]─ p3 ┘                     ^\n"+
+"  b ───────────────────────────────────┘\n"+
+"\n"+
+"  8 nodes to draw:  3×  (one per wᵢxᵢ)   ·   2+ (sum the products)\n"+
+"                    1+  (add bias b)     ·   1 scale-by-α   ·   1 max(0,·)",
+   intro:"Work strictly inside-out. The three products come first, then the sum tree, then the bias, then the \\(\\alpha\\)-scale, then the max. Each item below is one thing you physically draw; the parenthetical is the one-line 'why' that justifies the node.",
+   fwd:[["inputs (leaves)","x1 x2 x3 w1 w2 w3 b"],["× nodes","3"],["+ nodes","3"],["scale","× α"],["activation","max(0, ·)"]],
+   steps:[
+    ["Draw 3 multiply nodes — the products \\(w_ix_i\\).","\\(p_1=x_1w_1,\\;p_2=x_2w_2,\\;p_3=x_3w_3\\). One \\(\\times\\) gate each, fed by the matching \\(x_i\\) and \\(w_i\\) leaves. <i>Why:</i> \\(w\\cdot x\\) is a dot product = a sum of pairwise products, and each pairwise product is exactly one multiply gate."],
+    ["Draw 2 add nodes — sum the products into \\(s\\).","First \\(+\\): \\(p_1+p_2\\). Second \\(+\\): \\((p_1+p_2)+p_3=s\\). <i>Why:</i> \\(+\\) takes two inputs, so three products need two add gates (a binary tree). Only collapse to a single 3-input \\(+\\) if the exam's own notation does."],
+    ["Draw 1 add node — add the bias \\(b\\).","\\(z=s+b\\). <i>Why:</i> the bias is just one more additive term; its output \\(z=w\\cdot x+b\\) is the pre-activation that feeds the nonlinearity."],
+    ["Draw 1 scale-by-constant node — \\(\\alpha z\\).","A \\(\\times\\) gate with the constant \\(\\alpha\\) on one edge: output \\(\\alpha z\\). <i>Why:</i> the activation is \\(\\max(0,\\alpha x)\\) evaluated at \\(x=z\\), so \\(\\alpha\\) multiplies the whole pre-activation before the max."],
+    ["Draw 1 max node — the activation \\(\\max(0,\\alpha z)\\).","A \\(\\max(0,\\cdot)\\) gate: the other input is the constant \\(0\\); output is the neuron output. <i>Why:</i> this single gate is the nonlinearity. (In T1 you'd backprop it by routing the gradient to whichever input won — here you just draw it.)"],
+    ["Label every leaf and edge.","Name \\(x_1,x_2,x_3,w_1,w_2,w_3,b\\), the constant \\(\\alpha\\), and the constant \\(0\\) into the max. <i>Why:</i> marks are per node/edge; an unlabelled correct node can be marked wrong."]
+   ],
+   examwrite:"<div class='h'></div><div class='mono'>x1 --\\ \n       [×] p1 --\\ \nw1 --/            [+]--\\ \nx2 --\\           /       [+]-- s --[+ b]-- z --[× α]-- αz --[max(0,·)]-- OUT\n       [×] p2 --/       /              (bias b feeds this +)\nw2 --/                 /\nx3 --\\                 /\n       [×] p3 --------/ \nw3 --/</div><p style='margin:6px 0 0'>Draw exactly this: <b>3 multiply gates</b> (wᵢxᵢ), <b>2 add gates</b> to sum them, <b>1 add gate</b> for the bias, <b>1 ×α</b> node, <b>1 max(0,·)</b> node = 8 marked pieces. Label the seven leaves + the two constants (α, 0). No prose is needed; the drawing is the answer.</p>"},
+
+  {h:"WORKED 2 — sigmoid wrapper · build the graph for σ(w·x+b), 2 inputs · the exact inverse of the T1 sigmoid circuit",
+   q:"General \\(\\text{act}(w\\cdot x+b)=\\sigma(w_1x_1+w_2x_2+b)\\) drawn with <b>primitive</b> gates. This is the form to use if SS21 Q4's activation is the logistic sigmoid, and it is worth knowing regardless because it is Worked-Example-2 of the backprop block run in reverse.",
+   pre:
+"  x1,w1 ─[×]─ p1 ┐\n"+
+"                 [+]─ s ─[+ b]─ z ─[×(−1)]─ −z ─[exp]─ e^(−z) ─[+1]─ 1+e^(−z) ─[1/x]─ OUT = σ(z)\n"+
+"  x2,w2 ─[×]─ p2 ┘\n"+
+"\n"+
+"  sigmoid unpacks into 4 primitive gates:  ×(−1) → exp → +1 → 1/x",
+   intro:"Same affine skeleton (2 products, 1 sum, 1 bias), then the sigmoid is unpacked into four scalar gates. Compare node-for-node with T1 Example 2 — it is literally the same circuit, which is why the two questions reward the same knowledge.",
+   fwd:[["inputs (leaves)","x1 x2 w1 w2 b"],["× nodes","2"],["+ nodes","2 (sum + bias)"],["sigmoid gates","×(−1), exp, +1, 1/x"]],
+   steps:[
+    ["Draw 2 multiply nodes.","\\(p_1=x_1w_1,\\;p_2=x_2w_2\\). Same reasoning as Worked 1 — one \\(\\times\\) per product term."],
+    ["Draw the sum and bias adds.","\\(s=p_1+p_2\\), then \\(z=s+b=w\\cdot x+b\\). Two \\(+\\) gates; the second one's output \\(z\\) is the pre-activation."],
+    ["Unpack the sigmoid into 4 gates.","\\(\\sigma(z)=\\dfrac{1}{1+e^{-z}}\\) reads right-to-left as: \\(\\times(-1)\\Rightarrow -z\\); \\(\\exp\\Rightarrow e^{-z}\\); \\(+1\\Rightarrow 1+e^{-z}\\); \\(1/x\\Rightarrow \\dfrac{1}{1+e^{-z}}\\)=out. Draw these four in series after \\(z\\). <i>Why:</i> 'primitive/low-level graph' means no \\(\\sigma\\) black box — the gates are the marks."],
+    ["Recognise the T1 tie.","This is the Example-2 backprop circuit drawn forward. Build-graph and fill-gradients are one object from opposite ends — the same \\(\\times(-1),\\exp,+1,1/x\\) chain you differentiated in T1."],
+    ["If a single σ node is permitted.","If the wording is 'using the activation \\(\\sigma\\)' rather than 'primitive operations', one \\(\\sigma\\) node after \\(z\\) is acceptable. Read the verb: 'draw the low-level / basic-operation graph' ⇒ four gates; otherwise one node is fine."]
+   ],
+   examwrite:"<div class='mono'>x1 --\\ \n       [×] p1 --\\ \nw1 --/            [+]-- s --[+ b]-- z --[×(−1)]-- −z --[exp]-- e^(−z) --[+1]-- 1+e^(−z) --[1/x]-- OUT\nx2 --\\           /\n       [×] p2 --/\nw2 --/           (bias b feeds the [+ b] node)</div><p style='margin:6px 0 0'>2 multiply gates, 2 add gates (sum + bias), then the 4-gate sigmoid chain <code>×(−1) → exp → +1 → 1/x</code>. If they accept a single σ node, replace the four with one <code>[σ]</code> after z.</p>"}
+ ],
+ variations:[
+  {ex:"SoSe25 Q5b (8p)", d:"<b>Worked in full above (Ex 1).</b> Confirmed OCR: \\(\\text{act}(x)=\\max(0,\\alpha x)\\), three inputs \\(x=x_1w_1+x_2w_2+x_3w_3+b\\). 3 multiplies, 2 sums, 1 bias-add, 1 ×α, 1 max = the 8 pieces."},
+  {ex:"SS21 Q4 (8p)", d:"Build the graph for \\(\\text{act}(w\\cdot x+b)\\). <b>Same affine skeleton</b> (one \\(\\times\\) per \\(w_ix_i\\), a \\(+\\) tree, a \\(+b\\)); only the activation wrapper differs. If \\(\\text{act}=\\sigma\\), append the four sigmoid gates (Ex 2); if \\(\\text{act}\\) is ReLU/Leaky, append one \\(\\max\\) node (Ex 1). <span class='sub'>The protocol didn't preserve which activation SS21 printed — the \\(\\times/+\\) skeleton is most of the 8 marks either way, so drill both wrappers.</span>"},
+  {ex:"WiSe25/26 Q5b (8p)", d:"Same type. WiSe's activation family throughout the paper is ReLU (its T1 graph is ReLU, not sigmoid), so expect a single \\(\\max(0,\\cdot)\\) node — the Ex-1 structure without the \\(\\alpha\\) scale unless the paper states a slope. <span class='sub'>Grid not preserved; method is identical to Ex 1.</span>"}
+ ],
+ drill:"<b>Draw these yourself, from the formula alone — no peeking at the worked graphs:</b><ol>"+
+  "<li><b>SoSe25 Q5b:</b> from \\(\\max(0,\\alpha(x_1w_1+x_2w_2+x_3w_3+b))\\), draw all 8 nodes and label the 7 leaves + 2 constants. Then check node-count: 3×, 3+, 1 ×α, 1 max.</li>"+
+  "<li><b>Sigmoid form:</b> draw \\(\\sigma(w_1x_1+w_2x_2+b)\\) with the four primitive gates. Then flip it: pick forward values and backprop it — confirm you reproduce the T1 Example-2 gradients. Same circuit, both directions.</li>"+
+  "<li><b>Sanity check:</b> for any \\(\\text{act}(w\\cdot x+b)\\) with \\(n\\) inputs, state the node count before drawing (\\(n\\) ×, \\(n-1\\) + for the sum, 1 + for bias, then the activation gates). Getting the count right first prevents a missing-node slip.</li>"+
+  "</ol>Procedural ⇒ no Anki; drill = redraw until the inside-out order (products → sum → bias → activation) is automatic.",
+ checks:[
+  "State the 4-stage recipe cold: products → sum tree → bias-add → activation gates",
+  "Draw SoSe25 Q5b's 8-node graph (3× · 2+ · 1 bias+ · 1 ×α · 1 max) with every leaf labelled",
+  "Unpack σ into ×(−1) → exp → +1 → 1/x without hesitation",
+  "Explain in one line why this is the T1 backprop question in reverse",
+  "Give the node count for an n-input act(w·x+b) before drawing"
+ ]
+});
+
+RM.blocks.push({
+ id:"t4-activ", tier:4, code:"T4", bank:"B",
+ title:"Activation functions — sigmoid + Leaky ReLU",
+ exams:"2024 Q1 · SoSe25 Q3 · WiSe25/26 Q3",
+ points:"7 (3/6 sittings, always the same three-part ask)",
+ lede:"Pure recall: for sigmoid and Leaky ReLU give the <b>expression</b>, the <b>derivative</b>, and the <b>ranges</b> (of the function, and of its derivative). The only trap is the Leaky-ReLU slope constant — the professor changes it between papers (α=0.04 in 2024/SoSe25, ε=0.01 in WiSe25/26). Put all four formulas on the cheat sheet; know the two derivative ranges cold because they are the reason sigmoid vanishes and Leaky doesn't die.",
+ why:"3/6 sittings, 7 marks, zero computation — every point is memorised. It also underwrites the vanishing/dying block: σ'≤0.25 is why sigmoid vanishes; Leaky's f'=α>0 on the negative side is why it fixes dying ReLU.",
+ sections:[
+  {h:"Sigmoid", src:"tracker T4 · L4 training",
+   note:{c:"acc",h:"Derivative shortcut + peak",b:"\\(\\sigma'=\\sigma(1-\\sigma)\\) uses only the output, so if you know \\(o=\\sigma(z)\\) the derivative is \\(o(1-o)\\) — no re-exponentiating. Peak is \\(\\sigma'(0)=0.25\\)."},
+   body:"Expression: \\(\\sigma(x)=\\dfrac{1}{1+e^{-x}}\\).<br>Derivative: \\(\\sigma'(x)=\\sigma(x)\\,(1-\\sigma(x))\\).<br>Range of \\(\\sigma\\): \\((0,1)\\). Range of \\(\\sigma'\\): \\((0,\\,0.25]\\) (maximum \\(0.25\\) at \\(x=0\\)).<br>Because \\(\\sigma'\\le 0.25\\), stacking many sigmoids multiplies many sub-quarter factors ⇒ vanishing gradient."},
+  {h:"Leaky ReLU", src:"tracker T4 · WiSe25/26 Q3 OCR",
+   note:{c:"warn",h:"Slope constant changes between papers",b:"2024 & SoSe25 use \\(\\alpha=0.04\\); WiSe25/26 writes the slope as \\(\\varepsilon=0.01\\). Same function, different symbol and value — copy whatever the paper in front of you states, don't assume 0.04."},
+   body:"Expression: \\(f(x)=\\max(0,x)+\\alpha\\min(0,x)=\\begin{cases}x & x>0\\\\ \\alpha x & x\\le 0\\end{cases}\\).<br>Derivative: \\(f'(x)=\\begin{cases}1 & x>0\\\\ \\alpha & x<0\\end{cases}\\) (\\(\\alpha\\) is the small leak slope).<br>Range of \\(f\\): \\((-\\infty,\\infty)\\). Range of \\(f'\\): \\(\\{\\alpha,1\\}\\).<br>Because \\(f'=\\alpha>0\\) for \\(x<0\\), a Leaky-ReLU neuron never has an exactly-zero gradient ⇒ it cannot 'die' the way plain ReLU (\\(f'=0\\) for \\(x<0\\)) can."}
+ ],
+ worked:[],
+ variations:[
+  {ex:"2024 Q1 · SoSe25 Q3", d:"Give expression + derivative + range for sigmoid and Leaky ReLU; Leaky slope \\(\\alpha=0.04\\)."},
+  {ex:"WiSe25/26 Q3", d:"Identical ask; Leaky slope written \\(\\varepsilon=0.01\\). Only the constant differs — <b>use 0.01 here</b>."}
+ ],
+ anki:{
+  basic:[
+   ["Sigmoid: expression, derivative, function range, derivative range?","\\(\\sigma(x)=1/(1+e^{-x})\\); \\(\\sigma'=\\sigma(1-\\sigma)\\); range \\((0,1)\\); \\(\\sigma'\\in(0,0.25]\\) (peak 0.25 at x=0).","t4_activ"],
+   ["Leaky ReLU: expression, derivative, ranges?","\\(f(x)=\\max(0,x)+\\alpha\\min(0,x)\\); \\(f'=1\\) if \\(x>0\\) else \\(\\alpha\\); range \\((-\\infty,\\infty)\\); \\(f'\\in\\{\\alpha,1\\}\\).","t4_activ"],
+   ["Why does sigmoid cause vanishing gradients but Leaky ReLU does not die?","\\(\\sigma'\\le0.25\\): many layers multiply sub-quarter factors → gradient →0. Leaky \\(f'=\\alpha>0\\) on the negative side → never exactly-zero gradient, so the neuron can't die.","t4_activ"],
+   ["Leaky-ReLU slope constant across DLAM papers?","2024 & SoSe25: \\(\\alpha=0.04\\). WiSe25/26: \\(\\varepsilon=0.01\\). Use whichever the paper states.","t4_activ"]
+  ],
+  cloze:[
+   ["Sigmoid derivative is {{c1::σ(1−σ)}}, with range {{c2::(0, 0.25]}} and peak {{c3::0.25 at x=0}}.","","t4_activ"],
+   ["Leaky ReLU derivative is {{c1::1}} for x>0 and {{c2::α}} for x<0; the DLAM papers use α={{c3::0.04 (2024/SoSe25) or 0.01 (WiSe25/26)}}.","","t4_activ"]
+  ]
+ },
+ drill:"",
+ checks:[
+  "Write sigmoid expression, derivative, both ranges from memory",
+  "Write Leaky-ReLU expression, derivative, both ranges from memory",
+  "State the correct slope constant for the specific paper (0.04 vs 0.01)",
+  "Link σ'≤0.25 to vanishing and f'=α>0 to non-dying"
+ ]
+});
+
+RM.blocks.push({
+ id:"t4-bn", tier:4, code:"T4", bank:"B",
+ title:"Batch Normalization — definition + advantage",
+ exams:"2024 Q10a-b · SoSe25 Q6c · WiSe25/26 Q7",
+ points:"4–5 (3/6 sittings)",
+ lede:"Two parts: (a) write the normalization formula, (b) state one concrete advantage and why it holds. The formula the professor uses is \\(h_i=g_i\\,\\dfrac{a_i-\\mu_i}{\\sigma_i}+b_i\\) — standardise each activation over the mini-batch, then a learned scale \\(g\\) and shift \\(b\\). Don't forget the learned \\(g,b\\): normalization alone would fix the distribution rigidly; the affine pair lets the layer undo it if needed.",
+ why:"3/6 sittings, cheap partial-credit theory. The formula plus one well-justified advantage is the whole answer; a definition without the learned parameters, or an advantage with no mechanism, leaves marks on the table.",
+ sections:[
+  {h:"Definition + formula", src:"tracker T4 · SS21 p6 OCR",
+   body:"For each feature/unit \\(i\\), over a mini-batch: compute batch mean \\(\\mu_i\\) and std \\(\\sigma_i\\), standardise, then apply a <b>learned</b> scale \\(g_i\\) and shift \\(b_i\\):\\[h_i=g_i\\,\\frac{a_i-\\mu_i}{\\sigma_i}+b_i.\\]"+
+   "\\(a_i\\) is the pre-activation; \\((\\mu_i,\\sigma_i)\\) are computed per-batch during training; \\((g_i,b_i)\\) (a.k.a. \\(\\gamma,\\beta\\)) are trained by backprop. Setting \\(g_i=\\sigma_i,\\;b_i=\\mu_i\\) recovers the identity — that is why the affine pair matters."},
+  {h:"One key advantage (state + justify)", src:"tracker T4",
+   note:{c:"good",h:"Answer template",b:"Advantage + one-line mechanism. e.g. 'Allows higher learning rates / faster, more stable training, because normalising each layer's inputs keeps their distribution stable across updates (reduces internal covariate shift), so gradients don't blow up or vanish from shifting scales.'"},
+   body:"Any one, with its mechanism, earns the mark:<ul>"+
+   "<li><b>Faster / more stable training, higher learning rates:</b> stable per-layer input distribution ⇒ better-conditioned loss surface.</li>"+
+   "<li><b>Less sensitive to weight initialization:</b> the layer re-standardises regardless of incoming scale.</li>"+
+   "<li><b>Mild regularization:</b> batch statistics inject noise, slightly reducing overfitting (can lessen the need for dropout).</li></ul>"+
+   "<div class='note'><div class='h'>Test-time note (often the (b) sub-part)</div>At inference there is no mini-batch: use the <b>running (population) mean/variance</b> collected during training, not per-batch statistics.</div>"}
+ ],
+ worked:[],
+ variations:[
+  {ex:"2024 Q10a-b", d:"(a) define BatchNorm / write the formula; (b) give an advantage (and/or the test-time behaviour)."},
+  {ex:"SoSe25 Q6c · WiSe25/26 Q7", d:"Same content, sometimes only the advantage or only the formula. The learned \\(g,b\\) and one justified advantage are the reliable points."}
+ ],
+ anki:{
+  basic:[
+   ["BatchNorm formula (as used in DLAM)?","\\(h_i=g_i\\,(a_i-\\mu_i)/\\sigma_i+b_i\\): standardise the pre-activation over the batch (\\(\\mu_i,\\sigma_i\\)), then learned scale \\(g_i\\) and shift \\(b_i\\).","t4_bn"],
+   ["Why does BatchNorm include learned scale g and shift b?","Pure normalisation would fix each layer's distribution rigidly; \\(g,b\\) let the network rescale/shift (even undo normalisation, \\(g=\\sigma,b=\\mu\\)) so representational power isn't lost.","t4_bn"],
+   ["State one BatchNorm advantage with its mechanism.","Faster/more stable training + higher learning rates: normalising layer inputs keeps their distribution stable across updates (reduces internal covariate shift), better-conditioning the loss surface.","t4_bn"],
+   ["BatchNorm at test time?","No mini-batch available → use the running (population) mean and variance estimated during training, not per-batch statistics.","t4_bn"]
+  ],
+  cloze:[
+   ["BatchNorm: \\(h_i=\\){{c1::\\(g_i(a_i-\\mu_i)/\\sigma_i+b_i\\)}}, where {{c2::μ,σ}} are batch statistics and {{c3::g,b}} are learned.","","t4_bn"],
+   ["At inference BatchNorm uses {{c1::running population}} mean/variance, not {{c2::per-batch}} statistics.","","t4_bn"]
+  ]
+ },
+ drill:"",
+ checks:[
+  "Write the BatchNorm formula including the learned g and b",
+  "Explain why the learned g,b are needed (identity recovery)",
+  "State one advantage WITH its one-line mechanism",
+  "Give the test-time behaviour (running population stats)"
+ ]
+});
+
+RM.blocks.push({
+ id:"t4-biasvar", tier:4, code:"T4", bank:"B",
+ title:"Bias–variance vs number of hidden units; NN as feature extractors",
+ exams:"MT22/23 Q1 · SoSe25 Q4",
+ points:"3 (small, reliable theory)",
+ lede:"One directional claim plus a short justification. <b>Fewer hidden units ⇒ simpler model ⇒ bias ↑, variance ↓</b> (toward underfitting); more units ⇒ bias ↓, variance ↑ (toward overfitting). SoSe25 adds Q4b: 'a neural network acts as a feature extractor — justify.'",
+ why:"3 marks, pure concept you already own from DMML. Just say the direction the right way round and give one sentence of mechanism.",
+ sections:[
+  {h:"Hidden units → bias / variance", src:"tracker T4 · DMML carry-over",
+   body:"Model capacity scales with the number of hidden units. <b>Decreasing</b> them shrinks the hypothesis space: the model can represent fewer functions, so it fits the training data less flexibly (systematic error / <b>bias ↑</b>) but is less sensitive to the particular training sample (<b>variance ↓</b>). Increasing them reverses both. Standard capacity–complexity trade-off; the classic U-shaped test error sits at the balance point."},
+  {h:"NN as feature extractor (SoSe25 Q4b)", src:"tracker T4 · L11 deep NLP / transfer",
+   note:{c:"good",h:"The justification they want",b:"The hidden layers learn a hierarchy of representations; the penultimate layer's activations are a learned feature vector, and the final layer is just a linear classifier on those features. Evidence: you can chop the head and reuse the body (transfer learning), and early layers learn general features (edges/textures) while later layers learn task-specific ones."},
+   body:"Justify with the structure: each hidden layer transforms its input into a more useful representation; by the last hidden layer the network has mapped raw input to features on which a simple (linear/softmax) output layer suffices. That the learned features transfer to new tasks (freeze the body, retrain the head) is the concrete proof that the network's body <i>is</i> a feature extractor."}
+ ],
+ worked:[],
+ variations:[
+  {ex:"MT22/23 Q1", d:"State the effect on bias and variance of decreasing hidden units (bias ↑, variance ↓) with a one-line reason."},
+  {ex:"SoSe25 Q4 (+Q4b)", d:"Same bias/variance part; plus 'NN as feature extractor — justify' — answer with the representation-hierarchy + transfer-learning argument."}
+ ],
+ anki:{
+  basic:[
+   ["Effect of DECREASING the number of hidden units on bias and variance?","Lower capacity → bias ↑ (underfits, more systematic error), variance ↓ (less sensitive to the training sample). Increasing units reverses both.","t4_biasvar"],
+   ["Justify: a neural network acts as a feature extractor.","Hidden layers learn a hierarchy of representations; the penultimate layer is a learned feature vector and the output layer is a linear classifier on it. Proof: freeze the body and retrain the head (transfer learning) — early layers = general features, later = task-specific.","t4_biasvar"]
+  ],
+  cloze:[
+   ["Fewer hidden units → bias {{c1::↑}} and variance {{c2::↓}} (toward {{c3::underfitting}}).","","t4_biasvar"],
+   ["A NN is a feature extractor: the {{c1::penultimate layer}} gives a learned feature vector and the {{c2::output layer}} is a linear classifier on it; reusing the body is {{c3::transfer learning}}.","","t4_biasvar"]
+  ]
+ },
+ drill:"",
+ checks:[
+  "State the direction correctly: fewer units → bias↑, variance↓",
+  "Give the one-line capacity reason",
+  "Justify NN-as-feature-extractor with representation hierarchy + transfer"
+ ]
+});
+
+
+/* ============================ TIER 5 (Pass 4) ============================ */
+
+/* ---- t5-params — Bank A — param counting CONV / Pool / FC ---- */
+RM.blocks.push({
+ id:"t5-params", tier:5, code:"T5", bank:"A",
+ title:"Parameter counting — CONV / Pool / FC layers",
+ exams:"MT22/23 Q4",
+ points:"3 (MT only, but pure formula — free marks)",
+ lede:"Three formulas, applied per layer, then summed. <b>Conv:</b> \\((F\\cdot F\\cdot C_{in}+1)\\cdot C_{out}\\). <b>Pool:</b> \\(0\\). <b>FC:</b> \\((n_{in}+1)\\cdot n_{out}\\). The single most-dropped mark is the <b>+1 bias</b> — one per filter in a conv layer, one per unit in an FC layer. Below: the formulas derived in one line each, then a full multi-layer CNN counted end to end.",
+ why:"Deterministic arithmetic with zero modelling judgement. Learn the three formulas + the bias rule and this is 3 guaranteed marks.",
+ sections:[
+  {h:"The three formulas (and why)", src:"tracker T5 · L6/L7 CNNs",
+   note:{c:"acc",h:"Never forget the +1 bias",b:"A conv layer has ONE bias per output channel (per filter), so the +1 is inside the bracket that gets multiplied by \\(C_{out}\\). An FC layer has one bias per output unit, so the +1 is inside the bracket multiplied by \\(n_{out}\\). Pooling and flatten/reshape have NO learnable parameters at all."},
+   body:"<table><tr><th>Layer</th><th>Params</th><th>Reason</th></tr>"+
+   "<tr><td><b>Conv</b> (\\(F\\times F\\), \\(C_{in}\\to C_{out}\\))</td><td>\\((F\\cdot F\\cdot C_{in}+1)\\cdot C_{out}\\)</td><td>Each of the \\(C_{out}\\) filters is a \\(F\\times F\\times C_{in}\\) weight cube (shared across all spatial positions) plus 1 bias.</td></tr>"+
+   "<tr><td><b>Pool</b> (max / avg)</td><td>\\(0\\)</td><td>Pooling is a fixed reduction — no weights, no bias.</td></tr>"+
+   "<tr><td><b>Flatten / reshape</b></td><td>\\(0\\)</td><td>Just re-indexes the same numbers.</td></tr>"+
+   "<tr><td><b>FC / dense</b> (\\(n_{in}\\to n_{out}\\))</td><td>\\((n_{in}+1)\\cdot n_{out}\\)</td><td>Full weight matrix \\(n_{in}\\times n_{out}\\) plus one bias per output unit.</td></tr></table>"+
+   "<div class='note'><div class='h'>Conv params do NOT depend on input spatial size</div>Because the filter weights are shared across every spatial location, a \\(5\\times5\\) conv over a \\(32\\times32\\) map has exactly the same parameter count as over a \\(200\\times200\\) map. Spatial size only affects the FC count later, via how many features you flatten into.</div>"}
+ ],
+ worked:[
+  {h:"WORKED — MT22/23 Q4 method, on a full small CNN, layer by layer",
+   q:"\"Give the number of trainable parameters in each layer and in total.\" The protocol did not preserve MT22/23's exact layer table, so this is worked on a canonical small CNN that exercises every layer type; read the real sheet's dimensions and apply the identical three formulas.",
+   pre:
+"Layer      config                         output shape\n"+
+"---------------------------------------------------------\n"+
+"input                                     32 x 32 x 3\n"+
+"CONV1      5x5, 16 filters, pad=2, s=1    32 x 32 x 16\n"+
+"POOL1      2x2 max, s=2                   16 x 16 x 16\n"+
+"CONV2      3x3, 32 filters, pad=1, s=1    16 x 16 x 32\n"+
+"POOL2      2x2 max, s=2                    8 x  8 x 32\n"+
+"FLATTEN                                   2048\n"+
+"FC1        2048 -> 128                    128\n"+
+"FC2        128  -> 10                     10  (output)",
+   intro:"Walk top to bottom. For each layer pick the right formula, plug in, and keep a running total. \\(C_{in}\\) of a conv layer is the channel count of the map feeding it.",
+   fwd:[["CONV1 in/out","C_in=3, C_out=16, F=5"],["CONV2 in/out","C_in=16, C_out=32, F=3"],["flatten","8·8·32 = 2048"],["FC1/FC2","2048→128→10"]],
+   steps:[
+    ["CONV1 — \\((F^2C_{in}+1)C_{out}\\).","\\((5\\cdot5\\cdot3+1)\\cdot16=(75+1)\\cdot16=76\\cdot16=\\mathbf{1216}\\)."],
+    ["POOL1.","No weights \\(\\Rightarrow \\mathbf{0}\\)."],
+    ["CONV2 — \\(C_{in}\\) is now 16 (POOL1's output channels).","\\((3\\cdot3\\cdot16+1)\\cdot32=(144+1)\\cdot32=145\\cdot32=\\mathbf{4640}\\)."],
+    ["POOL2.","\\(\\mathbf{0}\\)."],
+    ["FLATTEN — find the FC input size.","POOL2 output is \\(8\\times8\\times32\\Rightarrow n_{in}=8\\cdot8\\cdot32=\\mathbf{2048}\\). Flatten itself adds \\(0\\) params."],
+    ["FC1 — \\((n_{in}+1)n_{out}\\).","\\((2048+1)\\cdot128=2049\\cdot128=\\mathbf{262272}\\)."],
+    ["FC2 (output) — \\((n_{in}+1)n_{out}\\).","\\((128+1)\\cdot10=129\\cdot10=\\mathbf{1290}\\)."],
+    ["Total = sum of all layers.","\\(1216+0+4640+0+0+262272+1290=\\mathbf{269418}\\). Note the FC layers dominate — that is the standard observation the examiner rewards a comment on."]
+   ],
+   answer:[["CONV1","1216"],["POOL1","0"],["CONV2","4640"],["POOL2","0"],["FC1","262272"],["FC2","1290"],["TOTAL","269418"]],
+   examwrite:"<div class='mono'>CONV1: (5*5*3+1)*16   = 76*16   = 1216\nPOOL1: 0\nCONV2: (3*3*16+1)*32  = 145*32  = 4640\nPOOL2: 0\nFC1:   (2048+1)*128   = 2049*128= 262272\nFC2:   (128+1)*10      = 129*10  = 1290\nTOTAL                          = 269418</div><p style='margin:6px 0 0'>Write the formula, the substitution, and the number for every layer — partial marks are per-layer. Always show the \\(+1\\); leaving out the bias is the marked error. State the total explicitly.</p>"},
+
+  {h:"WORKED — two tiny by-hand checks (make the formulas reflexive)",
+   q:"Sanity examples with hand-sized numbers so you can verify the formulas without a calculator.",
+   intro:"If these are instant, the real question is just bigger numbers.",
+   fwd:[["conv","3×3, 1→2 filters"],["fc","4→3"]],
+   steps:[
+    ["Conv \\(3\\times3\\), 1 input channel, 2 filters.","\\((3\\cdot3\\cdot1+1)\\cdot2=(9+1)\\cdot2=\\mathbf{20}\\). (18 weights + 2 biases.)"],
+    ["FC \\(4\\to3\\).","\\((4+1)\\cdot3=5\\cdot3=\\mathbf{15}\\). (12 weights + 3 biases.)"]
+   ],
+   answer:[["conv 3×3 1→2","20"],["FC 4→3","15"]],
+   examwrite:"<div class='mono'>conv 3x3, 1->2:  (9*1+1)*2 = 20\nFC 4->3:         (4+1)*3   = 15</div>"}
+ ],
+ variations:[
+  {ex:"MT22/23 Q4 (3 p)", d:"<b>The method above.</b> A small CNN table (conv/pool/FC layers); give per-layer and total parameter counts. Only the specific \\(F, C_{in}, C_{out}, n_{in}, n_{out}\\) differ from the worked example — the three formulas + bias rule are invariant."},
+  {ex:"General trap variants", d:"Watch for (a) a conv layer whose \\(C_{in}\\) is the previous conv's \\(C_{out}\\), not the input image channels; (b) being asked params <i>with</i> vs <i>without</i> bias — halve the +1 contribution accordingly; (c) a flatten step where you must compute the spatial size after all pools before the first FC."}
+ ],
+ drill:"<b>Solve these yourself:</b><ol>"+
+  "<li>Re-count the full CNN above from the layer table alone, no peeking, and hit \\(269418\\).</li>"+
+  "<li>Change CONV1 to \\(7\\times7, 8\\) filters and recompute CONV1 (\\((49\\cdot3+1)\\cdot8=1184\\)) and the new total shift.</li>"+
+  "<li>Take your MT22/23 sheet's actual layer table and produce the per-layer + total counts under a 3-minute timer.</li>"+
+  "</ol>Procedural ⇒ no Anki.",
+ checks:[
+  "Write all three formulas cold, with the +1 bias in the right place",
+  "State that conv params are independent of input spatial size",
+  "Carry C_in = previous layer's channel count through a 2-conv stack",
+  "Compute the flatten size from the post-pool spatial dims before the first FC",
+  "Reproduce the full-CNN total (269418) end to end"
+ ]
+});
+
+/* ---- t5-silubn — Bank A — comp-graph incl. SiLU + BatchNorm ---- */
+RM.blocks.push({
+ id:"t5-silubn", tier:5, code:"T5", bank:"A",
+ title:"Comp-graph with SiLU + BatchNorm — forward & backward",
+ exams:"2024 Q5 · WiSe25/26 Q5-graph",
+ points:"— (a backprop-family graph with two new node types)",
+ lede:"Exactly the T1 backprop procedure, with two extra node types you must know the local derivative of. <b>SiLU</b> \\(=x\\,\\sigma(x)\\), local deriv \\(\\sigma(x)+x\\,\\sigma(x)(1-\\sigma(x))\\). <b>BatchNorm</b> \\(=\\gamma\\hat x+\\beta\\) with \\(\\hat x=(x-\\mu)/\\sqrt{\\sigma^2+\\varepsilon}\\), local deriv (given batch stats) \\(=\\gamma/\\sqrt{\\sigma^2+\\varepsilon}\\). Below: both derived, then a full \\(w\\!\\cdot\\! x\\to\\text{SiLU}\\to\\text{BN}\\) graph forward and backward with numbers.",
+ why:"Two of the six sittings put SiLU and/or BatchNorm into the gradient graph. If the SiLU and BN local derivatives are reflex, this collapses to the T1 walk you already own.",
+ sections:[
+  {h:"SiLU (a.k.a. swish) local derivative", src:"tracker T5 · L5 training2 · 2024 Q5",
+   note:{c:"acc",h:"Reuse-the-forward-value form",b:"An equivalent form is \\(\\text{SiLU}'(x)=\\text{SiLU}(x)+\\sigma(x)\\,(1-\\text{SiLU}(x))\\) — handy when you already computed \\(\\text{SiLU}(x)=x\\sigma(x)\\) and \\(\\sigma(x)\\) in the forward pass, so no new evaluations are needed."},
+   body:"\\(\\text{SiLU}(x)=x\\cdot\\sigma(x)\\), a product of two things that both depend on \\(x\\) — so it is a <b>product rule</b>:<br>\\[\\frac{d}{dx}\\big(x\\,\\sigma(x)\\big)=\\underbrace{1\\cdot\\sigma(x)}_{\\text{first}\\times\\text{second}}+\\underbrace{x\\cdot\\sigma'(x)}_{\\text{first}\\times\\text{second}'}=\\sigma(x)+x\\,\\sigma(x)\\big(1-\\sigma(x)\\big).\\]"+
+   "Inside a graph you can draw SiLU either as one node (use this whole derivative) or as an explicit \\(\\times\\) of an identity branch and a \\(\\sigma\\) branch (then it is just the T1 mult + sigmoid gates, and the reused \\(x\\) is a branch you sum over). Both give the same number."},
+  {h:"BatchNorm node local derivative", src:"tracker T5 · L5 · tie to T4 bn",
+   note:{c:"good",h:"At exam scale, batch stats are treated as constants",b:"For a single-node backward step the exam gives (or lets you assume fixed) \\(\\mu,\\sigma^2,\\gamma,\\beta\\). Then \\(\\hat x=(x-\\mu)/\\sqrt{\\sigma^2+\\varepsilon}\\) is linear in \\(x\\) and \\(\\partial\\text{BN}/\\partial x=\\gamma/\\sqrt{\\sigma^2+\\varepsilon}\\). The full through-the-batch derivative (where \\(\\mu,\\sigma^2\\) also depend on \\(x\\)) is not what these questions ask for."},
+   body:"\\(\\text{BN}(x)=\\gamma\\,\\hat x+\\beta,\\quad \\hat x=\\dfrac{x-\\mu}{\\sqrt{\\sigma^2+\\varepsilon}}\\). Chain it as two gates: normalise (scale by \\(1/\\sqrt{\\sigma^2+\\varepsilon}\\), shift by \\(-\\mu\\)) then affine (scale by \\(\\gamma\\), shift by \\(\\beta\\)).<br>Local derivatives: \\(\\partial\\text{BN}/\\partial x=\\gamma/\\sqrt{\\sigma^2+\\varepsilon}\\); \\(\\partial\\text{BN}/\\partial\\gamma=\\hat x\\); \\(\\partial\\text{BN}/\\partial\\beta=1\\)."}
+ ],
+ worked:[
+  {h:"WORKED — full graph \\(w\\!\\cdot\\!x+b\\ \\to\\ \\text{SiLU}\\ \\to\\ \\text{BN}\\), forward then backward",
+   q:"2024 Q5 / WiSe25/26 Q5-graph put SiLU (and BatchNorm) into the fill-the-gradients graph. The exact grid was not preserved, so this works the full method on concrete numbers; the mechanics are exactly what the sheet demands.",
+   pre:
+"  x=2.0 ─┐\n"+
+"         [x]── a=w*x ──[+]── z=a+b ──[SiLU]── s ──[BN]── n  (output, g=1.0)\n"+
+"  w=0.5 ─┘            b=0.0        gamma=2.0, beta=0.5, mu=0.3, var=0.25\n",
+   intro:"Forward left→right, then backward right→left. New nodes are SiLU and BN; the \\(\\times\\) and \\(+\\) are the ordinary T1 gates.",
+   fwd:[["a = w·x","0.5·2.0 = 1.0"],["z = a+b","1.0+0 = 1.0"],["σ(z)","0.7311"],["s = SiLU(z)=z·σ(z)","0.7311"],["x̂ = (s−μ)/√var","(0.7311−0.3)/0.5 = 0.8622"],["n = γx̂+β","2·0.8622+0.5 = 2.2244"]],
+   steps:[
+    ["Forward check.","\\(a=0.5\\cdot2.0=1.0\\); \\(z=1.0+0=1.0\\); \\(\\sigma(1.0)=1/(1+e^{-1})=0.7311\\); \\(s=1.0\\cdot0.7311=0.7311\\); \\(\\hat x=(0.7311-0.3)/\\sqrt{0.25}=0.4311/0.5=0.8622\\); \\(n=2.0\\cdot0.8622+0.5=2.2244\\)."],
+    ["Output gradient (given).","\\(g_n=1.0\\)."],
+    ["BN node.","\\(\\partial n/\\partial s=\\gamma/\\sqrt{\\sigma^2+\\varepsilon}=2.0/0.5=4.0\\Rightarrow g_s=1.0\\cdot4.0=\\mathbf{4.0}\\). Side outputs: \\(\\partial n/\\partial\\gamma=\\hat x=\\mathbf{0.8622}\\), \\(\\partial n/\\partial\\beta=\\mathbf{1.0}\\)."],
+    ["SiLU node — local deriv at \\(z=1.0\\).","\\(\\sigma(z)+z\\,\\sigma(z)(1-\\sigma(z))=0.7311+1.0\\cdot0.7311\\cdot0.2689=0.7311+0.1966=0.9277\\).<br>\\(g_z=g_s\\cdot0.9277=4.0\\cdot0.9277=\\mathbf{3.7108}\\)."],
+    ["+ gate (\\(z=a+b\\)).","Add copies through: \\(g_a=\\mathbf{3.7108}\\) and \\(g_b=\\mathbf{3.7108}=\\partial L/\\partial b\\)."],
+    ["× gate (\\(a=w\\cdot x\\)) — switch values.","\\(g_w=g_a\\cdot x=3.7108\\cdot2.0=\\mathbf{7.4216}=\\partial L/\\partial w\\); \\(g_x=g_a\\cdot w=3.7108\\cdot0.5=\\mathbf{1.8554}\\)."]
+   ],
+   answer:[["n (out)","1.0*"],["s (into BN)","4.0"],["γ","0.8622"],["β","1.0"],["z (into SiLU)","3.7108"],["b","3.7108"],["w","7.4216"],["x","1.8554"]],
+   examwrite:"<div class='mono'>fwd:  a=1.0  z=1.0  sig=0.7311  s=0.7311  xhat=0.8622  n=2.2244\nBN:   dn/ds = gamma/sqrt(var) = 2.0/0.5 = 4.0   -> g_s = 4.0\n      dn/dgamma = xhat = 0.8622 ,  dn/dbeta = 1.0\nSiLU: sig + z*sig*(1-sig) = 0.7311 + 0.1966 = 0.9277\n      g_z = 4.0 * 0.9277 = 3.7108\n+ :   g_a = g_b = 3.7108\n* :   g_w = 3.7108*x = 7.4216 ,  g_x = 3.7108*w = 1.8554</div><p style='margin:6px 0 0'>Show each node's local derivative next to the gradient you write — the marker gives partial credit for the correct SiLU and BN local derivatives even if a later number slips.</p>"}
+ ],
+ variations:[
+  {ex:"2024 Q5", d:"Comp-graph including a SiLU node (and BatchNorm). Same fill-the-gradients format as T1 backprop; the two new nodes use the local derivatives above. Grid not preserved — apply the method to the sheet's numbers."},
+  {ex:"WiSe25/26 Q5-graph", d:"The graph part of Q5 uses the same node set. If SiLU is drawn as an explicit \\(x\\times\\sigma(x)\\) with a reused-\\(x\\) branch, sum the two gradients returning to \\(x\\) (T1 branch rule) — otherwise treat SiLU as one node with the product-rule derivative."}
+ ],
+ drill:"<b>Solve these yourself:</b><ol>"+
+  "<li>Reproduce the full forward + backward above from the graph alone; confirm \\(g_w=7.4216,\\ g_x=1.8554\\).</li>"+
+  "<li>Redo the SiLU step with the reuse form \\(\\text{SiLU}(z)+\\sigma(z)(1-\\text{SiLU}(z))\\) and check you get \\(0.9277\\).</li>"+
+  "<li>Change \\(\\gamma=1,\\ \\text{var}=1\\) and re-derive \\(g_s\\) (\\(=1.0\\)) to see BN reduce to pass-through when \\(\\gamma=\\sqrt{\\text{var}}\\).</li>"+
+  "<li>Draw SiLU as an explicit \\(\\times\\)/\\(\\sigma\\) split and verify the reused-\\(x\\) branch sum reproduces the same \\(g_z\\).</li>"+
+  "</ol>Procedural ⇒ no Anki.",
+ checks:[
+  "State SiLU = x·σ(x) and its derivative σ(x)+x·σ(x)(1−σ(x)) cold",
+  "State BN = γx̂+β and ∂BN/∂x = γ/√(var+ε), plus ∂/∂γ = x̂, ∂/∂β = 1",
+  "Run the full w·x→SiLU→BN graph forward and backward to g_w, g_x",
+  "Handle SiLU-as-split with the reused-x branch sum"
+ ]
+});
+
+/* ---- t5-maxgate — Bank A — max-gate backprop ---- */
+RM.blocks.push({
+ id:"t5-maxgate", tier:5, code:"T5", bank:"A",
+ title:"Max-gate backprop — the router rule",
+ exams:"MT22/23 Q5",
+ points:"— (short; one rule)",
+ lede:"One rule: a <b>max</b> node routes the full upstream gradient to whichever input <i>won</i> the forward pass, and sends \\(0\\) to every loser. No multiplication, no shrinkage — it is a switch. This is the same rule that makes max-pooling and ReLU (\\(=\\max(0,x)\\)) backprop trivial.",
+ why:"A quick, self-contained procedural item, and the rule reappears inside pooling (T3), the vanishing-gradient max-pool sub-question (T2), and ReLU. Bank it once, reuse it everywhere.",
+ sections:[
+  {h:"The rule + why", src:"tracker T5 · ties T1 max, T2 vanish, T3 pool",
+   note:{c:"acc",h:"Router, not shrinker",b:"\\(\\partial\\max(a,b)/\\partial a = 1\\) if \\(a>b\\) else \\(0\\). So the gradient passes at full size to the winner and is killed for losers. Because the factor is exactly 1 (never <1), a max node never contributes to vanishing gradient."},
+   body:"Forward: \\(m=\\max(a,b)\\) copies the larger input. Backward, incoming \\(g\\): send \\(g\\) to the input that was the max in the forward pass, \\(0\\) to the others. You must therefore <b>remember which input won</b> during the forward pass — that is the only bookkeeping.<br><br><b>Ties:</b> the standard convention is to route the whole gradient to one winner (or split equally); state whichever convention you use. <b>ReLU</b> is \\(\\max(0,x)\\): the constant \\(0\\) never wins for \\(x>0\\), so the gradient passes for \\(x>0\\) and is killed for \\(x<0\\) — exactly the ReLU rule."}
+ ],
+ worked:[
+  {h:"WORKED — MT22/23 Q5 · a max node inside a small graph",
+   q:"\"Backpropagate through the max operation.\" Worked as a max feeding a multiply, with an explicit forward pass so you can see which branch the gradient takes.",
+   pre:
+"  a=2.0 ─┐\n"+
+"         [max]── m=2.0 ──[x]── out=6.0   (g_out = 1.0)\n"+
+"  b=-1.0─┘                 w=3.0\n",
+   intro:"Forward, then walk back. The multiply is the ordinary T1 mult gate; the max is the router.",
+   fwd:[["m = max(a,b)","max(2.0,−1.0) = 2.0"],["out = m·w","2.0·3.0 = 6.0"]],
+   steps:[
+    ["Output gradient (given).","\\(g_{out}=1.0\\)."],
+    ["× gate (\\(out=m\\cdot w\\)) — switch values.","\\(g_m=g_{out}\\cdot w=1.0\\cdot3.0=\\mathbf{3.0}\\); \\(g_w=g_{out}\\cdot m=1.0\\cdot2.0=\\mathbf{2.0}\\)."],
+    ["max gate — route to the winner.","Forward winner was \\(a=2.0\\) (since \\(2.0>-1.0\\)). So \\(g_a=g_m=\\mathbf{3.0}\\) and \\(g_b=\\mathbf{0.0}\\)."]
+   ],
+   answer:[["out","1.0*"],["m","3.0"],["w","2.0"],["a (winner)","3.0"],["b (loser)","0.0"]],
+   examwrite:"<div class='mono'>x : g_m = g_out*w = 3.0 ,  g_w = g_out*m = 2.0\nmax: winner = a (2.0 > -1.0)\n     g_a = 3.0 (full pass) ,  g_b = 0.0 (killed)</div><p style='margin:6px 0 0'>State which input won and why; then give the routed gradients. The winner gets the incoming gradient unchanged, losers get 0.</p>"},
+
+  {h:"WORKED — 3-input max, a tie, and the ReLU special case",
+   q:"The two edge cases the examiner can attach: more than two inputs, and a tie.",
+   intro:"Same rule, generalised.",
+   fwd:[["max(1,4,4)","= 4 (tie between the two 4's)"],["ReLU(x)=max(0,x)","winner is x iff x>0"]],
+   steps:[
+    ["3-input, clear winner: \\(\\max(1,4,2)=4\\), incoming \\(g=5\\).","Route all of \\(g\\) to the \\(4\\): gradients \\((0,\\ \\mathbf{5},\\ 0)\\)."],
+    ["Tie: \\(\\max(1,4,4)=4\\), incoming \\(g=5\\).","Convention A (route to one): \\((0,5,0)\\) or \\((0,0,5)\\). Convention B (split equally): \\((0,2.5,2.5)\\). State the one you pick."],
+    ["ReLU as a max: \\(\\text{ReLU}(x)=\\max(0,x)\\).","For \\(x>0\\), \\(x\\) wins \\(\\Rightarrow g_x=g\\). For \\(x<0\\), the constant \\(0\\) wins \\(\\Rightarrow g_x=0\\). This is why the T1 ReLU rule is 'pass if input >0, else kill'."]
+   ],
+   answer:[["max(1,4,2), g=5","(0,5,0)"],["max(1,4,4), g=5","(0,5,0) or split (0,2.5,2.5)"],["ReLU x>0","g_x=g"],["ReLU x<0","g_x=0"]],
+   examwrite:"<div class='mono'>>2 inputs: full g to the single max, 0 to all others\ntie:       route to one (state it) or split equally\nReLU:      max(0,x) -> pass g if x>0, else 0</div>"}
+ ],
+ variations:[
+  {ex:"MT22/23 Q5", d:"<b>Worked above.</b> Backprop through a max node; may be standalone or embedded with a multiply/add. The only content is the routing rule + remembering the forward winner."},
+  {ex:"Cross-references", d:"Max-pooling backprop (T3 pool) is this rule applied per window; the T2 vanishing-gradient sub-question ('does max-pool cause vanishing?') is answered by 'no — it routes with factor 1, never shrinks'."}
+ ],
+ drill:"<b>Solve these yourself:</b><ol>"+
+  "<li>Redo the worked graph with \\(a=-3,\\ b=1\\) (so \\(b\\) wins) and confirm the gradient now flows to \\(b\\).</li>"+
+  "<li>Backprop \\(\\max(5,5)\\) both by 'route to one' and 'split' and state which convention you would write.</li>"+
+  "<li>Confirm ReLU's 0/1 rule is exactly \\(\\max(0,x)\\) routing.</li>"+
+  "</ol>Procedural ⇒ no Anki.",
+ checks:[
+  "State the router rule: full g to the forward winner, 0 to losers",
+  "Explain why max never causes vanishing gradient (factor = 1)",
+  "Handle >2 inputs and state a tie convention",
+  "Derive ReLU's backprop rule as a max(0,x) special case"
+ ]
+});
+
+/* ---- t5-lstm — Bank A — LSTM fill gates + explain ---- */
+RM.blocks.push({
+ id:"t5-lstm", tier:5, code:"T5", bank:"A",
+ title:"LSTM — fill the gates + explain",
+ exams:"2024 Q8 · WiSe25/26 Q8",
+ points:"— (gate equations + one numeric step + why it helps)",
+ lede:"Four gates, two of them producing the cell update. <b>f, i, o</b> are \\(\\sigma(\\cdot)\\) (values in \\((0,1)\\), they gate); the <b>candidate</b> \\(\\tilde g\\) is \\(\\tanh(\\cdot)\\) (values in \\((-1,1)\\), it proposes content). Cell update \\(c_t=f\\odot c_{t-1}+i\\odot\\tilde g\\); hidden \\(h_t=o\\odot\\tanh(c_t)\\). Below: all equations, a full numeric one-step fill, and the gradient-highway explanation.",
+ why:"Two sittings ask for the gate equations, a numeric gate fill, and 'why does the LSTM help with long-range dependencies / vanishing gradients'. The equations are memorisable and the numeric step is mechanical.",
+ sections:[
+  {h:"The four gates + the two updates", src:"tracker T5 · L8 RNNs",
+   note:{c:"acc",h:"σ = gate (how much), tanh = content (what)",b:"The three σ gates output 0..1 and act as element-wise valves: forget (keep how much old cell), input (write how much candidate), output (expose how much cell). The tanh candidate is the actual new information proposed. Mixing these up is the marked error."},
+   body:"With \\([h_{t-1},x_t]\\) the concatenation of previous hidden and current input:<br>"+
+   "\\[\\begin{aligned}f_t&=\\sigma(W_f[h_{t-1},x_t]+b_f)&&\\text{forget gate}\\\\ i_t&=\\sigma(W_i[h_{t-1},x_t]+b_i)&&\\text{input gate}\\\\ o_t&=\\sigma(W_o[h_{t-1},x_t]+b_o)&&\\text{output gate}\\\\ \\tilde g_t&=\\tanh(W_c[h_{t-1},x_t]+b_c)&&\\text{candidate}\\end{aligned}\\]"+
+   "\\[c_t=f_t\\odot c_{t-1}+i_t\\odot\\tilde g_t,\\qquad h_t=o_t\\odot\\tanh(c_t).\\]"+
+   "\\(\\odot\\) is element-wise. Role in one line each: <b>forget</b> = how much of the old cell to keep; <b>input</b> = how much of the candidate to write; <b>candidate</b> = the proposed new content; <b>output</b> = how much of the (tanh-squashed) cell to expose as the hidden state."},
+  {h:"Why the LSTM beats a vanilla RNN", src:"tracker T5 · ties T2 vanish, T2 resnet",
+   note:{c:"good",h:"The additive cell path = a gradient highway",b:"\\(c_t=f_t\\odot c_{t-1}+\\dots\\) is additive, so \\(\\partial c_t/\\partial c_{t-1}=f_t\\) — a near-1 factor when the forget gate stays open — instead of a vanilla RNN's repeated multiply by \\(W^\\top\\text{diag}(\\tanh')\\) that shrinks. Same idea as the ResNet skip (T2)."},
+   body:"A vanilla RNN backpropagates through \\(h_t=\\tanh(Wh_{t-1}+\\dots)\\), so the gradient across \\(k\\) steps carries a factor \\(\\prod\\tanh'\\cdot W\\) that decays (vanishing) or explodes. The LSTM's <b>constant error carousel</b> — the additive cell line gated by \\(f_t\\) — lets gradients flow many steps with little decay, so it learns long-range dependencies."}
+ ],
+ worked:[
+  {h:"WORKED — one numeric LSTM step (scalar, so every gate is one number)",
+   q:"2024 Q8 / WiSe25/26 Q8 give pre-activations (or weights+inputs) and ask you to fill \\(f,i,o,\\tilde g\\), then \\(c_t\\) and \\(h_t\\). The exact numbers weren't preserved, so this uses clean pre-activation values; substitute the sheet's if given.",
+   pre:
+"  given:  c_{t-1} = 0.5\n"+
+"  pre-activations (already = W[h,x]+b):\n"+
+"    forget z_f = 0.0     input z_i = 0.8\n"+
+"    output z_o = 0.5     cand  z_g = -0.4",
+   intro:"Apply \\(\\sigma\\) to the three gate pre-activations and \\(\\tanh\\) to the candidate, then plug into the two update equations.",
+   fwd:[["f = σ(0.0)","0.5"],["i = σ(0.8)","0.6900"],["o = σ(0.5)","0.6225"],["g̃ = tanh(−0.4)","−0.3799"]],
+   steps:[
+    ["Forget gate \\(f=\\sigma(z_f)\\).","\\(\\sigma(0.0)=\\mathbf{0.5}\\). Keep half of the old cell."],
+    ["Input gate \\(i=\\sigma(z_i)\\).","\\(\\sigma(0.8)=1/(1+e^{-0.8})=1/1.4493=\\mathbf{0.6900}\\)."],
+    ["Output gate \\(o=\\sigma(z_o)\\).","\\(\\sigma(0.5)=1/(1+e^{-0.5})=1/1.6065=\\mathbf{0.6225}\\)."],
+    ["Candidate \\(\\tilde g=\\tanh(z_g)\\).","\\(\\tanh(-0.4)=\\mathbf{-0.3799}\\)."],
+    ["Cell update \\(c_t=f\\,c_{t-1}+i\\,\\tilde g\\).","\\(0.5\\cdot0.5+0.6900\\cdot(-0.3799)=0.25-0.2621=\\mathbf{-0.0121}\\)."],
+    ["Hidden \\(h_t=o\\,\\tanh(c_t)\\).","\\(\\tanh(-0.0121)\\approx-0.0121\\Rightarrow h_t=0.6225\\cdot(-0.0121)=\\mathbf{-0.0075}\\)."]
+   ],
+   answer:[["f","0.5"],["i","0.6900"],["o","0.6225"],["g̃","−0.3799"],["c_t","−0.0121"],["h_t","−0.0075"]],
+   examwrite:"<div class='mono'>f  = sigma(0.0)  = 0.5\ni  = sigma(0.8)  = 0.6900\no  = sigma(0.5)  = 0.6225\ng~ = tanh(-0.4)  = -0.3799\nc_t = f*c_{t-1} + i*g~ = 0.5*0.5 + 0.6900*(-0.3799) = -0.0121\nh_t = o*tanh(c_t)      = 0.6225*(-0.0121)          = -0.0075</div><p style='margin:6px 0 0'>Write each gate's equation, its value, then the two updates. If the sheet gives weights+inputs instead of pre-activations, first compute \\(z=W[h,x]+b\\) for each gate, then apply σ/tanh.</p>"}
+ ],
+ variations:[
+  {ex:"2024 Q8", d:"State the gate equations and/or fill a numeric step; explain each gate's role. Same equations as above."},
+  {ex:"WiSe25/26 Q8", d:"Same type; often pairs the numeric fill with 'why does the LSTM mitigate vanishing gradients' — answer with the additive-cell / constant-error-carousel argument (\\(\\partial c_t/\\partial c_{t-1}=f_t\\))."},
+  {ex:"GRU variant (if asked)", d:"A GRU merges cell and hidden and uses update/reset gates: \\(h_t=(1-z_t)\\odot h_{t-1}+z_t\\odot\\tilde h_t\\). Fewer gates, same gating idea; mention only if the sheet asks."}
+ ],
+ drill:"<b>Solve these yourself:</b><ol>"+
+  "<li>Write all four gate equations + the two updates from memory, with the σ/tanh assignment correct.</li>"+
+  "<li>Redo the numeric step with \\(z_f=1.0\\) (so \\(f=\\sigma(1)=0.7311\\)) and recompute \\(c_t,h_t\\).</li>"+
+  "<li>State in one sentence why \\(\\partial c_t/\\partial c_{t-1}=f_t\\) gives a gradient highway and how that ties to the ResNet skip.</li>"+
+  "</ol>Procedural ⇒ no Anki.",
+ checks:[
+  "Write f,i,o = σ(·), candidate = tanh(·), cell = f⊙c_{t-1}+i⊙g̃, h = o⊙tanh(c) cold",
+  "State each gate's role (forget/input/output/candidate) in one line",
+  "Fill a numeric one-step example to c_t and h_t",
+  "Explain the additive-cell gradient highway (∂c_t/∂c_{t-1}=f_t) vs vanilla RNN decay"
+ ]
+});
+
+/* ---- t5-tanh — Bank B — tanh derivative range ---- */
+RM.blocks.push({
+ id:"t5-tanh", tier:5, code:"T5", bank:"B",
+ title:"tanh derivative and its range",
+ exams:"MT22/23 Q3",
+ points:"— (one identity + one interval)",
+ lede:"\\(\\tanh'(x)=1-\\tanh^2(x)\\). Since \\(\\tanh(x)\\in(-1,1)\\), \\(\\tanh^2\\in[0,1)\\), so the derivative range is \\((0,1]\\), maximal \\(=1\\) at \\(x=0\\).",
+ why:"A one-line identity that also underpins the vanishing-gradient answer (tanh' peaks at 1 vs sigmoid' at 0.25, but is still <1 away from 0, so deep tanh nets still vanish).",
+ sections:[
+  {h:"Derivative, range, and the comparison", src:"tracker T5 · L4 training1",
+   note:{c:"good",h:"Contrast with sigmoid",b:"tanh' max is 1 (at 0); sigmoid' max is only 0.25. So tanh gradients are healthier near 0 and tanh is zero-centred — but both saturate to derivative ≈0 in the tails, so both still cause vanishing gradients in deep stacks."},
+   body:"\\(\\tanh(x)=\\dfrac{e^{x}-e^{-x}}{e^{x}+e^{-x}}\\), and \\(\\dfrac{d}{dx}\\tanh(x)=1-\\tanh^2(x)=\\operatorname{sech}^2(x)\\). Because \\(\\tanh\\in(-1,1)\\Rightarrow\\tanh^2\\in[0,1)\\Rightarrow 1-\\tanh^2\\in(0,1]\\). The maximum \\(1\\) occurs at \\(x=0\\) (where \\(\\tanh=0\\)); the derivative \\(\\to0\\) as \\(|x|\\to\\infty\\) (saturation)."}
+ ],
+ worked:[],
+ variations:[
+  {ex:"MT22/23 Q3", d:"State \\(\\tanh'=1-\\tanh^2\\) and give its range \\((0,1]\\); may ask where the max occurs (x=0) or to contrast with sigmoid."}
+ ],
+ anki:{
+  basic:[
+   ["What is the derivative of tanh, and its range?","\\(\\tanh'(x)=1-\\tanh^2(x)\\); range \\((0,1]\\), max \\(=1\\) at \\(x=0\\), \\(\\to0\\) in the tails.","t5_tanh"],
+   ["tanh vs sigmoid derivative maxima?","tanh' max = 1 (at 0) and zero-centred; sigmoid' max = 0.25. Both saturate to ≈0 in tails, so both still vanish in deep nets.","t5_tanh"]
+  ],
+  cloze:[
+   ["\\(\\tanh'(x)=\\){{c1::\\(1-\\tanh^2(x)\\)}}, with range {{c2::(0, 1]}} and maximum at \\(x=\\){{c3::0}}.","","t5_tanh"]
+  ]
+ },
+ drill:"",
+ checks:[
+  "State tanh' = 1 − tanh² and range (0,1]",
+  "Give where the max (=1) occurs and why the tails saturate",
+  "Contrast tanh' max (1) with sigmoid' max (0.25)"
+ ]
+});
+
+/* ---- t5-gd — Bank B — GD vs minibatch GD ---- */
+RM.blocks.push({
+ id:"t5-gd", tier:5, code:"T5", bank:"B",
+ title:"Batch GD vs minibatch (stochastic) GD",
+ exams:"SoSe25 Q6 · WiSe25/26 Q6",
+ points:"— (a compact compare-and-contrast)",
+ lede:"<b>Batch GD</b> uses the whole training set per update: exact gradient, one slow expensive step, deterministic, memory-heavy. <b>Minibatch GD</b> uses a small random subset: noisy gradient estimate, many cheap frequent steps, the noise helps escape saddle points / poor minima and tends to generalise better. SGD is minibatch with batch size 1.",
+ why:"Two sittings ask for the trade-off directly. State the four axes — gradient accuracy, cost per step, convergence behaviour, memory — and the noise-as-a-feature point.",
+ sections:[
+  {h:"The trade-off, axis by axis", src:"tracker T5 · L2 optimization",
+   note:{c:"good",h:"The point the examiner rewards","b":"The minibatch gradient is an <i>unbiased but noisy</i> estimate of the full-batch gradient. The noise is not just tolerated — it helps: it lets the optimiser jump out of sharp/poor local minima and saddle points, and empirically finds flatter minima that generalise better."},
+   body:"<table><tr><th>Axis</th><th>Batch GD</th><th>Minibatch / SGD</th></tr>"+
+   "<tr><td>Gradient</td><td>Exact (full dataset)</td><td>Noisy estimate (random subset)</td></tr>"+
+   "<tr><td>Cost per update</td><td>High — one pass over all data per step</td><td>Low — one small batch per step ⇒ many more updates per epoch</td></tr>"+
+   "<tr><td>Convergence</td><td>Smooth, deterministic; can stall in poor minima/saddles</td><td>Jittery path; noise escapes saddles/sharp minima, often better generalisation</td></tr>"+
+   "<tr><td>Memory / scale</td><td>Must hold/scan whole set; infeasible for large data</td><td>Constant small memory; scales to huge datasets & streaming</td></tr>"+
+   "<tr><td>Hardware</td><td>—</td><td>Batch fits GPU, vectorised; batch size trades noise vs throughput</td></tr></table>"+
+   "One-line summary: batch GD = accurate but slow and memory-bound; minibatch = fast, scalable, and its noise is a useful regulariser. SGD (batch size 1) is the noisy extreme; minibatch is the practical middle."}
+ ],
+ worked:[],
+ variations:[
+  {ex:"SoSe25 Q6 · WiSe25/26 Q6", d:"State the differences between GD and minibatch GD (accuracy, cost, convergence, memory) and why minibatch is standard in deep learning. May ask specifically 'why is the minibatch gradient still useful despite being noisy' — answer: unbiased estimate + noise escapes poor minima."}
+ ],
+ anki:{
+  basic:[
+   ["Batch GD vs minibatch GD — the four axes?","Gradient: exact vs noisy estimate. Cost/step: high (all data) vs low (one small batch, many updates). Convergence: smooth/deterministic vs jittery but escapes saddles. Memory: whole set vs constant small.","t5_gd"],
+   ["Why is a noisy minibatch gradient a good thing, not just a compromise?","It's an unbiased estimate of the full gradient, and the noise helps escape saddle points / sharp poor minima and tends to find flatter, better-generalising minima.","t5_gd"]
+  ],
+  cloze:[
+   ["Batch GD gives an {{c1::exact}} gradient but is {{c2::slow/memory-heavy}}; minibatch GD gives a {{c3::noisy}} estimate with many cheap updates.","","t5_gd"],
+   ["SGD is minibatch GD with batch size {{c1::1}}; its gradient noise helps {{c2::escape saddle points / poor local minima}}.","","t5_gd"]
+  ]
+ },
+ drill:"",
+ checks:[
+  "Contrast batch vs minibatch on gradient accuracy, cost/step, convergence, memory",
+  "State that the minibatch gradient is unbiased but noisy",
+  "Explain noise-as-a-feature (escapes saddles/sharp minima, better generalisation)",
+  "State SGD = batch size 1"
+ ]
+});
+
+/* ==DLAM_SPLICE_BLOCKS==
+   Later passes: add RM.blocks.push({...}) ABOVE this marker (Tier 3 → Pass 2,
+   Tier 4 → Pass 3, Tier 5 → Pass 4-5, Tier 6 → Pass 6). Do NOT re-emit the file.
+   Match the block schema: {id,tier,code,bank,title,exams,points,lede,why,
+   sections[],worked[],variations[],anki?{basic[],cloze[]},drill,checks[]}.
+   Anki only on Bank B (theory) blocks. Then run verifier.js. */
+
+/* =========================== STORAGE =========================== */
+function load(k,d){try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}}
+function save(k,v){localStorage.setItem(k,JSON.stringify(v))}
+let DONE = load("dlam.done",{});
+function isDone(k){return !!DONE[k]}
+function setDone(k,v){DONE[k]=v;save("dlam.done",DONE)}
+function esc(s){return String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}
+function blockById(id){return RM.blocks.find(b=>b.id===id)}
+function built(id){return !!blockById(id)}
+
+/* =========================== ROUTER =========================== */
+function parseHash(){const h=location.hash.replace(/^#/,'')||'register';return h.split('/');}
+function go(h){location.hash=h}
+window.addEventListener('hashchange',render);
+
+/* =========================== RAIL =========================== */
+function renderRail(){
+ const [view,arg]=parseHash();
+ let h=`<div class="brand">DLAM<small>exam roadmap · ${BUILD}</small></div>`;
+ h+=`<div class="railgrp"><h4>Views</h4>`;
+ h+=railBtn('register','Register (home)',view==='register');
+ h+=railBtn('worked','Worked appendix (Bank A)',view==='worked');
+ h+=railBtn('craft','Exam craft',view==='craft');
+ h+=railBtn('triage','Triage',view==='triage');
+ h+=railBtn('anki','Anki decks',view==='anki');
+ h+=railBtn('tracker','Tracker',view==='tracker');
+ h+=`</div>`;
+ for(let t=1;t<=6;t++){
+   const rows=REGISTER.filter(r=>r.tier===t);
+   if(!rows.length)continue;
+   h+=`<div class="railgrp"><h4>Tier ${t}</h4>`;
+   rows.forEach(r=>{
+     const on = view==='block'&&arg===r.blockId;
+     const pend = !built(r.blockId);
+     h+=`<button class="rbtn ${on?'on':''} ${pend?'pending':''}" onclick="go('block/${r.blockId}')">
+       <span>${esc(r.type.length>40?r.type.slice(0,38)+'…':r.type)}</span>
+       <span class="pt">${r.bank}</span></button>`;
+   });
+   h+=`</div>`;
+ }
+ document.getElementById('rail').innerHTML=h;
+}
+function railBtn(hash,label,on){return `<button class="rbtn ${on?'on':''}" onclick="go('${hash}')">${label}</button>`;}
+
+/* =========================== VIEWS =========================== */
+function renderRegister(){
+ let built_n=RM.blocks.length, total=REGISTER.length;
+ let h=`<h1>Question register</h1>
+   <p class="sub">${total} distinct types across 6 sittings · spine = DLAM_progress_tracker.md · ${built_n}/${total} blocks built (${BUILD}).</p>
+   <div class="note acc"><div class="h">How to use this page</div>Study in tier order. Tier 1 alone is the biggest single point block; Tier 1–4 is a solid 1.7–2.0. Bank A = procedural (drill by re-solving, no Anki). Bank B = theory (Anki deck per block). Pending rows arrive in later build passes.</div>`;
+ for(let t=1;t<=6;t++){
+   const rows=REGISTER.filter(r=>r.tier===t);if(!rows.length)continue;
+   const appears={1:'6/6',2:'5/6',3:'4/6',4:'3/6',5:'2/6',6:'1/6'}[t];
+   h+=`<h2><span class="pill t${t}">TIER ${t}</span> &nbsp;appears ${appears}</h2>`;
+   rows.forEach(r=>{
+     const b=built(r.blockId);
+     h+=`<div class="regrow">
+       <span class="pill t${t}">${r.bank}</span>
+       <span>${b?`<a href="#block/${r.blockId}">${esc(r.type)}</a>`:esc(r.type)}</span>
+       <span class="ex">${esc(r.exams)}</span>
+       <span class="ptc mono" style="text-align:right;color:${b?'var(--good)':'var(--warn)'}">${b?'built':'pending'}</span>
+     </div>`;
+   });
+ }
+ return h;
+}
+
+function renderBlock(id){
+ const b=blockById(id);
+ if(!b){const r=REGISTER.find(x=>x.blockId===id);
+   return `<h1>${r?esc(r.type):'Unknown block'}</h1>
+     <div class="note warn"><div class="h">Not built yet</div>This block is scheduled for a later pass (${r?('Tier '+r.tier):''}). The register lists it so coverage is visible; the teaching content arrives when its pass runs.</div>
+     <p><a href="#register">← back to register</a></p>`;}
+ const done=isDone('block:'+b.id);
+ let h=`<h1>${esc(b.title)}</h1>
+   <p class="sub"><span class="pill t${b.tier}">TIER ${b.tier}</span> <span class="tag ${b.bank==='A'?'a':'b'}">Bank ${b.bank} · ${b.bank==='A'?'procedural':'theory'}</span> ${esc(b.points)}</p>
+   <p class="sub mono">${esc(b.exams)}</p>
+   <div class="lede">${b.lede}</div>
+   <div class="why"><b>Why this tier:</b> ${b.why}</div>`;
+ (b.sections||[]).forEach(s=>{
+   h+=`<div class="sec">${s.src?`<span class="src">${esc(s.src)}</span>`:''}<h3>${esc(s.h)}</h3>${s.body}`;
+   if(s.note)h+=`<div class="note ${s.note.c}"><div class="h">${esc(s.note.h)}</div>${s.note.b}</div>`;
+   h+=`</div>`;
+ });
+ (b.worked||[]).forEach((w,wi)=>{
+   h+=`<div class="worked"><h3>${esc(w.h)}</h3><div class="q">${w.q}</div>`;
+   if(w.pre)h+=`<pre style="font-family:var(--mono);font-size:11.5px;overflow:auto;background:#0a0d12;padding:10px;border-radius:6px">${esc(w.pre)}</pre>`;
+   if(w.intro)h+=`<p>${w.intro}</p>`;
+   if(w.fwd){h+=`<p class="stepsub">Forward pass (recompute first — you'll need every value):</p><table class="gradtab"><tr>${w.fwd.map(a=>`<th>${esc(a[0])}</th>`).join('')}</tr><tr>${w.fwd.map(a=>`<td>${esc(a[1])}</td>`).join('')}</tr></table>`;}
+   if(w.steps&&w.steps.length)h+=`<p class="stepsub">Backward pass — every step, in the order you write it:</p>`;
+   (w.steps||[]).forEach(st=>{h+=`<div class="step"><b>${esc(st[0])}</b><div>${st[1]}</div></div>`;});
+   if(w.answer){h+=`<p class="stepsub">Final gradients:</p><table class="gradtab"><tr><th>pos</th>${w.answer.map(a=>`<td>${esc(a[0])}</td>`).join('')}</tr><tr><th>grad</th>${w.answer.map(a=>`<td>${esc(a[1])}</td>`).join('')}</tr></table><p class="sub">* given in the question.</p>`;}
+   if(w.examwrite)h+=`<div class="examwrite"><div class="h">What you actually write on the exam sheet</div>${w.examwrite}</div>`;
+   h+=`</div>`;
+ });
+ if(b.variations&&b.variations.length){
+   h+=`<h2>Every real variation of this type</h2><table><tr><th>Exam</th><th>What's different</th></tr>`;
+   b.variations.forEach(v=>{h+=`<tr><td class="mono">${esc(v.ex)}</td><td>${v.d}</td></tr>`;});
+   h+=`</table>`;
+ }
+ if(b.drill)h+=`<div class="drill"><div class="h">Drill (do this solo)</div>${b.drill}</div>`;
+ if(b.anki&&(b.anki.basic.length||b.anki.cloze.length)){
+   h+=`<h2>Anki (theory) — <a href="#anki">all decks →</a></h2>${ankiBlocks(b)}`;
+ }
+ if(b.checks){
+   h+=`<h2>Done when</h2><ul class="checks">`;
+   b.checks.forEach((c,i)=>{const k='chk:'+b.id+':'+i,d=isDone(k);
+     h+=`<li class="${d?'done':''}" onclick="toggle('${k}')"><input type="checkbox" ${d?'checked':''} onclick="event.stopPropagation();toggle('${k}')"><span>${c}</span></li>`;});
+   h+=`</ul>`;
+ }
+ h+=`<hr class="hr"><label style="cursor:pointer"><input type="checkbox" ${done?'checked':''} onclick="toggle('block:${b.id}')"> Mark whole block learned</label>`;
+ return h;
+}
+
+function ankiBlocks(b){
+ let out='';
+ if(b.anki.basic.length){
+   const tsv=b.anki.basic.map(r=>r.join('\t')).join('\n');
+   out+=ankiPre('Basic — Front⇥Back⇥Tag',tsv);
+ }
+ if(b.anki.cloze.length){
+   const tsv=b.anki.cloze.map(r=>r.join('\t')).join('\n');
+   out+=ankiPre('Cloze — Text⇥Extra⇥Tag',tsv);
+ }
+ return out;
+}
+let PREN=0;
+function ankiPre(label,tsv){
+ const id='pre'+(PREN++);
+ return `<div class="anki"><div class="hd"><span>${esc(label)}</span><button class="copy" onclick="copyPre('${id}')">copy</button></div><pre id="${id}">${esc(tsv)}</pre></div>`;
+}
+function copyPre(id){const t=document.getElementById(id).textContent;navigator.clipboard&&navigator.clipboard.writeText(t);}
+
+function renderWorked(){
+ let h=`<h1>Worked appendix — Bank A</h1>
+   <p class="sub">Every calculation a question can demand, worked end-to-end. Setup-equation first. An arithmetic slip is a full miss.</p>`;
+ const aBlocks=RM.blocks.filter(b=>b.bank==='A'&&b.worked&&b.worked.length);
+ if(!aBlocks.length)h+=`<div class="note">No worked items built yet beyond Tier 1.</div>`;
+ aBlocks.forEach(b=>{
+   h+=`<div class="sec"><span class="src">${esc(b.exams)}</span><h3><a href="#block/${b.id}">${esc(b.title)}</a></h3>`;
+   b.worked.forEach(w=>{h+=`<p><b>${esc(w.h)}</b></p>`;if(w.answer)h+=`<p class="mono sub">result: ${w.answer.map(a=>a[0]+'='+a[1]).join(', ')}</p>`;});
+   h+=`</div>`;
+ });
+ h+=`<div class="note warn"><div class="h">Pending (later passes)</div>Conv-kernel solve, pooling apply, SPN queries, attention apply, LSTM gate-fill, param counting, sigmoid-neuron df/dw. Conv/pooling grids for SoSe25 & WiSe25/26 still need an image pull (see handoff).</div>`;
+ return h;
+}
+
+function renderCraft(){
+ return `<h1>Exam craft</h1>
+ <p class="sub">90 min · 90 marks · closed book · one double-sided A4 cheat sheet.</p>
+ <div class="note acc"><div class="h">Time = marks</div>90 marks in 90 minutes ⇒ <b>1 minute per mark</b>, including reading. A 5-mark question gets ~5 min; do not overrun a theory question and starve a backprop block.</div>
+ <h2>Point value = sentence count</h2>
+ <p>A 1-mark question wants one sentence. A 5–6 marker wants that many crisp points, usually structured. Two classic ways students bleed marks: writing a paragraph where a line was asked, and <b>giving a definition without an example</b> — most definition questions want both.</p>
+ <h2>Cheat sheet — use ALL the space</h2>
+ <div class="note good"><div class="h">Survivor advice (highest-signal)</div>Past students agree the single biggest lever is that <b>most people underuse the cheat sheet</b>. Fill both sides. Put on it exactly what is expensive to recall under time pressure; know cold what is cheap.</div>
+ <table><tr><th>Put on the sheet</th><th>Know cold (don't waste sheet space)</th></tr>
+ <tr><td>Output-size <code>N_out=⌊(N+2P−F)/S⌋+1</code>; sigmoid & Leaky-ReLU formula+deriv+range (α=0.04 for 2024/SoSe25); attention <code>softmax(QKᵀ/√d_k)V</code>; LSTM gate formulas; BatchNorm formula; ELBO skeleton; SiLU = x·σ(x)</td>
+ <td>The +/×/max backprop gate rules (they're reflex, not lookup); ResNet idea; GAN generation = only G; max-pool doesn't vanish gradient; vanishing vs dying</td></tr></table>
+ <h2>Bank A vs Bank B triage in the room</h2>
+ <p>Bank A (backprop, conv, pooling, SPN, attention, LSTM, param count) is where full marks are cheap and slips are full misses — do these first while fresh, check arithmetic once. Bank B (theory) is partial-credit forgiving — bank the Bank-A points, then spend remaining time widening theory answers.</p>`;
+}
+
+function renderTriage(){
+ const gates=[
+  {c:"You hesitate on any +/×/max gate rule",r:"Stop. Re-drill T1 gate rules until reflex before anything else — it's 12–18 marks and it's binary.",link:"block/t1-backprop"},
+  {c:"You forget to sum gradients at a branch / skip connection",r:"This is the most-missed backprop step. Re-do SS21 Q3 focusing on pos 2 (the branch). Same idea powers the ResNet advantage.",link:"block/t1-backprop"},
+  {c:"You can draw a ResNet block but not say why the skip helps",r:"Tie it to the add-gate pass-through: derivative-1 path back to early layers. That sentence is the mark.",link:"block/t2-resnet"},
+  {c:"You blank on the max-pool sub-question",r:"Answer is fixed: NO — max-pool routes the gradient (×1 to the max), it doesn't shrink it.",link:"block/t2-vanish"},
+  {c:"You describe GANs but not the generation-time components",r:"At inference: only noise→G→image. D and data are training-only. That contrast is the sub-part's mark.",link:"block/t2-gan"}
+ ];
+ let h=`<h1>Triage</h1><p class="sub">Decision gates keyed to the mistakes you'll actually make. Match the symptom, take the remedy.</p>`;
+ gates.forEach(g=>{h+=`<div class="gate"><div class="cond">▶ ${esc(g.c)}</div><p>${esc(g.r)} <a href="#${g.link}">go →</a></p></div>`;});
+ return h;
+}
+
+function renderAnki(){
+ let h=`<h1>Anki decks (theory / Bank B only)</h1>
+ <div class="note"><div class="h">Import</div>One deck per tier block. Import each TSV block with <b>field separator = Tab</b> and <b>Allow HTML in fields</b> ticked. Basic = 3 fields (Front⇥Back⇥Tag). Cloze = 3 fields (Text⇥Extra⇥Tag). Procedural (Bank A) blocks have no cards — you drill those by re-solving.</div>`;
+ const bBlocks=RM.blocks.filter(b=>b.anki&&(b.anki.basic.length||b.anki.cloze.length));
+ if(!bBlocks.length)h+=`<div class="note">No theory decks built yet.</div>`;
+ bBlocks.forEach(b=>{
+   h+=`<h2><span class="pill t${b.tier}">T${b.tier}</span> <a href="#block/${b.id}">${esc(b.title)}</a></h2>${ankiBlocks(b)}`;
+ });
+ return h;
+}
+
+function renderTracker(){
+ let h=`<h1>Tracker</h1>`;
+ const tiers=[1,2,3,4,5,6];
+ h+=`<div class="topbar"><span class="grow sub">Progress persists in this browser (localStorage).</span>
+   <button class="btn" onclick="expJSON()">export JSON</button>
+   <button class="btn" onclick="document.getElementById('imp').click()">import JSON</button>
+   <input id="imp" type="file" accept="application/json" style="display:none" onchange="impJSON(event)">
+   <button class="btn" onclick="toggleTheme()">theme</button></div>`;
+ tiers.forEach(t=>{
+   const rows=REGISTER.filter(r=>r.tier===t);if(!rows.length)return;
+   const bl=rows.filter(r=>built(r.blockId));
+   const doneN=bl.filter(r=>isDone('block:'+r.blockId)).length;
+   const pct=bl.length?Math.round(100*doneN/bl.length):0;
+   h+=`<h3><span class="pill t${t}">TIER ${t}</span> ${doneN}/${bl.length} built-blocks learned <span class="sub">(${rows.length-bl.length} pending build)</span></h3>
+     <div class="progress"><i style="width:${pct}%"></i></div>`;
+   rows.forEach(r=>{
+     const b=built(r.blockId), d=isDone('block:'+r.blockId);
+     h+=`<div class="regrow"><span class="pill t${t}">${r.bank}</span>
+       <span>${b?`<a href="#block/${r.blockId}">${esc(r.type)}</a>`:esc(r.type)}</span>
+       <span class="ex">${esc(r.exams)}</span>
+       <span class="ptc mono" style="text-align:right;color:${!b?'var(--warn)':(d?'var(--good)':'var(--mut)')}">${!b?'pending':(d?'learned':'built')}</span></div>`;
+   });
+ });
+ return h;
+}
+
+/* =========================== ACTIONS =========================== */
+function toggle(k){setDone(k,!isDone(k));render();}
+function expJSON(){const blob=new Blob([JSON.stringify({done:DONE,build:BUILD},null,2)],{type:'application/json'});
+ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='dlam_progress.json';a.click();}
+function impJSON(ev){const f=ev.target.files[0];if(!f)return;const rd=new FileReader();
+ rd.onload=()=>{try{const o=JSON.parse(rd.result);if(o.done){DONE=o.done;save('dlam.done',DONE);render();}}catch(e){alert('bad JSON')}};
+ rd.readAsText(f);ev.target.value='';}
+function initTheme(){const t=load('dlam.theme','dark');if(t==='light')document.documentElement.setAttribute('data-theme','light');}
+function toggleTheme(){const cur=document.documentElement.getAttribute('data-theme')==='light'?'dark':'light';
+ if(cur==='light')document.documentElement.setAttribute('data-theme','light');else document.documentElement.removeAttribute('data-theme');
+ save('dlam.theme',cur);}
+
+/* =========================== RENDER =========================== */
+function render(){
+ renderRail();
+ const [view,arg]=parseHash();
+ let h='';
+ if(view==='register')h=renderRegister();
+ else if(view==='block')h=renderBlock(arg);
+ else if(view==='worked')h=renderWorked();
+ else if(view==='craft')h=renderCraft();
+ else if(view==='triage')h=renderTriage();
+ else if(view==='anki')h=renderAnki();
+ else if(view==='tracker')h=renderTracker();
+ else h=renderRegister();
+ const main=document.getElementById('main');
+ main.innerHTML=h;main.scrollTop=0;
+ if(window.MathJax&&MathJax.typesetPromise)MathJax.typesetPromise([main]);
+}
+initTheme();
+render();
+console.log('%cDLAM roadmap '+BUILD+' — blocks:'+RM.blocks.length+'/'+REGISTER.length,'color:#6aa9ff');
+</script>
+</body>
+</html>
