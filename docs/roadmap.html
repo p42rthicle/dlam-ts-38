@@ -2166,7 +2166,7 @@ python -m src.train --model patchtst --fold 2 --gap 336</code></pre>
       --lookback 336 --patience 8 --notes graded
   done
 done</code></pre>
-<p><strong>2. ETT data</strong> (the transfer test — needs the two <a href="#s8-3">Phase&nbsp;8.3</a> edits, which live on the <code>feat/ett</code> branch):</p>
+<p><strong>2. ETT data</strong> (the transfer test — needs the two <a href="#s8-3">Phase&nbsp;8.3</a> edits <em>and</em> <code>data/ett/long.csv</code>, both on the <code>feat/ett</code> branch). If <code>long.csv</code> isn't there yet, build it once — <code>python scripts/prepare_ett.py</code> (<a href="#s8-2">Phase&nbsp;8.2</a>):</p>
 <pre><code>for model in linear mlp lstm patchtst; do
   for f in 0 1 2; do
     echo "=== $model  fold $f  (ett) ==="
@@ -2185,6 +2185,30 @@ df = df[df.notes.isin(["graded", "ett"])]          # just this comparison's runs
 tbl = df.groupby(["notes", "model"]).wape.agg(["mean", "std", "count"]).round(4)
 print(tbl.sort_values(["notes", "mean"]))          # lower WAPE = better</code></pre></div></div>
 <p>You get one small table per dataset, models ranked by mean WAPE across the three folds. That table — next to the seasonal-mean baseline from <code>score_baselines</code> — is exactly what goes in your report's results section.</p>
+<h3>Run it locally on your Mac, overnight (the easy path)</h3>
+<p>For a one-time run this beats Colab — no upload, no disconnects, results land straight in the repo, and Apple Silicon uses the MPS GPU automatically. From PyCharm:</p>
+<ol>
+<li><strong>Open the terminal in the project root.</strong> PyCharm's <em>Terminal</em> tab (bottom) — you should already be in <code>dlam-ts-38/</code> on the branch that has everything (<code>feat/ett</code>, so both the graded and ETT runs work). Sanity-check: <code>pwd</code> ends in <code>dlam-ts-38</code>, and your venv is active (the prompt shows <code>(.venv)</code>).</li>
+<li><strong>Launch the graded ladder, wrapped in <code>caffeinate</code> so the Mac can't sleep mid-run:</strong>
+<pre><code>caffeinate -i bash -c '
+for model in linear mlp lstm patchtst; do
+  for f in 0 1 2; do
+    echo "=== $model fold $f (graded) ==="
+    python -m src.train --model $model --fold $f --gap 336 --lookback 336 --patience 8 --notes graded
+  done
+done'</code></pre></li>
+<li><strong>Then the ETT ladder</strong> (same, plus the ETT flags). First make sure <code>data/ett/long.csv</code> exists — if not, run <code>python scripts/prepare_ett.py</code> once (<a href="#s8-2">Phase&nbsp;8.2</a>):
+<pre><code>caffeinate -i bash -c '
+for model in linear mlp lstm patchtst; do
+  for f in 0 1 2; do
+    echo "=== $model fold $f (ett) ==="
+    python -m src.train --model $model --fold $f --gap 336 --lookback 336 --patience 8 \
+      --covariates 0 --data data/ett/long.csv --notes ett
+  done
+done'</code></pre></li>
+<li><strong>Read the results.</strong> Everything is already in <code>experiments/runs.csv</code> and <code>experiments/checkpoints/</code> — nothing to download. Run the <code>compare.py</code> snippet above for the ranked table.</li>
+</ol>
+<div class="check"><b>Set-and-forget (Mac)</b><p><code>caffeinate -i</code> keeps the Mac awake only while the job runs — but <strong>closing the lid still sleeps it</strong> unless an external monitor is attached, so leave the lid open and on charger. It's already resumable: each run saves its checkpoint + logbook row the instant it finishes, so if anything interrupts the batch, the completed models are safe — just re-run the ones that didn't (the <code>--notes</code> tag keeps the table clean). Timing and RAM: see the note just below.</p></div>
 <div class="note"><b>How long it takes, and what actually limits it</b><p>On your Apple-Silicon Mac the models run on the <strong>MPS</strong> GPU automatically — nothing to configure, <code>train.py</code> picks MPS when it's available. Rough wall-clock: <strong>linear</strong> and <strong>MLP</strong> are minutes per fold; <strong>LSTM</strong> is the slow one (~25–35&nbsp;min/fold on the graded data); <strong>PatchTST</strong> is heavy too (tens of minutes/fold). So the full graded sweep is a <strong>long/overnight job</strong> (~3–6&nbsp;h); the ETT sweep is quick (one series, ~15–20&nbsp;min total). The limiter is <strong>GPU compute, not memory</strong> — the job needs only a few GB of RAM, so on 24&nbsp;GB you're never memory-bound and freeing RAM won't speed it up (your instinct is right). What <em>does</em> help: keep the Mac plugged in (a fanless Air throttles when hot), and don't run other GPU-heavy work alongside it. If it's too slow, push LSTM/PatchTST to Colab's free GPU (~3&times; faster) or run fewer folds.</p></div>
 <h3>Run it on Colab's free GPU (the ~2–3× option)</h3>
 <p>Colab's free NVIDIA T4 trains the heavy models (LSTM, PatchTST) roughly 2–3&times; faster than the Mac. From a <em>blank</em> notebook it's six cells. (Accounts and sign-in assumed — this is just the run.)</p>
