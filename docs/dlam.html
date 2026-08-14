@@ -15,10 +15,12 @@
   --acc:#6aa9ff; --acc2:#7ee0c0; --good:#5fd08a; --warn:#e5b96b; --bad:#e57373;
   --kw:#ffd479; --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
   --sans:'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  --code-bg:#0a0d12; --code-fg:#e6edf3;
 }
 [data-theme="light"]{
   --bg:#f6f7f9; --panel:#fff; --panel2:#eef1f5; --line:#dde2e9;
   --tx:#1b222c; --mut:#5a6675; --dim:#8b97a7; --kw:#8a5a00;
+  --code-bg:#f4f6f8; --code-fg:#1a2530;
 }
 *{box-sizing:border-box}
 html,body{margin:0;background:var(--bg);color:var(--tx);font-family:var(--sans);font-size:15px;line-height:1.6}
@@ -85,9 +87,9 @@ th{background:var(--panel2);font-weight:600;color:var(--mut)}
 .checks li{padding:6px 0;border-bottom:1px solid var(--line);display:flex;gap:10px;align-items:flex-start;cursor:pointer}
 .checks input{margin-top:4px}
 .checks li.done span{color:var(--dim);text-decoration:line-through}
-.anki{background:#0a0d12;border:1px solid var(--line);border-radius:8px;padding:0;margin:10px 0;overflow:hidden}
+.anki{background:var(--code-bg);border:1px solid var(--line);border-radius:8px;padding:0;margin:10px 0;overflow:hidden}
 .anki .hd{background:var(--panel2);padding:7px 12px;font-family:var(--mono);font-size:11px;color:var(--mut);display:flex;justify-content:space-between}
-.anki pre{margin:0;padding:12px;overflow:auto;font-family:var(--mono);font-size:11.5px;color:var(--tx);white-space:pre;max-height:340px}
+.anki pre{margin:0;padding:12px;overflow:auto;font-family:var(--mono);font-size:11.5px;color:var(--code-fg);white-space:pre;max-height:340px}
 .copy{cursor:pointer;border:1px solid var(--line);background:none;color:var(--acc);border-radius:4px;font-size:10px;padding:2px 8px;font-family:var(--mono)}
 .topbar{display:flex;gap:8px;align-items:center;margin-bottom:6px}
 .topbar .grow{flex:1}
@@ -97,6 +99,32 @@ th{background:var(--panel2);font-weight:600;color:var(--mut)}
 .progress > i{display:block;height:100%;background:var(--good)}
 .regrow{display:grid;grid-template-columns:44px 1fr 150px 70px;gap:8px;align-items:center;padding:7px 8px;border-bottom:1px solid var(--line);font-size:13px}
 .regrow:hover{background:var(--panel)}
+/* cheat sheet — dense, DMML-style */
+.cheat-side{margin:16px 0 22px}
+.cheat-side > h2{border-bottom:2px solid var(--acc);padding-bottom:4px}
+.cicols{column-count:2;column-gap:13px}
+@media(max-width:900px){.cicols{column-count:1}}
+.ci{break-inside:avoid;-webkit-column-break-inside:avoid;border:1px solid var(--line);border-radius:6px;padding:7px 9px;margin:0 0 8px;background:var(--panel);font-size:11.5px;line-height:1.38}
+.ci .ch{font-weight:600;color:var(--acc);border-bottom:1px solid var(--line);padding-bottom:3px;margin-bottom:4px;letter-spacing:.2px}
+.ci .ch .cw{float:right;color:var(--mut);font-weight:400;font-family:var(--mono);font-size:9.5px}
+.ci .cb{color:var(--tx)}
+.ci .cb b{color:var(--acc2)}
+.ci .cb code{font-family:var(--mono);font-size:10.5px;color:var(--acc2)}
+.cheat-pending{border:1px dashed var(--warn);border-radius:8px;padding:10px 14px;margin:14px 0;font-size:12px;line-height:1.45}
+.cheat-pending .h{color:var(--warn);font-size:11px;text-transform:uppercase;letter-spacing:.8px;margin-bottom:5px}
+/* coverage index */
+.covrow{display:grid;grid-template-columns:50px 1fr 78px 52px 56px;gap:8px;align-items:center;padding:5px 8px;border-bottom:1px solid var(--line);font-size:12.5px}
+.covrow .cq{font-family:var(--mono);color:var(--acc2)}
+.covrow .cm{font-family:var(--mono);font-size:11px;text-align:right}
+.covrow .cm.est{color:var(--dim)}
+.covrow .cs{text-align:right;font-family:var(--mono);font-size:11px}
+@media print{
+  #rail,nav,.topbar{display:none!important}
+  body,#main{background:#fff!important;color:#000!important}
+  .ci{border-color:#bbb;background:#fff;font-size:9.5px;line-height:1.3}
+  .ci .ch{color:#000}.ci .cb{color:#000}.ci .cb b{color:#000;text-decoration:underline}
+  .cicols{column-count:3;column-gap:8px}
+}
 .regrow .ex{font-family:var(--mono);font-size:10.5px;color:var(--dim)}
 .gate{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:12px 0}
 .gate .cond{color:var(--warn);font-weight:600}
@@ -118,7 +146,7 @@ th{background:var(--panel2);font-weight:600;color:var(--mut)}
    Self-contained. Model answers embedded. Anki = theory (Bank B) only.
    Later passes append via RM.blocks.push(...) above the SPLICE marker.
    ========================================================================= */
-const BUILD = "passR · 2026-08-13";
+const BUILD = "passR5 · 2026-08-13";
 const RM = { blocks: [] };
 
 /* ---- REGISTER (full, static, from tracker). blockId links to a block.
@@ -540,7 +568,7 @@ RM.blocks.push({
    "<b>Node rules</b> (evaluate bottom-up): a <b>product</b> node outputs \\(\\prod\\) of its children; a <b>sum</b> node outputs \\(\\sum_k w_k\\cdot(\\text{child}_k)\\) with the edge weights \\(w_k\\).<br><br>"+
    "<b>Query types:</b> <b>EVI</b> — all variables observed, read the root. <b>MAR</b> — some variables summed out (their leaves =1), read the root. <b>MAP/argmax</b> — evaluate the network once per candidate value of the target variable(s), pick the value giving the largest root."},
   {h:"SS21 network (used in the worked examples)", src:"SS21 Q6 (scanned)",
-   body:"<pre style='font-family:var(--mono);font-size:11.5px;background:#0a0d12;padding:10px;border-radius:6px'>"+
+   body:"<pre style='font-family:var(--mono);font-size:11.5px;background:var(--code-bg);color:var(--code-fg);padding:10px;border-radius:6px'>"+
 "                 (+)  root:  0.7*L + 0.3*R\n"+
 "           0.7 /     \\ 0.3\n"+
 "          (x)L         (x)R\n"+
@@ -1246,69 +1274,72 @@ RM.blocks.push({
    Adds a plain-language on-ramp to every built block WITHOUT touching any
    worked-solution number: each entry is assigned onto the existing block object
    as `.primer = {test, idea}`. Two labels render above the lede.
+   R2: `idea` is a full conceptual explainer of the topic(s) the question tests
+   (what a GAN is, what ResNet is, etc.) — deliberately repeated in full across
+   sibling blocks. Register: technical but accessible, no analogies/ELI5.
    Register for Tier 5/6 going forward: new blocks may carry `primer:{test,idea}`
    inline in the push object — the renderer and verifier both expect it. */
 const PRIMERS = {
 "t1-backprop":{
   test:"Whether you can run the chain rule mechanically along a computation graph — take the gradient coming in from the output side, multiply by the local derivative of the node you are at, write the number, move one node left. It is not asking you to <i>derive</i> backprop; it checks you can execute it fast and without slips.",
-  idea:"Every node does one small operation (add, multiply, ReLU, sigmoid). Each has a simple local derivative — how its output reacts to its input. Backprop just walks right-to-left and at each node multiplies the incoming gradient by that local derivative. The whole question is knowing the handful of gate rules and doing careful arithmetic."},
+  idea:"A computation graph breaks a function into a chain of tiny operations — each node does one thing (add, multiply, ReLU, sigmoid, ...) and passes its result forward to the next. Training a network needs the gradient of the final loss with respect to every weight and input, and backpropagation is nothing more than the chain rule applied systematically along that graph.<br><br>The object that makes it work is the <b>local derivative</b>: for each node, how its output changes when its input changes, evaluated at the numbers from the forward pass. Backprop starts with a gradient of 1 at the output and moves right-to-left; at every node it multiplies the gradient arriving from the right by that node's local derivative to get the gradient on the node's input, then hands that leftward to the next node. Where one value fans out to several places, the gradients coming back along those branches are <i>summed</i>. So the whole method is: run the forward pass and record every intermediate value, then walk backward multiplying by local derivatives and adding at branch points. What makes it fast in an exam is knowing each gate's local derivative cold — an add gate passes the gradient through unchanged, a multiply gate sends each input the upstream gradient times the <i>other</i> input, a max gate routes the whole gradient to the winner, and sigmoid/ReLU each have their own — after which the question is just careful arithmetic."},
 "t2-resnet":{
   test:"Whether you understand <i>why</i> skip connections matter, not just that ResNets have them. The marks come from tying the skip edge to gradient flow — the reason very deep nets became trainable at all.",
-  idea:"A residual block computes output = F(x) + x, so it learns a small correction to its input instead of a whole new transformation. That +x skip edge gives the gradient a direct path backward, so it does not have to squeeze through every layer and shrink to nothing on the way. That is what lets you stack many layers and still train them."},
+  idea:"ResNet (Residual Network) is the architecture that made <i>very</i> deep convolutional networks trainable. Before it, simply stacking more layers made accuracy saturate and then get worse — not from overfitting but because gradients had to pass back through every layer and tended to shrink to nothing (the vanishing-gradient problem), so early layers barely learned. ResNet's fix is the <b>residual block</b>: rather than asking a stack of layers to learn a full target mapping H(x), you let it learn only the <i>residual</i> F(x) = H(x) − x and add the input back through a <b>skip (shortcut) connection</b>, so the block outputs F(x) + x.<br><br>Two consequences matter. First, if the best thing a block can do is leave its input alone, it only has to push F(x) toward 0, which is easy to learn — so adding depth never hurts and can only help. Second, and this is what the exam rewards, that +x edge gives the gradient a direct route home: on the backward pass an addition passes the upstream gradient straight through to the input unchanged, running in parallel with the shrinking path through F. So even in a network hundreds of layers deep, a strong gradient signal still reaches the early layers, which is exactly why ResNets could train at 50, 100, even 1000 layers. In the exam a residual block is drawn as a small three-node graph — the layers F, the skip edge carrying x, and the + that merges them — and every advantage you list (trainable depth, better gradient flow, easy identity mapping) should trace back to that skip path."},
 "t2-vanish":{
   test:"Whether you can tell two different failure modes apart — gradients shrinking toward zero (vanishing) vs. ReLU units getting permanently stuck (dying) — and back each with the derivative argument. There is a fixed trap sub-question about max-pooling.",
-  idea:"On the way back, gradients get multiplied together layer by layer. If each factor is small (sigmoid's derivative is ≤0.25), the product collapses toward zero deep in the net — that is vanishing. Dying is different: a ReLU whose input is always negative outputs 0 forever, so its gradient is 0 and it never recovers. Max-pooling only routes the gradient to the winning element unchanged — it never multiplies by a factor below 1, so it is not a cause of vanishing."},
+  idea:"Both are ways the learning signal is lost as gradients flow backward through a deep network, but the causes are different and the exam wants them cleanly separated. <b>Vanishing gradients</b> come from repeated multiplication by small numbers. Backprop multiplies the local derivatives of every layer together on the way back; if those derivatives are consistently below 1 — as with sigmoid, whose derivative maxes out at 0.25, or tanh in its flat regions — the product shrinks roughly exponentially with depth, so early layers receive almost no gradient and learn extremely slowly. It is fundamentally a <i>saturation</i> problem: the activation is operating in a flat region where its slope is tiny.<br><br><b>Dying ReLU</b> is a different, more permanent failure. ReLU outputs 0 for any negative input and has gradient exactly 0 there. If a unit's weights push its pre-activation negative for essentially all training inputs, it outputs 0 forever and receives 0 gradient forever, so it can never update — the unit is effectively dead. Leaky ReLU addresses this by giving negative inputs a small non-zero slope α, which keeps a little gradient alive so the unit can recover.<br><br>The recurring trap sub-question asks whether <b>max-pooling</b> contributes to vanishing gradients. It does not. Max-pooling has no weights, and on the backward pass it simply routes the incoming gradient to whichever input was the maximum (gradient 1 to the winner, 0 to the losers). It never multiplies the gradient by a factor below 1, so it cannot cause the exponential shrinkage that saturating activations do — that is the answer the examiner is looking for."},
 "t2-gan":{
   test:"Whether you know how the two networks interact during training, and — the part that separates full marks from partial — what you actually keep at generation time.",
-  idea:"A GAN trains two networks against each other: a generator turns random noise into fake samples, and a discriminator tries to tell fakes from real data. They improve by competition. The point most people miss: once training is done you discard the discriminator — generation is just noise → generator → sample."},
+  idea:"A GAN (Generative Adversarial Network) is a method for learning to generate realistic data — images, most commonly — by training two networks in competition. The <b>generator</b> G takes a random noise vector z (sampled from a simple distribution) and maps it to a fake sample. The <b>discriminator</b> D takes a sample and outputs the probability that it is real (drawn from the training set) rather than generated. The two are trained together in a <i>minimax game</i>: D is trained to correctly separate real from fake, while G is trained to fool D into labelling its fakes as real. As training proceeds the two improve against each other — D gets sharper at spotting fakes, which forces G to produce ever more convincing samples. At the ideal equilibrium G's outputs are indistinguishable from real data and D is reduced to guessing (≈50%).<br><br>The part the exam specifically probes is what happens <i>after</i> training. The discriminator and the real training set exist only to provide a training signal for G — they are scaffolding. At generation (inference) time you use the generator alone: sample a noise vector z, push it through G, and read off the generated image. D is discarded entirely. So the two things worth nailing are the training diagram (noise → G → fake sample; real data + fake → D → real/fake decision) and the generation process, which is simply noise → G → image with no discriminator involved."},
 "t3-convkernel":{
   test:"Two versions of one skill. Forward: can you slide a given kernel over an input and produce the feature map correctly. Inverse: given the output map and a kernel with blanks, can you set up and solve for the missing kernel values.",
-  idea:"Convolution slides a small kernel across the input; each output cell is the sum of element-wise products between the kernel and the patch it currently covers. When the output is known but part of the kernel is not, each output cell becomes one linear equation in the unknowns — a few cells give you enough equations to solve for the blanks."},
+  idea:"A convolution slides a small matrix of weights — the <b>kernel</b> (or filter) — across a larger input and produces a <b>feature map</b>. At each position the kernel sits over a patch of the input the same size as itself; you multiply each kernel weight by the input value beneath it and sum all those products into a single output number. Slide the kernel one step (the <i>stride</i>) and repeat, so the output cell at row i, column j is the weighted sum of the input patch positioned there. The same small set of weights is reused at every position — this <b>weight sharing</b> is what lets a CNN detect a given pattern anywhere in the image while using very few parameters, and it is the reason convolution is the workhorse operation of image models.<br><br>The forward task hands you the complete kernel and asks for the feature map, which is pure application of the sum-of-products, one output cell at a time. The inverse task is the same operation read backwards: it gives you the finished output map together with a kernel that has some entries blanked out, and asks you to recover them. Because each output cell is a linear combination of known input values and the unknown weights, every output cell you are given becomes one linear equation in those unknowns; collect as many equations as there are unknowns and solve the small linear system. The arithmetic is identical in both directions — the inverse just asks you to set up the equations instead of evaluating them, and (usefully) the professor tends to reuse the same input grid and kernel across papers, hiding only a row for the inverse version."},
 "t3-pool":{
   test:"Two things: apply the output-size formula, and apply the pooling operation itself (average or max) to the grid.",
-  idea:"Pooling shrinks a feature map by summarising each window. With a 2×2 window stepped by 2 the windows do not overlap, so you replace each block of four numbers with their average (avg-pool) or their largest (max-pool). The output size follows the same formula as convolution."},
+  idea:"Pooling <b>downsamples</b> a feature map — it reduces its spatial size while summarising the response in each region, which cuts computation for later layers and gives the network a little tolerance to small shifts in the input (translation invariance). It slides a window over the map much like convolution, but instead of a learned weighted sum it applies a fixed summary function: <b>max pooling</b> keeps the largest value in each window, <b>average pooling</b> takes the mean of the window. A key point the exam likes elsewhere is that pooling has <i>no learnable parameters</i> — the operation is fixed, so it contributes 0 to any parameter count and just routes gradient on the backward pass.<br><br>Two things are asked. The <b>output size</b> uses the same formula as convolution: N_out = ⌊(N − F)/S⌋ + 1, or with padding P, (N − F + 2P)/S + 1, where N is the input side length, F the window size, and S the stride. The everyday case is a 2×2 window with stride 2, which halves each spatial dimension and makes the windows non-overlapping — so you can just partition the map into 2×2 blocks and replace each block by its max or its average. Then you <b>apply</b> the operation to fill the output grid. Both the size and the grid are trivial in principle, so the only real risk is an arithmetic slip under time pressure; the marks are for getting every cell right."},
 "t3-spn":{
   test:"Whether you can evaluate a sum-product network bottom-up for the three query types — full evidence (EVI), marginal (MAR), and MAP — and read the answer straight off the root.",
-  idea:"An SPN is a tree of sum and product nodes sitting over indicator leaves. You set each leaf to 1 or 0 depending on whether it agrees with the query (1 for any variable you are summing out), then propagate upward: product nodes multiply their children, sum nodes take the weighted sum. MAR = set summed-out variables' leaves to 1; MAP = try each value of the target variable and keep the one giving the largest root value."},
+  idea:"A Sum-Product Network (SPN) is a deep probabilistic model that represents a whole probability distribution as a rooted graph built from three kinds of node: <b>leaf</b> nodes (indicators, or simple distributions, over single variables), <b>product</b> nodes (which combine independent sub-parts by multiplying their values), and <b>sum</b> nodes (weighted mixtures of their children, with non-negative weights that sum to 1). Its defining advantage is <b>tractable inference</b>: because the model is composed only of sums and products arranged in a valid structure, many queries that are expensive or intractable in general graphical models can be answered <i>exactly</i> by a single bottom-up pass through the graph — the value computed at the root is the answer.<br><br>You evaluate it by setting the leaf indicators according to the query and then propagating upward: each product node multiplies its children's values, each sum node takes the weighted sum of its children. The three query types differ only in how the leaves are set. <b>EVI</b> (evidence) is the probability of a fully specified assignment of all variables — set each variable's indicator consistent with the assignment to 1 and the inconsistent ones to 0. <b>MAR</b> (marginal) leaves some variables unspecified — you marginalise a variable out by setting <i>all</i> of its indicators to 1, which makes the network sum over its possible values automatically. <b>MAP</b> (most probable value of a target) means evaluating the network once for each candidate value of the target and taking the argmax. The marks reward showing the intermediate node values, so write them out as you propagate rather than jumping to the root."},
 "t3-attn":{
   test:"The same three points every sitting: the score formula and what it measures, the softmax normalisation, and how the result is applied — plus a numeric computation if vectors are handed to you.",
-  idea:"Attention lets each query pull information out of a set of key–value pairs. It scores every query against every key with a dot product, scales by √dₖ so the numbers do not blow up, softmaxes the scores into weights that sum to 1, then returns the weighted sum of the values. A high score with some key means that key's value dominates the output."},
+  idea:"Attention lets a model decide, separately for each position, which other positions to pull information from, instead of treating all context equally. Every element produces three vectors: a <b>query</b> q (what this position is looking for), a <b>key</b> k (what a position offers as a match target), and a <b>value</b> v (the content a position will contribute). To produce the output for one query you <i>score</i> it against every key with a dot product — a large dot product means the query and that key are aligned, i.e. that position is relevant. The scores are turned into weights by a row-wise <b>softmax</b>, so they are non-negative and sum to 1, and the output is the softmax-weighted sum of the value vectors. A position with a high score therefore contributes most of its value to the result.<br><br>Written for a whole sequence at once: Attention(Q, K, V) = softmax(QKᵀ / √dₖ) · V. The subtlety the exam rewards is the <b>√dₖ scaling</b>. When the key dimension dₖ is large, the raw dot products tend to grow large in magnitude, which pushes the softmax into a saturated regime where one weight is ≈1 and the rest ≈0 and the gradient through it nearly vanishes; dividing every score by √dₖ (the square root of the key dimension) keeps them in a moderate range so the softmax stays smooth and trainable. Know the three steps — score, normalise, weighted sum — the formula, and the reason for the scaling; when vectors are given you just execute those three steps numerically."},
 "t3-rnn2tf":{
   test:"Whether you can name two concrete RNN limitations the Transformer removes, and give the per-layer complexity figures.",
-  idea:"An RNN processes a sequence step by step, so it cannot parallelise over time and long-range signals must survive many sequential steps (where they tend to vanish). The Transformer replaces recurrence with attention: every position sees every other in a single layer, so it parallelises and links distant tokens directly — the cost is O(n²·d) per layer versus the RNN's O(n·d²)."},
+  idea:"A recurrent neural network (RNN) reads a sequence one element at a time, carrying a hidden state forward from step to step. That design creates two structural weaknesses. First, it is inherently <b>sequential</b>: step t cannot be computed until step t−1 has finished, so the computation over the sequence cannot be parallelised — training and inference are slow on long inputs. Second, for an early token to influence a much later one, its information has to survive being repeatedly transformed through every intervening step, and across many steps that signal tends to vanish — so RNNs struggle to capture <b>long-range dependencies</b>.<br><br>The Transformer removes recurrence entirely and uses <b>self-attention</b> instead: within a single layer, every position attends directly to every other position. This makes the model fully <i>parallel</i> across the sequence (all positions are computed at once rather than in order) and gives any two tokens a direct, constant-length path to each other regardless of how far apart they are, so long-range dependencies are captured far more easily. The cost is per-layer complexity: self-attention compares every position with every other, making it O(n²·d) in sequence length n and representation width d, whereas an RNN layer is O(n·d²). For the sequence lengths typical in practice (n smaller than d) this trade is favourable, which is why the exam asks for both the two problems solved and the two big-O figures."},
 "t3-ethics":{
   test:"Whether you can list several <i>distinct</i> ethical problems with large LLMs, one crisp sentence each. Breadth of distinct points beats depth on any one of them.",
-  idea:"Models trained on internet-scale data inherit and amplify its problems: biased or toxic outputs, confident factual fabrication, privacy leakage from training data, large energy and compute cost, and potential for misuse such as disinformation. The exam wants a well-spread checklist, not an essay on a single issue."},
+  idea:"Large language models are trained on enormous, largely uncurated collections of internet text, and most of their ethical problems trace back to that fact combined with their scale and their fluency (which makes their mistakes persuasive). The standard issues the exam expects you to be able to name and describe in one sentence each are: <b>bias and toxicity</b> — the model absorbs and can reproduce or even amplify the stereotypes, prejudices, and harmful language present in its training data; <b>misinformation and hallucination</b> — it produces fluent, confident text that can be simply false, and can be used to mass-produce convincing disinformation; <b>privacy</b> — training data may contain personal information that the model memorises and can leak at generation time; <b>environmental and resource cost</b> — training and serving very large models consumes large amounts of energy and compute, concentrated in a few well-resourced organisations, which also raises concerns about <i>access and concentration of power</i>; and <b>misuse and accountability</b> — the same capabilities enable spam, fraud, plagiarism, and manipulation, and it is often unclear who is responsible when an output causes harm.<br><br>Because the question is open-ended and worth only a few marks, the winning strategy is breadth, not depth: give three or four <i>distinct</i> issues, one clear sentence each, rather than writing a long paragraph on a single one and running out of separate points."},
 "t4-buildgraph":{
   test:"The mirror image of the backprop question: you are given the formula act(w·x+b) and must <i>draw</i> the low-level computation graph from primitive gates, wiring the products, the sum-tree, the bias, and the activation correctly.",
-  idea:"The pre-activation w·x+b is always the same skeleton — one multiply per wᵢxᵢ, a tree of adds to sum them, one more add for the bias. Then the activation sits on top, drawn as its own primitive gates (not a black box) whenever the question wants the internals. Only the activation wrapper changes between papers."},
+  idea:"This is the inverse of the Tier-1 backprop task. There you were handed a graph and asked for gradients; here you are handed a formula — act(w·x + b) — and asked to <i>draw</i> the low-level computation graph that computes it from primitive operations. The underlying idea is that a compact expression is really just a sequence of elementary gates, and the marks reward showing you can unfold it.<br><br>The pre-activation w·x + b always has the same skeleton. The dot product w·x is a set of <b>multiply</b> gates, one per term wᵢxᵢ; their outputs feed a tree of <b>add</b> gates that sum them; and one further add gate folds in the bias b. That yields the scalar pre-activation. The <b>activation</b> then sits on top, and this is the only part that changes between papers: if it is Leaky ReLU, max(0, αx), you draw it as its primitive pieces (a scaling by α and a max); if it is a sigmoid, you expand it into the same negate → exp → +1 → reciprocal chain used in the Tier-1 sigmoid circuit. Because marks are awarded per node and edge, the two classic ways to lose them are (a) drawing the activation as a single unopened black box when the question wants its internal gates, and (b) forgetting the bias node. Label every wire and every gate; the labelled graph is the answer."},
 "t4-activ":{
   test:"Pure recall: for sigmoid and Leaky ReLU give the expression, the derivative, and the ranges (of the function and of its derivative). The one live trap is the Leaky-ReLU slope constant, which the professor changes between papers.",
-  idea:"An activation supplies the nonlinearity. Sigmoid squashes to (0,1) and its derivative peaks at only 0.25 — that small factor is why deep sigmoid nets vanish. Leaky ReLU passes positives through and gives negatives a small slope α, so its derivative is α (a positive number) on the negative side — that non-zero slope is exactly why it does not die the way plain ReLU can."},
+  idea:"Activation functions are the non-linearities placed after each layer's linear step. They matter because without them a stack of linear layers would collapse into a single linear map — the activation is what lets a deep network represent complex, non-linear functions. This question is pure recall of two of them, and, importantly, of <i>why</i> their derivatives behave as they do.<br><br><b>Sigmoid</b>, σ(x) = 1/(1 + e⁻ˣ), squashes any real input into the range (0, 1). Its derivative is σ'(x) = σ(x)(1 − σ(x)), which peaks at just 0.25 (at x = 0) and falls toward 0 for large |x|. That small, easily-saturated derivative is precisely the mechanism behind vanishing gradients in deep sigmoid networks — it is the number that gets multiplied together across layers. <b>Leaky ReLU</b>, f(x) = x for x ≥ 0 and αx for x < 0, passes positive inputs through unchanged and gives negative inputs a small slope α; its derivative is 1 for x > 0 and α for x < 0. Because that negative-side slope is non-zero, a Leaky-ReLU unit keeps receiving gradient even when its input is negative, which is exactly why it avoids the dying-ReLU problem that plain ReLU can suffer. The one live trap is that the professor varies the slope constant between papers (α = 0.04 in 2024/SoSe25, ε = 0.01 in WiSe25/26), so always cite the value from the paper in front of you. All four items — the two expressions, the two derivatives, and their ranges — belong on the cheat sheet."},
 "t4-bn":{
   test:"Two parts: write the batch-norm formula, and give one advantage together with the mechanism behind it.",
-  idea:"Batch norm standardises each activation across the mini-batch (subtract the mean, divide by the standard deviation), then applies a learned scale g and shift b. The standardisation keeps activations in a stable range so training is faster and less sensitive to initialisation; the learned g and b let the layer recover the original distribution if that is actually what it needs. Dropping the learned g,b is the usual way marks are lost."},
+  idea:"Batch Normalization is a layer inserted between a linear step and its activation that keeps the distribution of each activation stable throughout training. The motivation: as the weights of earlier layers update, the distribution of inputs seen by later layers keeps shifting (often called internal covariate shift), which slows and destabilises learning. BatchNorm counteracts this by re-standardising activations on every mini-batch so downstream layers always see a well-behaved input distribution.<br><br>For each activation it computes the mean μ and standard deviation σ over the current mini-batch and normalises: x̂ = (x − μ)/σ, giving values that are roughly zero-mean and unit-variance. But forcing every activation to a fixed distribution would throw away representational capacity, so BatchNorm then applies a <b>learned scale g and shift b</b>: the output is h = g·x̂ + b (the professor writes it hᵢ = gᵢ·(aᵢ − μᵢ)/σᵢ + bᵢ). Those learned parameters let the network rescale, or even undo, the normalisation wherever that is actually what it needs — which is why they must appear in your formula. The benefits all follow from keeping activations well-scaled: faster and more stable training, tolerance of higher learning rates, reduced sensitivity to weight initialisation, and a mild regularising effect from the noise in each mini-batch's statistics. The two ways to lose marks are writing the normalisation without the learned g, b, and stating an advantage without naming the mechanism that produces it."},
 "t4-biasvar":{
   test:"One directional claim stated the right way round — how the number of hidden units trades bias against variance — plus the 'network as feature extractor' justification that SoSe25 adds.",
-  idea:"Fewer hidden units means a simpler model: higher bias, lower variance, tending toward underfitting. More units means lower bias, higher variance, tending toward overfitting. Separately, the hidden layers learn a transformed representation of the input and the final layer classifies on top of it — so the hidden part is acting as a learned feature extractor."},
+  idea:"The bias–variance tradeoff describes how a model's capacity affects its ability to generalise. <b>Bias</b> is error from the model being too simple to capture the true underlying pattern — it underfits. <b>Variance</b> is error from the model being so flexible that it fits the noise in the particular training set and then fails on new data — it overfits. Total generalisation error balances the two, and the number of hidden units acts as a direct capacity dial. Fewer hidden units ⇒ a simpler, more constrained model ⇒ higher bias and lower variance (tending toward underfitting). More hidden units ⇒ a more flexible model ⇒ lower bias and higher variance (tending toward overfitting). The exam simply wants that direction stated the right way round, plus one sentence of mechanism.<br><br>SoSe25 adds a second part: justify that a neural network acts as a <b>feature extractor</b>. The idea is that the hidden layers progressively transform the raw input into a new, learned representation, and the final layer is essentially a simple (often linear) classifier operating on that representation. So the network is not merely classifying — its earlier layers are automatically discovering the features that make the final classification easy, taking over the role that manual feature engineering played in classical machine learning."},
 "t5-params":{
   test:"Whether you can count trainable parameters layer by layer and sum them, applying the right formula to conv, pooling, and fully-connected layers — with the bias terms included.",
-  idea:"Each layer's parameters are just its weights plus its biases. Conv: (F·F·C_in + 1) per filter, times C_out filters. Pooling: none — it has no learned weights. FC: (n_in + 1) per output unit. The +1 is the bias, and forgetting it is the single most-dropped mark on this question."},
+  idea:"Counting a network's trainable parameters means adding up, for every layer, its weights plus its biases — the numbers that gradient descent actually updates. Each layer type has a simple formula. A <b>convolutional</b> layer has one kernel per output channel, and each kernel has F·F·C_in weights (its spatial size F×F times the number of input channels C_in) plus one bias, so the layer holds (F·F·C_in + 1)·C_out parameters. A useful sanity point: this count does <i>not</i> depend on the spatial size of the feature map, precisely because the same kernel is shared across all positions. A <b>pooling</b> layer has 0 parameters — it applies a fixed operation (max or average) with nothing to learn. A <b>fully-connected</b> layer mapping n_in inputs to n_out outputs has a weight for every input–output pair plus one bias per output unit, giving (n_in + 1)·n_out parameters.<br><br>You apply the right formula to each layer in turn and sum the results. The single most commonly dropped mark is the <b>+1 bias term</b> — one per filter in a conv layer, one per unit in an FC layer — so build the habit of writing that +1 every single time. There is no modelling judgement anywhere in this question; it is deterministic arithmetic, which makes it reliable marks once the three formulas and the bias rule are reflexive."},
 "t5-silubn":{
   test:"The same backprop walk as Tier 1, but with two extra node types — SiLU and BatchNorm — whose local derivatives you have to know and apply inside the graph.",
-  idea:"Nothing changes in the method: you still multiply incoming gradients by local derivatives, node by node. You just need two more local derivatives on hand — SiLU (which is x·σ(x)) and a BatchNorm node (γ·x̂+β). Once those two are memorised, this collapses back into the T1 procedure you already own."},
+  idea:"This is the standard backprop-on-a-graph question with two less-common node types dropped in, so the only genuinely new thing to learn is their <b>local derivatives</b> — the method around them is exactly the Tier-1 walk. <b>SiLU</b> (also called swish) is the smooth activation f(x) = x·σ(x), the input multiplied by its own sigmoid. By the product rule its derivative is σ(x) + x·σ(x)(1 − σ(x)), which you should be able to write down and evaluate at a given x. <b>BatchNorm</b> as a graph node computes γ·x̂ + β with x̂ = (x − μ)/√(σ² + ε); when the batch statistics μ and σ² are treated as given constants — as the exam does — the node's local derivative with respect to its input is simply γ/√(σ² + ε).<br><br>With those two derivatives in hand, the whole question collapses to the Tier-1 procedure. Run the forward pass through the graph (typically w·x → SiLU → BN), recording every intermediate value, then walk backward multiplying the gradient arriving from the right by each node's local derivative — using the SiLU and BN derivatives above at those two nodes and the ordinary add/multiply rules everywhere else. If SiLU and BatchNorm are the only unfamiliar pieces and you have their local derivatives memorised, you already know how to do the rest of the walk."},
 "t5-maxgate":{
   test:"Whether you know how a max node passes gradient backward — it is a routing rule, not a multiplication.",
-  idea:"A max node behaves like a switch: on the way back it sends the entire incoming gradient to whichever input was largest in the forward pass, and 0 to all the others. Nothing gets scaled. The same rule is what makes max-pooling and ReLU (which is just max(0,x)) trivial to backprop through."},
+  idea:"A max node computes the maximum of its inputs, and the exam checks that you know how gradient flows back through it — which is a <b>routing</b> rule, not a scaling one. In the forward pass exactly one input is the largest and its value becomes the node's output. In the backward pass the node behaves like a switch: the entire incoming gradient is passed to whichever input <i>won</i> (was the maximum), and every other input receives 0. Nothing is multiplied or shrunk — the gradient is simply directed to the winner.<br><br>This single rule reappears in several places, which is why it is worth banking cleanly once. <b>Max-pooling</b> is a max over each window, so its backward pass routes the gradient to the position that held the window's maximum and sends 0 elsewhere. <b>ReLU</b> is max(0, x), so for a positive input the gradient passes straight through (x beat 0) and for a negative input it is killed (0 won) — which is also the mechanism behind the dying-ReLU problem. In the rare case of a tie the usual convention is to send the gradient to one winner (or split it evenly), but the exam almost never hinges on that. State it as: forward = take the max; backward = full gradient to the arg-max input, 0 to the rest."},
 "t5-lstm":{
   test:"Whether you can write the four gate equations, fill them numerically for one step, and explain why an LSTM handles long-range dependencies where a vanilla RNN does not.",
-  idea:"An LSTM carries a cell state across time and uses gates to control it. The forget, input, and output gates are sigmoids in (0,1) — they decide how much to keep, write, and expose. The candidate is a tanh in (−1,1) — it proposes new content. The cell updates as c = f·c_prev + i·candidate, which gives the gradient a mostly-additive highway through time, and that is why long-range signal survives."},
+  idea:"An LSTM (Long Short-Term Memory) is a recurrent unit designed specifically to carry information across many time steps without it vanishing — the thing a plain RNN cannot do. Its central feature is a <b>cell state</b> c that runs along the sequence like a conveyor belt, altered only by a few simple, gated operations. Three <b>gates</b>, each a sigmoid producing values in (0, 1), control it: the <b>forget gate</b> f decides how much of the previous cell state to retain, the <b>input gate</b> i decides how much new information to write, and the <b>output gate</b> o decides how much of the cell to expose as the hidden state. A separate <b>candidate</b> g̃ = tanh(·), with values in (−1, 1), proposes the new content that might be written.<br><br>The two updates are: the cell state c_t = f ⊙ c_{t−1} + i ⊙ g̃, and the hidden state h_t = o ⊙ tanh(c_t) (⊙ is element-wise multiplication). The reason this beats a vanilla RNN on long-range dependencies lies in that cell update: it is mostly <i>additive</i> — the old cell state is carried forward and a new term is added rather than being fully overwritten by a squashing non-linearity. So during backprop the gradient can flow back along the cell path largely unimpeded; when the forget gate stays near 1 the gradient is neither repeatedly multiplied by small weight matrices nor crushed by a saturating activation, so it does not vanish across long spans. Once you have the four gate equations, filling them for one numeric step is purely mechanical."},
 "t5-tanh":{
   test:"A one-line identity — tanh's derivative and its range — plus how it compares with sigmoid for the vanishing-gradient story.",
-  idea:"tanh'(x) = 1 − tanh²(x), which lands in (0,1] and peaks at 1 when x=0. That maximum is larger than sigmoid's 0.25, so tanh vanishes less — but it is still below 1 once you move away from the origin, so very deep tanh nets still vanish."},
+  idea:"tanh is a sigmoidal activation that maps any input into the range (−1, 1). Unlike the logistic sigmoid, it is <b>zero-centred</b>, which tends to make optimisation a little easier because the activations feeding the next layer aren't all pushed positive. This question is essentially a one-line identity plus its consequences. The derivative is tanh'(x) = 1 − tanh²(x). Since tanh(x) lies in (−1, 1), tanh²(x) lies in [0, 1), so the derivative lies in (0, 1], reaching its maximum of 1 at x = 0 and shrinking toward 0 as |x| grows and the function saturates.<br><br>The comparison worth carrying: tanh's derivative peaks at 1, versus sigmoid's peak of only 0.25, so tanh loses less gradient magnitude per layer and therefore vanishes <i>less</i> badly than sigmoid. But that peak of 1 is reached only at x = 0; away from the origin the derivative is still below 1, so multiplying many of them together across a deep network still drives the gradient toward zero. In short, tanh mitigates the vanishing-gradient problem but does not solve it — which is exactly the point the exam's comparison is fishing for."},
 "t5-gd":{
   test:"Whether you can state the trade-off between batch and minibatch gradient descent across a few clear axes.",
-  idea:"Batch GD uses the whole training set for each update: an exact gradient, but one slow and memory-heavy step. Minibatch GD uses a small random subset: a noisy gradient, but many cheap frequent steps — and that noise actually helps escape saddle points and tends to generalise better. SGD is the extreme case with batch size 1."}
+  idea:"Gradient descent trains a network by repeatedly stepping the weights in the direction of the negative gradient of the loss; the variants differ in how much data is used to estimate that gradient at each step. <b>Batch (full) gradient descent</b> uses the entire training set for every update. This yields the <i>exact</i> gradient and a smooth, deterministic path toward a minimum, but each step is computationally expensive and memory-heavy, updates are infrequent, and with no randomness the optimiser can stall at saddle points or poor flat regions. <b>Minibatch gradient descent</b> uses a small random subset of examples per step (stochastic gradient descent, SGD, is the extreme case of batch size 1). The gradient is now a <i>noisy</i> estimate, but you get many more, far cheaper updates per pass over the data, the computation fits comfortably in memory, and — a genuine feature rather than just a cost — the noise helps the optimiser escape saddle points and sharp poor minima and tends to settle in flatter minima that generalise better.<br><br>The exam wants the trade-off laid out along a few clear axes: gradient accuracy (exact vs noisy), cost and frequency of updates (few expensive vs many cheap), memory demand (heavy vs light), and convergence behaviour (smooth but stall-prone vs noisy but better at exploring). Stating those contrasts, plus the point that the noise is beneficial, is the full answer."}
 };
 Object.keys(PRIMERS).forEach(function(k){
   var blk = RM.blocks.find(function(b){ return b.id===k; });
@@ -1343,6 +1374,8 @@ function renderRail(){
  let h=`<div class="brand">DLAM<small>exam roadmap · ${BUILD}</small></div>`;
  h+=`<div class="railgrp"><h4>Views</h4>`;
  h+=railBtn('register','Register (home)',view==='register');
+ h+=railBtn('cheat','★ Cheat sheet',view==='cheat');
+ h+=railBtn('coverage','Coverage (per exam)',view==='coverage');
  h+=railBtn('worked','Worked appendix (Bank A)',view==='worked');
  h+=railBtn('craft','Exam craft',view==='craft');
  h+=railBtn('triage','Triage',view==='triage');
@@ -1394,6 +1427,7 @@ function renderBlock(id){
  if(!b){const r=REGISTER.find(x=>x.blockId===id);
    return `<h1>${r?esc(r.type):'Unknown block'}</h1>
      <div class="note warn"><div class="h">Not built yet</div>This block is scheduled for a later pass (${r?('Tier '+r.tier):''}). The register lists it so coverage is visible; the teaching content arrives when its pass runs.</div>
+     <div class="note acc"><div class="h">Cheat-sheet reminder</div>Once you reach here and build this block, go to the <a href="#cheat">Cheat sheet</a> and add its key formulas, then tick it off the pending list — the sheet is not complete until every pending block's formulas are on it.</div>
      <p><a href="#register">← back to register</a></p>`;}
  const done=isDone('block:'+b.id);
  let h=`<h1>${esc(b.title)}</h1>
@@ -1411,7 +1445,7 @@ function renderBlock(id){
  });
  (b.worked||[]).forEach((w,wi)=>{
    h+=`<div class="worked"><h3>${esc(w.h)}</h3><div class="q">${w.q}</div>`;
-   if(w.pre)h+=`<pre style="font-family:var(--mono);font-size:11.5px;overflow:auto;background:#0a0d12;padding:10px;border-radius:6px">${esc(w.pre)}</pre>`;
+   if(w.pre)h+=`<pre style="font-family:var(--mono);font-size:11.5px;overflow:auto;background:var(--code-bg);color:var(--code-fg);padding:10px;border-radius:6px">${esc(w.pre)}</pre>`;
    if(w.intro)h+=`<p>${w.intro}</p>`;
    if(w.fwd){h+=`<p class="stepsub">Forward pass (recompute first — you'll need every value):</p><table class="gradtab"><tr>${w.fwd.map(a=>`<th>${esc(a[0])}</th>`).join('')}</tr><tr>${w.fwd.map(a=>`<td>${esc(a[1])}</td>`).join('')}</tr></table>`;}
    if(w.steps&&w.steps.length)h+=`<p class="stepsub">Backward pass — every step, in the order you write it:</p>`;
@@ -1511,6 +1545,119 @@ function renderAnki(){
  return h;
 }
 
+/* ---- CHEAT SHEET (curated, dense — mirrors the DMML two-side format) ----
+   Side 1 = Bank A numerical procedures; Side 2 = Bank B theory.
+   PENDING list must shrink to empty as Pass 5/6 blocks are built. */
+const CHEAT = {
+ side1:[
+  {c:"T1", t:"BACKPROP — fill gradients", w:"12–18p · 6/6", b:`<b>grad flows R→L: grad_in × local_deriv → input; SUM at branches.</b> Gate locals: ADD →×1 to each input. MUL z=xy → x gets grad·y, y gets grad·x (the OTHER). MAX/ReLU → full grad to arg-max input, 0 to losers (ReLU=max(0,x): pass if x>0 else 0). σ → σ(1−σ) (use fwd σ). exp → its own output. 1/x → −1/x². −x → −1. +c → ×1. ½(g−y)² → dL/dg=(g−y). <b>Steps:</b> 1 fwd, record every value; 2 grad=1 at out; 3 walk L; 4 SUM at fan-out/skip. <b>Checks:</b> branch/skip = ADD the two grads (most-missed). g<y* ⇒ params ↑.`},
+  {c:"T4", t:"BUILD comp-graph act(w·x+b)", w:"8p", b:`Skeleton always: one <code>×</code> per wᵢxᵢ → <code>+</code>-tree to sum → <code>+</code>bias → activation as PRIMITIVE gates. Leaky max(0,αx): ×α then max-0. σ wrapper: −(·)→exp→+1→1/(·). Marks per node/edge. Lose by: activation as black box, or missing bias node. Label every wire.`},
+  {c:"T3", t:"CONV — apply / recover kernel", w:"3–5p · 4/6", b:`Out cell = Σ(kernel ⊙ patch), same-position products, slide by stride, <b>no flip</b>. FORWARD: full kernel → fill map. INVERSE: out given + blank kernel cells → each known out-cell = 1 linear eqn in unknowns → solve. (Prof reuses SS21 5×5 input+kernel, hides a row in 2024.)`},
+  {c:"T3", t:"POOLING — size + apply", w:"2–4p · 4/6", b:`Size (shared w/ conv): <code>N_out=⌊(N−F+2P)/S⌋+1</code>, rows & cols separately, round DOWN. 2×2 stride 2 = non-overlapping blocks. AVG=mean of 4; MAX=largest. Pooling has 0 params.`},
+  {c:"T5", t:"PARAM COUNT", w:"3p", b:`Conv <code>(F·F·C_in+1)·C_out</code> · Pool <code>0</code> · FC <code>(n_in+1)·n_out</code>. <b>+1 = bias</b> (per filter / per unit) — most-dropped mark. Conv count independent of map size. RGB ⇒ C_in=3. Don't forget the output layer.`},
+  {c:"T3", t:"SPN — EVI / MAR / MAP", w:"4p · 4/6", b:`Bottom-up: ×-node = product of children; +-node = weighted sum; root = answer. Leaf = 1 if consistent, 0 if not, <b>1 if var summed-out</b>. EVI = full assignment. MAR = summed-out var's leaves all 1. MAP = eval per target value → argmax. Show intermediate node values.`},
+  {c:"T3", t:"ATTENTION — formula + apply", w:"4–6p · 4/6", b:`<code>Attn(Q,K,V)=softmax(QKᵀ/√dₖ)·V</code>. 1 score=q·kⱼ (dot). 2 ÷√dₖ. 3 row-softmax (weights sum 1). 4 out=Σ wⱼvⱼ. Why √dₖ: big dₖ → big dots → softmax saturates → grad vanishes; scaling keeps it smooth.`},
+  {c:"T5", t:"SiLU + BN backprop", w:"—", b:`Same T1 walk + 2 locals. SiLU=x·σ(x), deriv=σ(x)+x·σ(x)(1−σ(x)). BN node=γx̂+β, x̂=(x−μ)/√(σ²+ε); given batch stats, local wrt input = <code>γ/√(σ²+ε)</code>.`},
+  {c:"T5", t:"MAX-GATE", w:"—", b:`Forward = max. Backward = full grad to arg-max input, 0 to rest (switch, no scaling). Same rule powers max-pool & ReLU.`},
+  {c:"T5", t:"LSTM — fill gates", w:"—", b:`f,i,o = σ(·)∈(0,1) gates; g̃=tanh(·)∈(−1,1) candidate. <code>c_t=f⊙c_{t−1}+i⊙g̃</code>; <code>h_t=o⊙tanh(c_t)</code>. Long-range: cell update is ADDITIVE ⇒ grad highway (forget≈1 ⇒ no vanish).`},
+  {c:"ACT", t:"Activation derivs (lookup)", w:"7p", b:`σ=1/(1+e⁻ˣ), σ'=σ(1−σ), range (0,1), σ'≤0.25. LeakyReLU: x if x≥0 else αx; f'=1 (x>0)/α (x<0). <b>α=0.04 (2024/SoSe25), ε=0.01 (WiSe25/26) — cite per paper.</b> tanh∈(−1,1), tanh'=1−tanh², range (0,1], max 1 @0.`}
+ ],
+ side2:[
+  {c:"T2", t:"RESNET", w:"4–6p · 5/6", b:`Block <code>out=F(x)+x</code>; skip edge adds input back → learns residual. Why: (1) +x add-gate passes grad ×1 → direct route to early layers → deep nets trainable; (2) identity easy (F→0) → depth never hurts. Draw 3-node graph (F, skip, +). Tie every advantage to the skip/gradient path.`},
+  {c:"T2", t:"VANISHING vs DYING (+max-pool)", w:"4–6p · 4/6", b:`Vanishing: grads = product of layer locals; if <1 (σ'≤0.25, tanh flat) → shrinks exp with depth → early layers stall (saturation). Dying ReLU: input always <0 → out 0, grad 0 forever → dead; LeakyReLU (α>0) fixes. <b>Max-pool cause vanishing? NO</b> — routes grad ×1 to max, no factor <1.`},
+  {c:"T2", t:"GAN", w:"4–6p · 4/6", b:`G: noise z→fake. D: sample→P(real). Minimax: D separates real/fake, G fools D; equilibrium fakes≈real, D≈50%. Train: z→G→fake; real+fake→D→real/fake. <b>Generation (inference): ONLY z→G→image; discard D + training set</b> ← the sub-part mark.`},
+  {c:"T3", t:"RNN→TRANSFORMER + O(·)", w:"3–4p · 4/6", b:`2 RNN problems fixed: (1) sequential → no parallelism; (2) long-range deps vanish over many steps. Transformer self-attention: every pos sees every pos in 1 layer → parallel + direct long-range. Per layer: self-attn <code>O(n²·d)</code>, RNN <code>O(n·d²)</code>.`},
+  {c:"T3", t:"ETHICS of LLMs", w:"~5p · 4/6", b:`Name 3–4 DISTINCT, 1 line each: bias/toxicity (amplifies data); misinfo/hallucination (fluent-but-false, disinfo); privacy (memorise/leak); env & compute cost + power concentration; misuse/accountability (fraud, unclear responsibility). Breadth > depth; checklist not essay.`},
+  {c:"T4", t:"BATCHNORM", w:"4–5p", b:`Def <code>hᵢ=gᵢ·(aᵢ−μᵢ)/σᵢ+bᵢ</code>: standardise over mini-batch (μ,σ), then <b>learned scale g + shift b</b> (don't drop them). Adv+mechanism: stable activation distribution → faster/stable training, higher LR, less init-sensitive, mild regularisation.`},
+  {c:"T4", t:"BIAS–VARIANCE (hidden units)", w:"3p", b:`Fewer units → simpler → bias↑ variance↓ (underfit). More → bias↓ variance↑ (overfit). Feature extractor (SoSe25 Q4b): hidden layers learn representation, final layer = simple classifier on it.`},
+  {c:"T5", t:"BATCH vs MINIBATCH GD", w:"—", b:`Batch: whole set, exact grad, smooth, slow/costly, memory-heavy, can stall at saddles. Minibatch (SGD=1): random subset, noisy grad, many cheap steps, fits memory, noise escapes saddles/sharp minima → generalises better. Axes: accuracy / cost&freq / memory / convergence.`}
+ ],
+ pending:`<b>Not yet on this sheet — build the block, then add its formulas here and tick it off:</b><br>
+  Tier-5 Bank B: optimizers (Newton/AdaGrad/RMSprop directions), grid vs random search, weight-init (flat-loss suspect), bidirectional RNN, autoencoder, <b>VAE (explicit vs implicit vs GAN)</b>, <b>reparameterization trick + ELBO skeleton</b>. &nbsp; Tier-6: sigmoid-neuron df/dw (+L2), overfitting/early-stopping, dropout≈bagging, LR curves. <br>
+  <b>The sheet is NOT complete until every item above is on it.</b> When you reach any of these blocks (or land back on this page), come here and fold its formulas in.`
+};
+function cheatSide(items){
+ return `<div class="cicols">`+items.map(i=>
+   `<div class="ci"><div class="ch">${esc(i.c)} · ${esc(i.t)}<span class="cw">${esc(i.w)}</span></div><div class="cb">${i.b}</div></div>`
+ ).join('')+`</div>`;
+}
+function renderCheat(){
+ let h=`<h1>Cheat sheet — double-sided A4</h1>
+   <p class="sub">Consolidated formulas + procedures from every built block. Copy onto your allowed double-sided A4 (0.03 mm pen holds this density — see the DMML sheet). Put here what is expensive to recall; know the reflex rules cold.</p>
+   <div class="note good"><div class="h">Survivor advice</div>The single biggest lever is that most students <b>underuse the cheat sheet</b>. Fill both sides. Formulas, gate rules, output-size formula, LSTM gates, attention, BatchNorm, ELBO skeleton go on the sheet; the +/×/max backprop reflexes and one-line theory you know cold.</div>
+   <div class="cheat-pending"><div class="h">⚠ Sheet is incomplete until Pass 5/6</div>${CHEAT.pending} <a href="#coverage">coverage →</a></div>
+   <div class="cheat-side"><h2>Side 1 — Numerical procedures (Bank A)</h2>${cheatSide(CHEAT.side1)}</div>
+   <div class="cheat-side"><h2>Side 2 — Theory (Bank B)</h2>${cheatSide(CHEAT.side2)}</div>`;
+ return h;
+}
+/* ---- MARKS: verified per-question point values, read from the actual papers.
+   SS21 & SoSe25 reconstruct exactly to their stated totals (fully verified);
+   2024 & WiSe25/26 only annotate some questions in source (partial — others
+   show the register's type-range as a muted estimate); MT22/23 are solution
+   protocols with NO point annotations. Static table — edit if better data appears. */
+const MARKS = {
+ total:{ SS21:92, MT22:null, MT23:null, '2024':100, SoSe25:100, 'WiSe25/26':100 },
+ complete:{ SS21:true, SoSe25:true, '2024':false, 'WiSe25/26':false, MT22:false, MT23:false },
+ q:{
+  SS21:{1:5,2:4,3:12,4:8,5:6,6:12,7:2,8:2,9:6,10:7,11:5,12:5,13:5,14:6,15:2,16:5},
+  '2024':{1:7,3:13,6:4,8:8,10:10},
+  SoSe25:{1:6,2:2,3:7,4:6,5:18,6:12,7:7,8:8,9:4,10:12,11:7,12:11},
+  'WiSe25/26':{1:6,2:2,3:7,8:8,10:12,11:7},
+  MT22:{}, MT23:{}
+ }
+};
+function ptsMid(p){ if(!p||p==='—')return null; const m=(''+p).match(/(\d+)\s*[–-]\s*(\d+)/); if(m)return ((+m[1])+(+m[2]))/2; const s=(''+p).match(/\d+/); return s?+s[0]:null; }
+function renderCoverage(){
+ const SITTINGS=["SS21","MT22","MT23","2024","SoSe25","WiSe25/26"];
+ const map={}; SITTINGS.forEach(s=>map[s]=[]);
+ REGISTER.forEach(r=>{
+   (r.exams||'').split('·').forEach(tok=>{
+     tok=tok.trim(); if(!tok)return;
+     let labels=null,q=null;
+     if(tok.indexOf('MT22/23')===0){ labels=['MT22','MT23']; q=tok.slice(7).trim(); }
+     else if(tok.indexOf('WiSe25/26')===0){ labels=['WiSe25/26']; q=tok.slice(9).trim(); }
+     else { const m=tok.match(/^(SS21|MT22|MT23|2024|SoSe25)\s+(.*)$/); if(m){ labels=[m[1]]; q=m[2].trim(); } }
+     if(!labels)return;
+     labels.forEach(L=>{ if(map[L]) map[L].push({q,type:r.type,blockId:r.blockId,tier:r.tier,bank:r.bank,pts:r.pts,built:built(r.blockId)}); });
+   });
+ });
+ const qnum=q=>{const m=(q||'').match(/\d+/);return m?parseInt(m[0],10):99;};
+ let h=`<h1>Coverage — every real paper, question by question</h1>
+   <p class="sub">Each sitting's questions, inverted from the register and linked to the block that teaches it, with verified marks from the actual paper. "Built" = solvable now; "pending" = arrives in a later pass. Use this to confirm a whole paper before a timed run.</p>
+   <div class="note acc"><div class="h">What this proves</div>The 31-type register is the exhaustive taxonomy of what this professor asks. If every question below is <b>built</b> and learned, you can solve every real past paper. The marks column is exact where read from the paper; SS21 &amp; SoSe25 are fully verified (they sum to the stated total), so their "solvable marks" number is real.</div>`;
+ SITTINGS.forEach(S=>{
+   const rows=map[S].slice().sort((a,b)=>qnum(a.q)-qnum(b.q));
+   if(!rows.length)return;
+   const n=rows.length, done=rows.filter(x=>x.built).length, pct=Math.round(100*done/n);
+   // solvable marks (unique exam-question, all its rows built, exact mark known)
+   const groups={};
+   rows.forEach(x=>{const k=qnum(x.q); (groups[k]=groups[k]||{built:true}); if(!x.built)groups[k].built=false;});
+   let solvable=0; Object.keys(groups).forEach(k=>{ const mk=(MARKS.q[S]||{})[k]; if(groups[k].built&&mk!=null)solvable+=mk; });
+   const tot=MARKS.total[S];
+   let head=`${done}/${n} question-types built (${pct}%)`;
+   if(tot!=null && MARKS.complete[S]) head+=` &nbsp;·&nbsp; <b>solvable now ≈ ${solvable}/${tot} marks</b>`;
+   else if(tot!=null) head+=` &nbsp;·&nbsp; total ${tot} marks (some marks unverified)`;
+   else head+=` &nbsp;·&nbsp; marks not stated in source protocol`;
+   h+=`<h2>${esc(S)} <span class="sub">— ${head}</span></h2>
+     <div class="progress"><i style="width:${pct}%"></i></div>`;
+   rows.forEach(x=>{
+     const ex=(MARKS.q[S]||{})[qnum(x.q)];
+     const est=ptsMid(x.pts);
+     const mcell = ex!=null ? `${ex}p` : (est!=null?`~${est}p`:'—');
+     const mclass = ex!=null ? '' : 'est';
+     h+=`<div class="covrow">
+       <span class="cq">${esc(x.q)}</span>
+       <span>${x.built?`<a href="#block/${x.blockId}">${esc(x.type)}</a>`:esc(x.type)}</span>
+       <span class="sub">T${x.tier} · ${x.bank}</span>
+       <span class="cm ${mclass}">${mcell}</span>
+       <span class="cs" style="color:${x.built?'var(--good)':'var(--warn)'}">${x.built?'built':'pending'}</span>
+     </div>`;
+   });
+ });
+ h+=`<p class="sub" style="margin-top:16px">Marks: <b>Np</b> = read exactly from that paper; <b>~Np</b> = register type-range estimate (grey), not read from that specific paper; <b>—</b> = source states no marks. <b>SS21</b> (92p) and <b>SoSe25</b> (100p) reconstruct exactly to their stated totals — their solvable-marks readouts are real. <b>2024</b> &amp; <b>WiSe25/26</b> are HedgeDoc protocols that annotate only some questions, so a few marks are estimates. <b>MT22/23</b> are solution-only protocols with no point annotations. Mapping is by recurring question type (the register taxonomy).</p>`;
+ return h;
+}
+
 function renderTracker(){
  let h=`<h1>Tracker</h1>`;
  const tiers=[1,2,3,4,5,6];
@@ -1555,6 +1702,8 @@ function render(){
  const [view,arg]=parseHash();
  let h='';
  if(view==='register')h=renderRegister();
+ else if(view==='cheat')h=renderCheat();
+ else if(view==='coverage')h=renderCoverage();
  else if(view==='block')h=renderBlock(arg);
  else if(view==='worked')h=renderWorked();
  else if(view==='craft')h=renderCraft();
