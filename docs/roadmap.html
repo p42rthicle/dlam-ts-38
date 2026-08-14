@@ -1996,6 +1996,7 @@ cat requirements.txt</code></pre></div>
 
 <div class="step" data-revisit="s9-2" id="s9-2"><div class="step-head"><input type="checkbox" class="tick" id="c9-2"><div class="step-num">9.2</div><div class="step-body">
 <h3>Write <code>predict.py</code></h3>
+<div class="gotcha"><b>First fix <code>build_model_from_config</code> &mdash; it can't rebuild your submission model yet</b><p>Your best model is <strong>LSTM+covariates</strong>, but <code>build_model_from_config</code> (which <code>predict.py</code> imports below) currently only handles <code>linear</code> and <code>patchtst</code>, and passes <code>use_covariates</code> to <em>neither</em>. As written it raises <code>ValueError: Unknown model: lstm</code>, or silently drops the covariate head so the checkpoint won't load. Before <code>predict.py</code> works, extend it in <code>src/models/models.py</code>: add <code>mlp</code> and <code>lstm</code> branches, and pass <code>n_feat=cfg.get("n_feat")</code> + <code>use_covariates=bool(cfg.get("covariates"))</code> to every model (mirror what <code>build_model</code> already does). Instructors run <em>your</em> <code>predict.py</code> on the private test set, so it must reconstruct the exact trained model from the saved config.</p></div>
 <div class="codeblock"><div class="code-head"><span class="code-caret">&#9656;</span><span class="code-file">predict.py</span><span class="code-tag">python</span><button class="code-copy" type="button">copy</button></div><div class="code-wrap"><pre><code><span class="k">import</span> argparse, numpy <span class="k">as</span> np, pandas <span class="k">as</span> pd, torch
 <span class="k">from</span> pathlib <span class="k">import</span> Path
 <span class="k">from</span> src.models <span class="k">import</span> build_model_from_config
@@ -2366,6 +2367,18 @@ done</code></pre>
 </ul></div>
 
 <div class="gotcha"><b>Covariates are a separate axis — and your biggest lever on the graded data</b><p>This ladder is target-only (<code>--covariates 0</code>) so it's a fair architecture comparison. But your logbook already shows <code>linear --covariates 1</code> reaching WAPE&nbsp;~0.18 vs ~0.30 without — a big jump. Once you've picked the best architecture, re-run your top one or two with <code>--covariates 1</code>; that's likely your real submission model. (ETT has no known-future covariates, so it stays at 0.)</p></div>
+
+<h3>Submitting to the leaderboard (two tabs, two files)</h3>
+<p>The leaderboard Space has two upload tabs &mdash; different files, different behaviour:</p>
+<table>
+<tr><th>Tab</th><th>File</th><th>What happens</th></tr>
+<tr><td><strong>Submit Validation Predictions</strong></td><td>a predictions <strong>CSV</strong> (<code>series_id,timestamp,prediction</code>, 32,256 rows; &le;200&nbsp;MB)</td><td>auto-scored against hidden validation labels, updates the public leaderboard immediately. Feedback only; re-upload revisions anytime.</td></tr>
+<tr><td><strong>Submit Final Model</strong></td><td><code>final_submission.zip</code> = <code>predict.py</code> + <code>requirements.txt</code> + <code>checkpoint.pt</code> (+ <code>src/</code>); &le;200&nbsp;MB</td><td>the Space just <strong>stores</strong> it (does <em>not</em> run your code); instructors run the private evaluation. This is the graded submission &mdash; Phase&nbsp;9, once, at the end.</td></tr>
+</table>
+<p>The <strong>report PDF</strong> is a third, separate deliverable (Phase&nbsp;10). Your Hugging&nbsp;Face username must be registered to your group (<code>group-38</code>) before either upload works.</p>
+<p><strong>Do first &mdash; a calibration upload via "Submit Validation Predictions":</strong> the seasonal-mean baseline. It confirms the pipeline and tells you how your local numbers map to the leaderboard. Generate the CSV:</p>
+<pre><code>python -c "from pathlib import Path; from src.baselines import write_baselines; write_baselines(Path('data/raw/train.csv'), Path('data/raw/forecast_index_validation.csv'), Path('predictions'))"</code></pre>
+<p>Upload <code>predictions/seasonal_mean.csv</code>. It lands near the baselines (~0.33&nbsp;WAPE) &mdash; expected. Your <em>trained</em> model goes up only once <code>predict.py</code> exists (Phase&nbsp;9). Note the validation leaderboard is <strong>gap&nbsp;0</strong>, so a good CSV there wants a gap-0 model &mdash; separate from your graded gap-336 model.</p>
 
 <div class="check"><b>One move, every stage</b><p>Run at <code>--gap 336</code> &rarr; read the lowest <code>val WAPE</code> &rarr; lower is better &rarr; compare to the baseline and to your other models. That is the whole testing loop, start to finish.</p></div>
 </section>
