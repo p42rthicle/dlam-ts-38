@@ -1817,8 +1817,19 @@ done'</code></pre>
 <div class="phase-head">
   <div class="phase-tag"><span class="chip">Phase 7</span><span class="chip time">Days 21–25 · ~10 hours</span><span>ablations</span></div>
   <h2>The phase that actually earns the grade</h2>
-  <p class="lede" style="font-size:17px;margin-top:8px">Leaderboard position is a small part of your mark. The ablation study is where you demonstrate that you understand your own model.</p>
+  <p class="lede" style="font-size:17px;margin-top:8px">Leaderboard position is a small part of the mark; the ablation study is where you show you understand the model. Good news: <strong>half of it is already run</strong> — the model comparison and the covariates ablation are done and sitting in <code>runs.csv</code>. Follow 7.0 &rarr; 7.3 in order; you only create two small files and run one of them.</p>
 </div>
+
+<div class="step" id="s7-0"><div class="step-head"><input type="checkbox" class="tick" id="c7-0"><div class="step-num">7.0</div><div class="step-body">
+<h3>Start here: pull, branch, and what's already done</h3>
+<p><strong>First, get an up-to-date copy and your own branch</strong> (do this before anything else):</p>
+<pre><code>git checkout main
+git pull origin main
+git checkout -b feat/ablations</code></pre>
+<div class="check"><b>Two of the tables are already run &mdash; do NOT recompute them</b><p>The full model comparison (linear, mlp, lstm, patchtst &mdash; <em>target-only</em> and <em>with covariates</em>, 3 folds each) is already in <code>experiments/runs.csv</code> under two tags: <code>notes=graded</code> (target-only) and <code>notes=gradedcov</code> (with covariates). See it now:</p>
+<pre><code>python scripts/compare.py</code></pre>
+<p>The headline is already there &mdash; covariates cut WAPE from ~0.32 to ~0.20 on the graded task. <strong>Do not re-run those models</strong> (PatchTST alone takes hours). The two scripts below <em>read</em> these runs; they don't redo them.</p></div>
+</div></div></div>
 
 <div class="step" id="s7-1"><div class="step-head"><input type="checkbox" class="tick" id="c7-1"><div class="step-num">7.1</div><div class="step-body">
 <h3>What an ablation is</h3>
@@ -1828,62 +1839,59 @@ done'</code></pre>
 </div></div></div>
 
 <div class="step" id="s7-2"><div class="step-head"><input type="checkbox" class="tick" id="c7-2"><div class="step-num">7.2</div><div class="step-body">
-<h3>Run the grid</h3>
-<div class="why"><b>Why</b><p>Roughly 25 runs. Scripted, overnight, no supervision. Each appends one row to <code>runs.csv</code>.</p></div>
+<h3>Create and run the ablation script</h3>
+<div class="why"><b>Why</b><p>Each run changes exactly one factor versus your best config and appends a row to <code>runs.csv</code>. <strong>Create a new file at <code>scripts/ablate.sh</code> and paste this whole thing.</strong> The only line you edit is <code>BEST</code> &mdash; set it to whichever model won <code>compare.py</code>'s <code>gradedcov</code> block (almost certainly <code>linear</code>):</p></div>
 <div class="codeblock"><div class="code-head"><span class="code-caret">&#9656;</span><span class="code-file">scripts/ablate.sh</span><span class="code-tag">shell</span><button class="code-copy" type="button">copy</button></div><div class="code-wrap"><pre><code>#!/usr/bin/env bash
 set -e
-BEST=<span class="s">"--model patchtst --lookback 512 --patch-len 16 --loss huber --revin 1 --covariates 1 --gap 336"</span>   <span class="c"># set to your ladder-winning config; --gap 336 is the graded task</span>
+BEST=<span class="s">"--model linear --covariates 1 --gap 336 --lookback 336 --loss huber --revin 1"</span>   <span class="c"># your gradedcov winner; if a transformer won, change --model and uncomment patch/depth below</span>
 
-<span class="c"># --- Table 1: model comparison, fold 0 -----------------------------</span>
-<span class="k">for</span> m <span class="k">in</span> linear mlp lstm patchtst; <span class="k">do</span>
-  python -m src.train --model $m --fold 0 --gap 336 --notes <span class="s">"table1"</span>
-<span class="k">done</span>
-
-<span class="c"># --- Table 2: one factor at a time ---------------------------------</span>
+<span class="c"># The model comparison is ALREADY in runs.csv (notes=graded and notes=gradedcov).</span>
+<span class="c"># Do NOT re-run it. Below: change one factor at a time versus BEST.</span>
 python -m src.train $BEST --revin 0        --notes <span class="s">"abl:revin"</span>
 python -m src.train $BEST --covariates 0   --notes <span class="s">"abl:cov"</span>
 python -m src.train $BEST --use-trend 0    --notes <span class="s">"abl:trend"</span>
 python -m src.train $BEST --add-mask 1     --notes <span class="s">"abl:nanmask"</span>
 python -m src.train $BEST --fill mean      --notes <span class="s">"abl:fill"</span>
 
-<span class="k">for</span> L <span class="k">in</span> 336 720;        <span class="k">do</span> python -m src.train $BEST --lookback $L  --notes <span class="s">"abl:L"</span>;      <span class="k">done</span>
-<span class="k">for</span> P <span class="k">in</span> 8 32;            <span class="k">do</span> python -m src.train $BEST --patch-len $P --notes <span class="s">"abl:patch"</span>;  <span class="k">done</span>
-<span class="k">for</span> LS <span class="k">in</span> l1 mse;         <span class="k">do</span> python -m src.train $BEST --loss $LS     --notes <span class="s">"abl:loss"</span>;   <span class="k">done</span>
-<span class="k">for</span> N <span class="k">in</span> 2 6;             <span class="k">do</span> python -m src.train $BEST --layers $N     --notes <span class="s">"abl:depth"</span>;  <span class="k">done</span>
+<span class="k">for</span> L <span class="k">in</span> 336 720; <span class="k">do</span> python -m src.train $BEST --lookback $L --notes <span class="s">"abl:L"</span>;    <span class="k">done</span>
+<span class="k">for</span> LS <span class="k">in</span> l1 mse; <span class="k">do</span> python -m src.train $BEST --loss $LS    --notes <span class="s">"abl:loss"</span>; <span class="k">done</span>
+<span class="c"># transformer-only -- uncomment ONLY if BEST uses --model patchtst:</span>
+<span class="c"># for P in 8 32; do python -m src.train $BEST --patch-len $P --notes "abl:patch"; done</span>
+<span class="c"># for N in 2 6;  do python -m src.train $BEST --layers $N    --notes "abl:depth"; done</span>
 
 <span class="c"># --- final config: 3 folds x 3 seeds -------------------------------</span>
 <span class="k">for</span> f <span class="k">in</span> 0 1 2; <span class="k">do</span> <span class="k">for</span> s <span class="k">in</span> 0 1 2; <span class="k">do</span>
   python -m src.train $BEST --fold $f --seed $s --notes <span class="s">"final"</span>
 <span class="k">done</span>; <span class="k">done</span></code></pre></div></div>
 <pre><code>chmod +x scripts/ablate.sh
-./scripts/ablate.sh 2>&1 | tee experiments/ablate.log</code></pre>
-<div class="note"><b>Split the work</b><p>Run the fast rows locally while you sleep; push the LSTM and the 6-layer runs to Colab. Save Colab checkpoints to Drive every epoch — the free tier disconnects without warning.</p></div>
+caffeinate -i ./scripts/ablate.sh 2>&1 | tee experiments/ablate.log</code></pre>
+<div class="note"><b>Roughly how long</b><p>With <code>BEST</code> a simple model (linear/mlp) this is ~1&ndash;2 hours &mdash; one run per ablation plus nine <code>final</code> runs (3 folds &times; 3 seeds). The <code>caffeinate -i</code> keeps the Mac awake while it runs; leave the lid open, on charger. If <code>BEST</code> is a transformer it's longer &mdash; run it overnight or on Colab (Phase&nbsp;9.5).</p></div>
 </div></div></div>
 
 <div class="step" id="s7-3"><div class="step-head"><input type="checkbox" class="tick" id="c7-3"><div class="step-num">7.3</div><div class="step-body">
 <h3>Seeds, variance, and not fooling yourself</h3>
 <div class="why"><b>Why</b><p>Neural network training is stochastic. Two runs with identical settings and different seeds will differ. If seed-to-seed variation is ±2% and your ablation shows a 1% effect, <strong>you have measured nothing</strong> — and a good examiner will spot it.</p></div>
-<p>Run your final configuration with three seeds and report mean ± std. Then use that std as the noise floor for reading every other row.</p>
+<p>Your final configuration runs with three seeds (the <code>ablate.sh</code> above already does this, tagged <code>final</code>); that std is the noise floor for reading every other row. <strong>Create a new file at <code>scripts/tables.py</code> and paste this whole thing</strong> (no edits needed), then run <code>python scripts/tables.py</code>:</p>
 <div class="codeblock"><div class="code-head"><span class="code-caret">&#9656;</span><span class="code-file">scripts/tables.py</span><span class="code-tag">python</span><button class="code-copy" type="button">copy</button></div><div class="code-wrap"><pre><code><span class="k">import</span> pandas <span class="k">as</span> pd
 F = [<span class="s">"ts"</span>,<span class="s">"run_id"</span>,<span class="s">"model"</span>,<span class="s">"fold"</span>,<span class="s">"seed"</span>,<span class="s">"lookback"</span>,<span class="s">"loss"</span>,<span class="s">"revin"</span>,<span class="s">"covariates"</span>,<span class="s">"patch_len"</span>,<span class="s">"d_model"</span>,<span class="s">"layers"</span>,<span class="s">"lr"</span>,<span class="s">"epochs"</span>,<span class="s">"wape"</span>,<span class="s">"mae"</span>,<span class="s">"rmse"</span>,<span class="s">"mse"</span>,<span class="s">"mape"</span>,<span class="s">"smape"</span>,<span class="s">"minutes"</span>,<span class="s">"notes"</span>]
 r = pd.read_csv(<span class="s">"experiments/runs.csv"</span>, names=F, header=<span class="k">None</span>)   <span class="c"># runs.csv has no header row</span>
 
-t1 = (r[r.notes == <span class="s">"table1"</span>]
-      .groupby(<span class="s">"model"</span>)[[<span class="s">"wape"</span>,<span class="s">"mae"</span>,<span class="s">"rmse"</span>,<span class="s">"smape"</span>]]
+t1 = (r[r.notes.isin([<span class="s">"graded"</span>, <span class="s">"gradedcov"</span>])]     <span class="c"># model comparison, already run</span>
+      .groupby([<span class="s">"notes"</span>, <span class="s">"model"</span>])[[<span class="s">"wape"</span>,<span class="s">"mae"</span>,<span class="s">"rmse"</span>,<span class="s">"smape"</span>]]
       .agg([<span class="s">"mean"</span>,<span class="s">"std"</span>]).round(<span class="s">4</span>))
 
 fin  = r[r.notes == <span class="s">"final"</span>]
 noise = fin.groupby(<span class="s">"fold"</span>).wape.std().mean()
 <span class="t">print</span>(f<span class="s">"seed noise (mean std within fold): {noise:.4f}"</span>)
 
-base = fin.wape.mean()
+base = fin[fin.fold == <span class="s">0</span>].wape.mean()   <span class="c"># ablations run at fold 0, so compare to BEST at fold 0 (not the 3-fold mean)</span>
 t2 = r[r.notes.str.startswith(<span class="s">"abl:"</span>, na=<span class="k">False</span>)].copy()
 t2[<span class="s">"delta_%"</span>]      = (<span class="s">100</span> * (t2.wape - base) / base).round(<span class="s">1</span>)
 t2[<span class="s">"above_noise"</span>]  = (t2.wape - base).abs() > <span class="s">2</span> * noise
 
 <span class="t">print</span>(t1.to_latex())
 <span class="t">print</span>(t2[[<span class="s">"notes"</span>,<span class="s">"wape"</span>,<span class="s">"delta_%"</span>,<span class="s">"above_noise"</span>]].to_latex(index=<span class="k">False</span>))</code></pre></div></div>
-<div class="check"><b>Done when</b><p>You have two LaTeX tables and a stated noise floor, and every ablation row is flagged as inside or outside it. Rows inside the noise floor should be described as inconclusive in the text, not as findings.</p></div>
+<div class="check"><b>Done when</b><p>You have two LaTeX tables and a stated noise floor, and every ablation row is flagged as inside or outside it. Rows inside the noise floor are "no measurable effect" &mdash; write them as such, not as findings. Then commit <code>scripts/ablate.sh</code>, <code>scripts/tables.py</code> and the updated <code>runs.csv</code>, and open a PR.</p></div>
 </div></div></div>
 </section>
 
@@ -2273,7 +2281,7 @@ F = ["ts","run_id","model","fold","seed","lookback","loss","revin","covariates",
      "patch_len","d_model","layers","lr","epochs","wape","mae","rmse","mse",
      "mape","smape","minutes","notes"]
 df = pd.read_csv("experiments/runs.csv", names=F, header=None)
-df = df[df.notes.isin(["graded", "ett"])]          # just this comparison's runs
+df = df[df.notes.notna()]                          # every run given a --notes tag (graded, ett, gradedcov, ...)
 tbl = df.groupby(["notes", "model"]).wape.agg(["mean", "std", "count"]).round(4)
 print(tbl.sort_values(["notes", "mean"]))          # lower WAPE = better</code></pre></div></div>
 <p>You get one small table per dataset, models ranked by mean WAPE across the three folds. That table — next to the seasonal-mean baseline from <code>score_baselines</code> — is exactly what goes in your report's results section.</p>
@@ -4610,7 +4618,7 @@ Ticks are stored in this browser. Moving the file or switching browser loses the
   // Once it has run, the flag is set for good, so every later edit wins:
   // un-checking any of 0-4, or a full Reset, is never redone on the next load.
   // Bump the flag's version suffix if a future build needs to re-run this.
-  var DONE04_FLAG = '__done08v1';
+  var DONE04_FLAG = '__done0865v1';
   var DONE_BY_DEFAULT = ['c0-1','c0-2','c0-3','c0-4','c0-5','c0-6','c0-7',
     'c1-1','c1-2','c1-3','c1-4','c1-5','c1-6','c1-7','c1-8','c1-9',
     'c2-1','c2-2','c2-3','c2-4','c2-5','c2-6',
@@ -4618,7 +4626,9 @@ Ticks are stored in this browser. Moving the file or switching browser loses the
     'c4-1','c4-2','c4-3','c4-4','c4-5','c4-6',
     'c5-1','c5-2','c5-3','c5-4','c5-5',
     'c6-1','c6-2','c6-3','c6-4',
-    'c8-1','c8-2','c8-3','c8-4'];
+    'c8-1','c8-2','c8-3','c8-4',
+    'c6b-1','c6b-2','c6b-3',
+    'c7-0'];
 
   store.get().then(function(raw){
     try{ mem = raw?JSON.parse(raw):{}; }catch(e){ mem={}; }
