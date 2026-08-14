@@ -2368,17 +2368,7 @@ done</code></pre>
 
 <div class="gotcha"><b>Covariates are a separate axis — and your biggest lever on the graded data</b><p>This ladder is target-only (<code>--covariates 0</code>) so it's a fair architecture comparison. But your logbook already shows <code>linear --covariates 1</code> reaching WAPE&nbsp;~0.18 vs ~0.30 without — a big jump. Once you've picked the best architecture, re-run your top one or two with <code>--covariates 1</code>; that's likely your real submission model. (ETT has no known-future covariates, so it stays at 0.)</p></div>
 
-<h3>Submitting to the leaderboard (two tabs, two files)</h3>
-<p>The leaderboard Space has two upload tabs &mdash; different files, different behaviour:</p>
-<table>
-<tr><th>Tab</th><th>File</th><th>What happens</th></tr>
-<tr><td><strong>Submit Validation Predictions</strong></td><td>a predictions <strong>CSV</strong> (<code>series_id,timestamp,prediction</code>, 32,256 rows; &le;200&nbsp;MB)</td><td>auto-scored against hidden validation labels, updates the public leaderboard immediately. Feedback only; re-upload revisions anytime.</td></tr>
-<tr><td><strong>Submit Final Model</strong></td><td><code>final_submission.zip</code> = <code>predict.py</code> + <code>requirements.txt</code> + <code>checkpoint.pt</code> (+ <code>src/</code>); &le;200&nbsp;MB</td><td>the Space just <strong>stores</strong> it (does <em>not</em> run your code); instructors run the private evaluation. This is the graded submission &mdash; Phase&nbsp;9, once, at the end.</td></tr>
-</table>
-<p>The <strong>report PDF</strong> is a third, separate deliverable (Phase&nbsp;10). Your Hugging&nbsp;Face username must be registered to your group (<code>group-38</code>) before either upload works.</p>
-<p><strong>Do first &mdash; a calibration upload via "Submit Validation Predictions":</strong> the seasonal-mean baseline. It confirms the pipeline and tells you how your local numbers map to the leaderboard. Generate the CSV:</p>
-<pre><code>python -c "from pathlib import Path; from src.baselines import write_baselines; write_baselines(Path('data/raw/train.csv'), Path('data/raw/forecast_index_validation.csv'), Path('predictions'))"</code></pre>
-<p>Upload <code>predictions/seasonal_mean.csv</code>. It lands near the baselines (~0.33&nbsp;WAPE) &mdash; expected. Your <em>trained</em> model goes up only once <code>predict.py</code> exists (Phase&nbsp;9). Note the validation leaderboard is <strong>gap&nbsp;0</strong>, so a good CSV there wants a gap-0 model &mdash; separate from your graded gap-336 model.</p>
+<p>Leaderboard submission &mdash; the two upload tabs, the calibration CSV, and <strong>why your local, leaderboard, and graded scores are three different numbers</strong> &mdash; all lives in its own section now: see <a href="#p11">Phase&nbsp;11 (scoring &amp; the leaderboard)</a>.</p>
 
 <div class="check"><b>One move, every stage</b><p>Run at <code>--gap 336</code> &rarr; read the lowest <code>val WAPE</code> &rarr; lower is better &rarr; compare to the baseline and to your other models. That is the whole testing loop, start to finish.</p></div>
 </section>
@@ -2484,6 +2474,83 @@ pdflatex report.tex</code></pre>
 <li>Uploaded to Moodle <em>and</em> the Hugging Face Space</li>
 </ul></div>
 </div></div></div>
+</section>
+
+<!-- ============================== PHASE 11 ============================== -->
+<section class="phase" id="p11">
+<div class="phase-head">
+  <div class="phase-tag"><span class="chip">Phase 11</span><span class="chip time">reference &middot; read once</span><span>scoring &amp; the leaderboard</span></div>
+  <h2>Three scores, and why they won't match</h2>
+  <p class="lede" style="font-size:17px;margin-top:8px">By the end you'll see your model scored in three different places, giving three different numbers. That is completely normal &mdash; here is what each one is, why they differ, and which one is your grade. No panic required.</p>
+</div>
+
+<h3>First, the absolute basics: a model does two separate jobs</h3>
+<div class="why"><b>Why read this</b><p>This trips up everyone at the start, and it explains why the CSV we uploaded was the baseline and not our own model. A machine-learning model is used in <strong>two completely different ways</strong>, at different times.</p></div>
+<table>
+<tr><th></th><th>Training (fitting)</th><th>Prediction (inference)</th></tr>
+<tr><td>What it does</td><td>learns from data we already know the answers to &mdash; it adjusts its internal numbers to get better</td><td>takes the <em>already-trained</em> model and produces answers for <em>new</em> data it has never seen</td></tr>
+<tr><td>What comes out</td><td><strong>a saved model file</strong> (<code>checkpoint.pt</code>) &mdash; <em>no</em> submittable predictions</td><td><strong>a predictions CSV</strong> &mdash; the thing you upload</td></tr>
+<tr><td>In our project</td><td><code>python -m src.train ...</code> &mdash; done many times (that's the whole model ladder)</td><td><code>predict.py</code> &mdash; <strong>not written yet</strong> (Phase&nbsp;9)</td></tr>
+</table>
+<p>So &mdash; <strong>everything we've done so far has been <em>training</em>.</strong> Training makes the model better and saves it, but it never produces a predictions file you can hand in. To get predictions you run the trained model in <em>prediction</em> mode on new data &mdash; and that is exactly what <code>predict.py</code> will do.</p>
+<p><strong>That is why the CSV we uploaded to the leaderboard was the baseline, not our model:</strong> the baseline (<code>seasonal_mean</code>) can be computed directly, with no trained model, but our <em>trained</em> model has no way to produce a CSV until <code>predict.py</code> exists. We've trained a strong model &mdash; we just haven't <em>run</em> it to make predictions yet.</p>
+<div class="check"><b>The lifecycle, in one line</b><p><strong>Train once</strong> (save the checkpoint) &rarr; <strong>predict many times</strong> (make CSVs with <code>predict.py</code>) &rarr; <strong>upload the CSV as often as you like</strong> for leaderboard feedback &rarr; <strong>zip <code>predict.py</code> + the checkpoint once</strong> as the final graded submission.</p></div>
+
+<h3>What <em>is</em> a baseline, and how is ours computed?</h3>
+<div class="why"><b>Why</b><p>A "baseline" is <strong>not a trained model</strong> &mdash; it's a dead-simple rule computed straight from the data, with <em>no learning at all</em>. It exists to set a floor: any real model has to beat it, or the model isn't doing anything.</p></div>
+<p>We have four, from dumbest to smartest (rough leaderboard WAPE in brackets):</p>
+<table>
+<tr><th>Baseline</th><th>The rule</th><th>~WAPE</th></tr>
+<tr><td><code>naive_last_value</code></td><td>repeat each series' <em>last observed value</em> for all 336 hours</td><td>~48%</td></tr>
+<tr><td><code>lag24_repeat</code></td><td>repeat the <em>last 24 hours</em>, tiled forward</td><td>~47%</td></tr>
+<tr><td><code>lag168_repeat</code></td><td>repeat the <em>last week</em> (168&nbsp;h), tiled forward</td><td>~47%</td></tr>
+<tr><td><code>seasonal_mean</code></td><td>for each series, the <em>average</em> at each (day-of-week, hour); to predict a future hour, look up that slot's historical average</td><td>~34% &mdash; best</td></tr>
+</table>
+<p>None of these <em>learns</em> anything &mdash; they're formulas in <code>src/baselines.py</code>. Running <code>write_baselines(...)</code> just computes the seasonal averages from <code>train.csv</code> and writes the CSV. That is the whole "model." <code>seasonal_mean</code> is the strongest because it knows a Tuesday 9&nbsp;am tends to look like other Tuesday 9&nbsp;ams.</p>
+<h4>So how is that different from <em>our</em> model?</h4>
+<table>
+<tr><th></th><th>Baseline (e.g. seasonal_mean)</th><th>Our model (LSTM + covariates)</th></tr>
+<tr><td>Does it learn?</td><td>No &mdash; a fixed formula, same every run</td><td>Yes &mdash; weights trained by gradient descent</td></tr>
+<tr><td>Uses covariates?</td><td>No</td><td>Yes &mdash; that's where most of the win comes from</td></tr>
+<tr><td>Rough WAPE</td><td>~34%</td><td>~17% &mdash; about half the error</td></tr>
+</table>
+<p>That ~34%&nbsp;&rarr;&nbsp;~17% jump <em>is</em> the point of building a model: a learned network with covariates roughly halves the error of the best dumb rule.</p>
+<div class="check"><b>Reading the leaderboard</b><p>It lists several baseline reference rows at <em>different</em> scores (naive ~48%, seasonal ~34%). "Beating the baseline" means getting below the <strong>best</strong> one (seasonal, ~34%). Entries below ~34% are real trained models; entries sitting at ~34&ndash;48% are groups who uploaded a baseline (or a model that isn't working yet). Our <code>seasonal_mean</code> upload landed at ~34% because <em>it is</em> that baseline &mdash; our real model (~17%) will sit far below it once <code>predict.py</code> runs it.</p></div>
+
+<h3>The three scores</h3>
+<table>
+<tr><th>Score</th><th>Where</th><th>Data &amp; task</th><th>Role</th></tr>
+<tr><td><strong>Local</strong></td><td><code>compare.py</code>, your machine</td><td>folds cut from <code>train.csv</code>, <strong>gap&nbsp;336</strong></td><td>your everyday scoreboard &mdash; fast, free, unlimited. Your ~0.17.</td></tr>
+<tr><td><strong>Public leaderboard</strong></td><td>"Submit Validation Predictions" tab &mdash; a <strong>CSV</strong></td><td>hidden validation labels, the 336&nbsp;h <em>right after</em> train-end, <strong>gap&nbsp;0</strong></td><td>feedback only, re-upload anytime. An <em>easier, different</em> task.</td></tr>
+<tr><td><strong>Private grade</strong></td><td>"Submit Final Model" tab &mdash; a <strong>zip</strong></td><td>a hidden <em>test</em> set you never see, <strong>gap&nbsp;336</strong></td><td>instructors run your <code>predict.py</code> privately. <strong>This one is your mark.</strong></td></tr>
+</table>
+
+<h3>Why they won't be the same number</h3>
+<ul>
+<li><strong>Different data.</strong> Local uses pieces of your own training data; the leaderboard uses a hidden validation slice; the grade uses a hidden test slice. Different data &rarr; different difficulty.</li>
+<li><strong>Different gap.</strong> Local and the grade are <strong>gap&nbsp;336</strong> (predict a 2-week window that starts 2 weeks <em>after</em> your last data). The public leaderboard is <strong>gap&nbsp;0</strong> (predict the 2 weeks <em>immediately</em> after) &mdash; an easier task, so that number is <em>not</em> comparable to your grade.</li>
+<li><strong>Different randomness.</strong> Seeds, the exact window, rounding &mdash; a little wobble on top.</li>
+</ul>
+
+<h3>Expect the private grade to be a bit <em>worse</em> than your local number</h3>
+<p>Your local ~0.17 is measured on folds you <em>looked at</em> while choosing your model, so it's slightly <strong>optimistic</strong>. The private test is fresh data you never touched, so the model has to <em>generalise</em> &mdash; and it almost always loses a little there. A model that's 0.17 at home might be, say, 0.19&ndash;0.22 on the private test. <strong>That's not a bug or a mistake; it's the normal "reality tax," and every honest team plans for it.</strong> In the report, say it plainly: "local WAPE X; we expect the held-out test to be modestly higher."</p>
+
+<h3>"You running it" vs "them running it"</h3>
+<p>Locally, <em>you</em> run training and evaluation on data you have. For the grade, <strong>the instructors run <em>your</em> <code>predict.py</code> on data you have never seen</strong> &mdash; on their machine, no internet, no <code>train.csv</code>. So your submission must be totally self-contained: the checkpoint carries the weights, the scaler, the series order, and the last window of history. Anything that secretly depends on your laptop or on <code>train.csv</code> produces garbage there &mdash; the single most common way student submissions fail.</p>
+
+<h3>Which score is the "real" one?</h3>
+<p>The <strong>private grade (gap&nbsp;336)</strong> is the only one that counts, and it's the one you see <em>last</em> and should expect to be the <em>least flattering</em> of the three. So treat your <strong>local gap-336 number as an optimistic estimate</strong>, assume the grade will be a touch higher (worse), and treat the public gap-0 leaderboard as a loose sanity check on a different, easier task. Report all three honestly and you're doing science, not cherry-picking.</p>
+
+<h3>How to submit &mdash; and how often</h3>
+<ul>
+<li><strong>Public leaderboard (CSV) &mdash; unlimited.</strong> Generate a predictions CSV (with <code>predict.py</code> once it exists, or the baseline below for now), upload it via "Submit Validation Predictions", see the gap-0 score, repeat as often as you like. Your Hugging&nbsp;Face username must be registered to your group (<code>group-38</code>).</li>
+<li><strong>Final model (zip) &mdash; the graded one.</strong> Upload <code>predict.py</code> + <code>requirements.txt</code> + <code>checkpoint.pt</code> (+ <code>src/</code>) via "Submit Final Model". You can re-upload a newer zip before the deadline, but only your last one is evaluated, once, privately. So you iterate the <em>CSV</em> for feedback and lock in <em>one final zip</em> for the mark.</li>
+</ul>
+<p><strong>Your first upload should be the seasonal-mean baseline</strong> &mdash; a calibration + pipeline test. It lands ~0.33; that's expected (it's the baseline, not your model). Generate it:</p>
+<pre><code>python -c "from pathlib import Path; from src.baselines import write_baselines; write_baselines(Path('data/raw/train.csv'), Path('data/raw/forecast_index_validation.csv'), Path('predictions'))"</code></pre>
+<p>Upload <code>predictions/seasonal_mean.csv</code> via "Submit Validation Predictions". Your <em>trained</em> model can only go up once <code>predict.py</code> exists (Phase&nbsp;9) &mdash; and remember it'll be a gap-0 number, not your gap-336 grade.</p>
+
+<div class="check"><b>The one honest mindset</b><p>Local ~0.17 is your <em>optimistic</em> estimate. The private grade will likely be a bit worse &mdash; that's normal, plan for it. The public leaderboard is a different, easier task &mdash; a sanity check, not your mark. Report all three.</p></div>
 </section>
 
 <hr class="tick24">
