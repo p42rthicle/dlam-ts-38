@@ -1721,6 +1721,97 @@ tokens:  512 -> 63           attention cost: 262,144 -> 3,969  (66x cheaper)</co
 </div></div></div>
 </section>
 
+<!-- ============================== PHASE 6.5 ============================== -->
+<section class="phase" id="p6b">
+<div class="phase-head">
+  <div class="phase-tag"><span class="chip">Phase 6.5</span><span class="chip time">~half a day · remedial</span><span>covariate-aware models</span></div>
+  <h2>Give PatchTST the covariates it never had</h2>
+  <p class="lede" style="font-size:17px;margin-top:8px">The model ladder said every architecture ties at ~0.32 on the graded task — but that comparison was rigged. <strong>Only <code>linear</code> has a covariate head;</strong> MLP, LSTM and PatchTST never see the known-future covariates, and covariates are the one lever that actually moves the score. So the transformer has been fighting one-handed. This phase gives all three the same head — and runs PatchTST <em>target-only</em> so it's finally fast (~10&nbsp;min/fold, not 4.4&nbsp;h).</p>
+</div>
+
+<div class="step" id="s6b-1"><div class="step-head"><input type="checkbox" class="tick" id="c6b-1"><div class="step-num">6.5.1</div><div class="step-body">
+<h3>Add the covariate head to mlp, lstm and patchtst</h3>
+<div class="why"><b>Why</b><p><code>LinearForecaster</code> already does this: it adds <code>CovariateHead(x_fut)</code> to its output. The head is model-agnostic — it maps the future covariates <code>(B, H, F)</code> to an additive <code>(B, H)</code> correction. Reuse it verbatim in the other three; it's the same three lines each. Nothing else in the models changes.</p></div>
+<p><strong>1. <code>src/models/mlp.py</code></strong> — import the head, take <code>n_feat</code> + <code>use_covariates</code>, add it:</p>
+<div class="codeblock"><div class="code-head"><span class="code-caret">&#9656;</span><span class="code-file">src/models/mlp.py</span><span class="code-tag">python</span><button class="code-copy" type="button">copy</button></div><div class="code-wrap"><pre><code>from .covariate_head import CovariateHead          # add near the top
+
+# __init__: add n_feat and use_covariates to the signature
+def __init__(self, L, H, n_feat=0, d_model=512, dropout=0.2,
+             use_revin=True, use_covariates=False, **_):
+    ...                                            # (body unchanged)
+    self.revin = RevIN() if use_revin else None
+    self.cov   = CovariateHead(n_feat, H) if use_covariates else None
+
+# forward: just before `return out`
+    if self.cov is not None and x_fut is not None:
+        out = out + self.cov(x_fut)
+    return out</code></pre></div></div>
+<p><strong>2. <code>src/models/lstm.py</code></strong> — identical pattern (it already takes <code>n_feat</code>):</p>
+<div class="codeblock"><div class="code-head"><span class="code-caret">&#9656;</span><span class="code-file">src/models/lstm.py</span><span class="code-tag">python</span><button class="code-copy" type="button">copy</button></div><div class="code-wrap"><pre><code>from .covariate_head import CovariateHead          # add near the top
+
+def __init__(self, L, H, n_feat, d_model=128, layers=2, dropout=0.2,
+             use_revin=True, use_covariates=False, **_):
+    ...
+    self.cov = CovariateHead(n_feat, H) if use_covariates else None
+
+# forward: just before `return out`
+    if self.cov is not None and x_fut is not None:
+        out = out + self.cov(x_fut)
+    return out</code></pre></div></div>
+<p><strong>3. <code>src/models/models.py</code> &mdash; PatchTST</strong> (<code>CovariateHead</code> is already imported at the top of this file):</p>
+<div class="codeblock"><div class="code-head"><span class="code-caret">&#9656;</span><span class="code-file">src/models/models.py &mdash; class PatchTST</span><span class="code-tag">python</span><button class="code-copy" type="button">copy</button></div><div class="code-wrap"><pre><code># __init__: add use_covariates to the signature
+def __init__(self, L, H, n_feat, patch_len=16, stride=8, d_model=128,
+             layers=3, n_heads=8, d_ff=256, dropout=0.2, use_revin=True,
+             channel_mixing=False, target_only=False, use_covariates=False, **_):
+    ...
+    self.revin = RevIN() if use_revin else None
+    self.cov   = CovariateHead(n_feat, H) if use_covariates else None
+
+# forward: just before `return out`
+    if self.cov is not None and x_fut is not None:
+        out = out + self.cov(x_fut)
+    return out</code></pre></div></div>
+<p><strong>4. <code>src/models/models.py</code> &mdash; <code>build_model</code></strong> — pass the flag (and <code>n_feat</code> to MLP) to all three:</p>
+<div class="codeblock"><div class="code-head"><span class="code-caret">&#9656;</span><span class="code-file">src/models/models.py &mdash; build_model</span><span class="code-tag">python</span><button class="code-copy" type="button">copy</button></div><div class="code-wrap"><pre><code>if args.model == "mlp":
+    return MLPForecaster(L=L, H=H, n_feat=n_feat,
+                         use_revin=bool(args.revin),
+                         use_covariates=bool(args.covariates))
+if args.model == "lstm":
+    return LSTMForecaster(L=L, H=H, n_feat=n_feat,
+                          use_revin=bool(args.revin),
+                          use_covariates=bool(args.covariates))
+if args.model == "patchtst":
+    return PatchTST(..., use_covariates=bool(args.covariates))   # add this one kwarg</code></pre></div></div>
+<div class="check"><b>Done when</b><p>All four models accept <code>--covariates 1</code>. Smoke test: <code>python -m src.train --model patchtst --covariates 1 --target-only 1 --epochs 1</code> runs to completion with no shape error.</p></div>
+</div></div></div>
+
+<div class="step" id="s6b-2"><div class="step-head"><input type="checkbox" class="tick" id="c6b-2"><div class="step-num">6.5.2</div><div class="step-body">
+<h3>Run the fast covariate ladder</h3>
+<div class="why"><b>Why</b><p>Two flags do the work. <code>--covariates 1</code> turns on the new head. <code>--target-only 1</code> makes PatchTST's patch backbone univariate — 1 channel instead of ~24 — which is the ~20&times; speedup that takes it from 4.4&nbsp;h/fold to ~10&nbsp;min. So you get a fast <em>and</em> covariate-aware transformer: univariate target backbone, plus a head that reads all the future covariates.</p></div>
+<pre><code>caffeinate -i bash -c '
+for f in 0 1 2; do
+  python -m src.train --model linear   --fold $f --gap 336 --lookback 336 --covariates 1 --patience 8 --notes gradedcov
+  python -m src.train --model mlp      --fold $f --gap 336 --lookback 336 --covariates 1 --patience 8 --notes gradedcov
+  python -m src.train --model lstm     --fold $f --gap 336 --lookback 336 --covariates 1 --patience 8 --notes gradedcov
+  python -m src.train --model patchtst --fold $f --gap 336 --lookback 336 --covariates 1 --target-only 1 --patience 8 --notes gradedcov
+done'</code></pre>
+<div class="check"><b>Done when</b><p>Four covariate runs per fold are logged with <code>--notes gradedcov</code>. Wall-clock: linear/mlp minutes, lstm ~40&nbsp;min/fold, patchtst ~10&nbsp;min/fold (target-only). Whole ladder ~2&ndash;3&nbsp;h on the Mac.</p></div>
+</div></div></div>
+
+<div class="step" id="s6b-3"><div class="step-head"><input type="checkbox" class="tick" id="c6b-3"><div class="step-num">6.5.3</div><div class="step-body">
+<h3>Compare — did covariates change the ranking?</h3>
+<p>Re-run the comparison; the <code>gradedcov</code> block is the new one:</p>
+<pre><code>python scripts/compare.py</code></pre>
+<p>Two questions it answers:</p>
+<ul>
+<li><strong>Do covariates help on the graded task at all?</strong> Target-only was ~0.32 — does <code>gradedcov</code> drop clearly below that? (This is the number we did <em>not</em> have before.)</li>
+<li><strong>Does covariate-PatchTST beat covariate-linear?</strong> This is the real test of the exposé's claim — a transformer that finally uses the covariates.</li>
+</ul>
+<div class="gotcha"><b>Read it against the noise floor</b><p>These are 3-fold means with a ±0.02&ndash;0.03 std. A model is only "better" if it sits more than ~2&times; that std below the next — otherwise it's a tie, which is itself a legitimate finding. Whatever wins here (with covariates, at gap=336) is your submission model.</p></div>
+</div></div></div>
+
+</section>
+
 <!-- ============================== PHASE 7 ============================== -->
 <section class="phase" id="p7">
 <div class="phase-head">
