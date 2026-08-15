@@ -1840,10 +1840,10 @@ git checkout -b feat/ablations</code></pre>
 
 <div class="step" id="s7-2"><div class="step-head"><input type="checkbox" class="tick" id="c7-2"><div class="step-num">7.2</div><div class="step-body">
 <h3>Create and run the ablation script</h3>
-<div class="why"><b>Why</b><p>Each run changes exactly one factor versus your best config and appends a row to <code>runs.csv</code>. <strong>Create a new file at <code>scripts/ablate.sh</code> and paste this whole thing.</strong> The only line you edit is <code>BEST</code> &mdash; set it to whichever model won <code>compare.py</code>'s <code>gradedcov</code> block (almost certainly <code>linear</code>):</p></div>
+<div class="why"><b>Why</b><p>Each run changes exactly one factor versus your best config and appends a row to <code>runs.csv</code>. <strong>Create a new file at <code>scripts/ablate.sh</code> and paste this whole thing.</strong> <strong>Keep <code>BEST</code> as <code>linear</code>+covariates</strong> &mdash; that makes the whole ablation run fast (~2&nbsp;h). Our best <em>model</em> is actually <strong>LSTM</strong>+covariates (that's what the report crowns, straight from the comparison table already in <code>runs.csv</code>), but ablating LSTM would take ~12&nbsp;h and the component effects (RevIN, trend, lookback, loss) are model-agnostic &mdash; so run them on the fast linear model:</p></div>
 <div class="codeblock"><div class="code-head"><span class="code-caret">&#9656;</span><span class="code-file">scripts/ablate.sh</span><span class="code-tag">shell</span><button class="code-copy" type="button">copy</button></div><div class="code-wrap"><pre><code>#!/usr/bin/env bash
 set -e
-BEST=<span class="s">"--model linear --covariates 1 --gap 336 --lookback 336 --loss huber --revin 1"</span>   <span class="c"># your gradedcov winner; if a transformer won, change --model and uncomment patch/depth below</span>
+BEST=<span class="s">"--model linear --covariates 1 --gap 336 --lookback 336 --loss huber --revin 1"</span>   <span class="c"># keep linear for a FAST ablation (~2h). LSTM won the comparison but ablating it is ~12h; component effects transfer. Report LSTM as the best model.</span>
 
 <span class="c"># The model comparison is ALREADY in runs.csv (notes=graded and notes=gradedcov).</span>
 <span class="c"># Do NOT re-run it. Below: change one factor at a time versus BEST.</span>
