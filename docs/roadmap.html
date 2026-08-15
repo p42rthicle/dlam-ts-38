@@ -243,10 +243,10 @@ details.more>summary:hover{color:var(--ink)}
 
 
 .precheck{margin:12px 0 4px;padding:11px 14px;border-radius:4px;
-  background:var(--warn-soft);border:1px solid var(--warn);
+  background:var(--ok-soft);border:1px solid var(--ok);
   font-family:var(--disp);font-size:14.5px;line-height:1.55}
 .precheck b{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;
-  color:var(--warn);display:block;margin-bottom:4px;font-weight:700}
+  color:var(--ok);display:block;margin-bottom:4px;font-weight:700}
 .precheck a{font-weight:700}
 
 
@@ -4470,8 +4470,8 @@ Ticks are stored in this browser. Moving the file or switching browser loses the
       var st=document.querySelector('.step[data-revisit="'+sid+'"]'); if(!st) return;
       var hh=st.querySelector('.step-body h3'); if(!hh) return;
       var d=document.createElement('div'); d.className='precheck';
-      d.innerHTML='<b>Stop \u2014 unresolved from earlier</b>'+PRE[sid][1]+
-                  ' <a href="#'+PRE[sid][0]+'">Reopen '+PRE[sid][0].toUpperCase()+'</a>';
+      d.innerHTML='<b>Confirmed \u2014 settled on the forum</b>'+PRE[sid][1]+
+                  ' <a href="#'+PRE[sid][0]+'">See '+PRE[sid][0].toUpperCase()+'</a>';
       hh.parentNode.insertBefore(d, hh.nextSibling);
     });
   })();
