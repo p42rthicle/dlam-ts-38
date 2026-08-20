@@ -146,7 +146,7 @@ th{background:var(--panel2);font-weight:600;color:var(--mut)}
    Self-contained. Model answers embedded. Anki = theory (Bank B) only.
    Later passes append via RM.blocks.push(...) above the SPLICE marker.
    ========================================================================= */
-const BUILD = "pass5 · 2026-08-20";
+const BUILD = "pass6 · 2026-08-20";
 const RM = { blocks: [] };
 
 /* ---- REGISTER (full, static, from tracker). blockId links to a block.
@@ -1661,6 +1661,225 @@ RM.blocks.push({
  ]
 });
 
+/* ================= PASS 6 (2026) — Tier-6 blocks (final content pass) =================
+   Four 1/6-sitting types. Bank A (t6-signeuron, t6-lrcurves) get full worked[] depth,
+   NO anki. Bank B (t6-earlystop, t6-dropout) get primer+lede+why+sections+variations+anki.
+   Real exam questions only, cited. After this, CHEAT.pending is empty. */
+
+/* ---- t6-signeuron — Bank A — sigmoid neuron df/dw (+L2) ---- */
+RM.blocks.push({
+ id:"t6-signeuron", tier:6, code:"T6", bank:"A",
+ title:"Sigmoid neuron: partial derivatives df/dw, df/db (+L2 term)",
+ exams:"SS21 Q7–8",
+ points:"12 (2 per part: Q7 a–d, Q8 a–b)",
+ primer:{
+  test:"Whether you can differentiate a single sigmoid neuron's output with respect to each weight and the bias by the chain rule, state the sigmoid derivative in the σ(1−σ) form, and then add the extra term an L2 penalty contributes. Pure execution of df/dw = (df/dz)(dz/dw); the L2 part checks you know d/dwᵢ of α∑w² is 2αwᵢ.",
+  idea:"A single neuron computes a linear pre-activation z = w₁x₁ + w₂x₂ + w₃x₃ + b and then passes it through the logistic sigmoid f(z) = 1/(1+e⁻ᶻ). Training needs the derivative of the output with respect to each parameter, obtained by the chain rule df/dwᵢ = (df/dz)·(dz/dwᵢ). The two pieces are easy: the sigmoid's own derivative has the compact closed form f'(z) = f(z)(1 − f(z)) — worth memorising because you never have to re-derive it — and the linear pre-activation contributes dz/dwᵢ = xᵢ (only the i-th term survives, the rest are constants in wᵢ) and dz/db = 1. Multiplying gives df/dwᵢ = f(z)(1 − f(z))·xᵢ and df/db = f(z)(1 − f(z)).<br><br>The second part adds L2 regularisation, α∑wᵢ², to the objective. Because differentiation is linear, you just differentiate the two summands separately (the sum rule) and add: the sigmoid term is unchanged, and the penalty contributes d/dwᵢ(α∑wⱼ²) = 2αwᵢ (every other weight is a constant with respect to wᵢ, so its derivative is 0). Hence with L2, df/dwᵢ = f(z)(1 − f(z))·xᵢ + 2αwᵢ. The bias is normally not regularised, so df/db is unchanged. The whole question is 2 marks per part, and the marks are for showing the chain-rule split explicitly and writing the sigmoid derivative in the σ(1−σ) form — not for any numerical arithmetic, since no numbers are given."
+ },
+ lede:"Single neuron \\(z=w_1x_1+w_2x_2+w_3x_3+b\\), \\(f(z)=1/(1+e^{-z})\\). Chain rule: \\(\\frac{df}{dw_i}=\\frac{df}{dz}\\frac{dz}{dw_i}\\). Sigmoid derivative in closed form \\(f'(z)=f(z)(1-f(z))\\); \\(\\frac{dz}{dw_i}=x_i\\), \\(\\frac{dz}{db}=1\\). So \\(\\frac{df}{dw_i}=f(z)(1-f(z))\\,x_i\\) and \\(\\frac{df}{db}=f(z)(1-f(z))\\). Adding L2 \\(=\\alpha\\sum w_j^2\\) contributes \\(+2\\alpha w_i\\) to each weight derivative (bias unchanged).",
+ why:"SS21 Q7 (a–d) + Q8 (a–b), 2 marks each = 12. Marks are for the explicit chain-rule split and the \\(f(1-f)\\) form, plus the \\(+2\\alpha w_i\\) L2 term. No numbers are given — it is a symbolic derivation, so write every step exactly as below.",
+ sections:[
+  {h:"The two ingredients — sigmoid derivative and dz/dparam", src:"tracker T6 · L2/L3 · SS21 Q7–8",
+   note:{c:"good",h:"Memorise this, don't re-derive",b:"\\(f(z)=\\dfrac{1}{1+e^{-z}}\\Rightarrow f'(z)=f(z)\\big(1-f(z)\\big)\\). And \\(z=\\sum_j w_jx_j+b\\Rightarrow \\dfrac{\\partial z}{\\partial w_i}=x_i,\\ \\dfrac{\\partial z}{\\partial b}=1\\). Every part of the question is one product of these two."},
+   body:"<b>Sigmoid derivative.</b> With \\(f=\\frac{1}{1+e^{-z}}\\), write \\(f=(1+e^{-z})^{-1}\\); then \\(f'=-(1+e^{-z})^{-2}\\cdot(-e^{-z})=\\frac{e^{-z}}{(1+e^{-z})^2}\\). Recognise \\(\\frac{e^{-z}}{1+e^{-z}}=1-f\\), so \\(f'(z)=f(z)\\,(1-f(z))\\). This is the form to write on the sheet: \\([1-f(z)]\\,f(z)\\), or fully \\(\\big[1-\\frac{1}{1+e^{-z}}\\big]\\frac{1}{1+e^{-z}}\\).<br><br>"+
+   "<b>Linear pre-activation.</b> \\(z=w_1x_1+w_2x_2+w_3x_3+b\\). Differentiating in \\(w_i\\), only the \\(w_ix_i\\) term survives: \\(\\partial z/\\partial w_i=x_i\\). Differentiating in \\(b\\): \\(\\partial z/\\partial b=1\\).<br><br>"+
+   "<b>L2 term.</b> The penalty \\(\\alpha\\sum_j w_j^2=\\alpha(w_1^2+w_2^2+w_3^2)\\). By the sum rule, \\(\\partial/\\partial w_i=2\\alpha w_i\\) (other weights are constants ⇒ 0). Add this to the weight derivatives; the bias is not regularised, so \\(df/db\\) is unchanged."}
+ ],
+ worked:[
+  {h:"WORKED 1 — SS21 Q7 (2p each) · state f, f′, then df/dw₁, df/dw₂, df/db",
+   q:"\\\"Single neuron \\(z=w_1x_1+w_2x_2+w_3x_3+b\\), sigmoid \\(f(z)\\). (a) State \\(f(z)\\) and \\(f'(z)\\). (b) \\(df/dw_1\\). (c) \\(df/dw_2\\). (d) \\(df/db\\). Full details.\\\" (Verbatim from SS21 OCR.)",
+   intro:"No numbers are supplied — the answer is symbolic. Each part is \\((df/dz)\\times(dz/d\\text{param})\\). Show the chain-rule split, then substitute the two pieces.",
+   fwd:[["pre-activation","\\(z=w_1x_1+w_2x_2+w_3x_3+b\\)"],["\\(df/dz\\)","\\(f(z)(1-f(z))\\)"],["\\(dz/dw_1\\)","\\(x_1\\)"],["\\(dz/dw_2\\)","\\(x_2\\)"],["\\(dz/db\\)","\\(1\\)"]],
+   steps:[
+    ["(a) State the sigmoid and its derivative.","\\(f(z)=\\dfrac{1}{1+e^{-z}}\\). Derivative in closed form: \\(f'(z)=\\big[1-f(z)\\big]f(z)=\\Big[1-\\tfrac{1}{1+e^{-z}}\\Big]\\tfrac{1}{1+e^{-z}}\\). <i>Why:</i> the \\(f(1-f)\\) identity is what the examiner wants — deriving it via \\((1+e^{-z})^{-1}\\) is fine but state the final form."],
+    ["(b) \\(df/dw_1\\) — chain rule.","\\(\\dfrac{df}{dw_1}=\\dfrac{df}{dz}\\dfrac{dz}{dw_1}=\\big[1-f(z)\\big]f(z)\\cdot x_1\\). <i>Why:</i> \\(dz/dw_1=x_1\\) since only the \\(w_1x_1\\) term depends on \\(w_1\\)."],
+    ["(c) \\(df/dw_2\\).","\\(\\dfrac{df}{dw_2}=\\big[1-f(z)\\big]f(z)\\cdot x_2\\). Same structure, \\(dz/dw_2=x_2\\)."],
+    ["(d) \\(df/db\\).","\\(\\dfrac{df}{db}=\\big[1-f(z)\\big]f(z)\\cdot 1=\\big[1-f(z)\\big]f(z)\\). <i>Why:</i> \\(dz/db=1\\); the bias multiplies nothing, so the \\(x_i\\) factor becomes \\(1\\)."]
+   ],
+   answer:[["(a) f, f′","\\(1/(1+e^{-z})\\); \\([1-f]f\\)"],["(b) df/dw₁","\\([1-f(z)]f(z)\\,x_1\\)"],["(c) df/dw₂","\\([1-f(z)]f(z)\\,x_2\\)"],["(d) df/db","\\([1-f(z)]f(z)\\)"]],
+   examwrite:"<div class='h'>Write exactly (2 marks each):</div><div class='mono'>a) f(z) = 1/(1+exp(-z));  f'(z) = [1 - f(z)]·f(z)\nb) df/dw1 = df/dz · dz/dw1 = [1-f(z)]·f(z) · x1        (dz/dw1 = x1)\nc) df/dw2 = df/dz · dz/dw2 = [1-f(z)]·f(z) · x2        (dz/dw2 = x2)\nd) df/db  = df/dz · dz/db  = [1-f(z)]·f(z) · 1          (dz/db  = 1)</div><p style='margin:6px 0 0'>Always show the <code>df/dz · dz/dw</code> split and the \\(f(1-f)\\) form — that is where the marks are.</p>"},
+
+  {h:"WORKED 2 — SS21 Q8 (2p each) · add L2 = α∑w², recompute df/dw₁, df/dw₂",
+   q:"\\\"Now add L2 regularisation \\(\\alpha\\sum w^2\\) to \\(f\\). Give (a) \\(df/dw_1\\), (b) \\(df/dw_2\\) including the regularisation term.\\\" (Verbatim from SS21 OCR.)",
+   intro:"The objective is now \\(f(z)+\\alpha\\sum_j w_j^2\\). Differentiate the two summands separately (sum rule) and add. The sigmoid part is exactly Worked 1; only the extra penalty derivative is new.",
+   fwd:[["objective","\\(f(z)+\\alpha(w_1^2+w_2^2+w_3^2)\\)"],["sigmoid part of \\(df/dw_i\\)","\\([1-f(z)]f(z)\\,x_i\\)"],["L2 part \\(dL_2/dw_i\\)","\\(2\\alpha w_i\\)"]],
+   steps:[
+    ["Split by the sum rule.","\\(\\dfrac{d}{dw_i}\\big[f(z)+\\alpha\\textstyle\\sum_j w_j^2\\big]=\\dfrac{df}{dw_i}+\\dfrac{d}{dw_i}\\big(\\alpha\\sum_j w_j^2\\big)\\). <i>Why:</i> derivative of a sum is the sum of derivatives — handle each term independently."],
+    ["Differentiate the L2 penalty.","\\(\\dfrac{d}{dw_1}\\,\\alpha(w_1^2+w_2^2+w_3^2)=2\\alpha w_1\\) (the \\(w_2^2,w_3^2\\) terms are constants in \\(w_1\\) ⇒ 0). Likewise \\(\\partial/\\partial w_2=2\\alpha w_2\\)."],
+    ["(a) \\(df/dw_1\\) with L2.","\\(\\dfrac{df}{dw_1}=\\big[1-f(z)\\big]f(z)\\,x_1+2\\alpha w_1\\)."],
+    ["(b) \\(df/dw_2\\) with L2.","\\(\\dfrac{df}{dw_2}=\\big[1-f(z)\\big]f(z)\\,x_2+2\\alpha w_2\\)."],
+    ["Note on the bias.","\\(df/db\\) is unchanged — the bias is not part of \\(\\sum w^2\\), so it gets no \\(2\\alpha\\) term. (State this if asked about \\(b\\).)"]
+   ],
+   answer:[["(a) df/dw₁ (+L2)","\\([1-f(z)]f(z)\\,x_1+2\\alpha w_1\\)"],["(b) df/dw₂ (+L2)","\\([1-f(z)]f(z)\\,x_2+2\\alpha w_2\\)"]],
+   examwrite:"<div class='h'>Write exactly (2 marks each):</div><div class='mono'>objective f = 1/(1+exp(-z)) + a·(w1^2 + w2^2 + w3^2)\na) df/dw1 = df/dz·dz/dw1 + dL2/dw1 = [1-f(z)]·f(z)·x1 + 2·a·w1\nb) df/dw2 = df/dz·dz/dw2 + dL2/dw2 = [1-f(z)]·f(z)·x2 + 2·a·w2</div><p style='margin:6px 0 0'>The only new piece vs Q7 is <code>+2·a·wᵢ</code> from \\(\\alpha\\sum w^2\\). Bias derivative stays \\([1-f]f\\) (no L2 term).</p>"}
+ ],
+ variations:[
+  {ex:"SS21 Q7", d:"State \\(f(z)\\) and \\(f'(z)\\), then \\(df/dw_1,df/dw_2,df/db\\) with full chain-rule detail (2p each). Worked as Ex 1."},
+  {ex:"SS21 Q8", d:"Add L2 \\(=\\alpha\\sum w^2\\); recompute \\(df/dw_1,df/dw_2\\) with the regularisation term (2p each). Worked as Ex 2 — the delta is \\(+2\\alpha w_i\\)."}
+ ],
+ drill:"<b>Do these from memory — symbolic, no numbers:</b><ol>"+
+  "<li>State \\(f(z)\\) and \\(f'(z)=[1-f]f\\) without re-deriving, then write \\(df/dw_1,df/dw_2,df/db\\) with the chain-rule split shown.</li>"+
+  "<li>Add \\(L2=\\alpha\\sum w^2\\) and write \\(df/dw_1,df/dw_2\\) with the \\(+2\\alpha w_i\\) term; state why \\(df/db\\) is unchanged.</li>"+
+  "<li>Sanity: differentiate \\(\\alpha(w_1^2+w_2^2+w_3^2)\\) w.r.t. \\(w_2\\) and confirm you get \\(2\\alpha w_2\\) (not \\(2\\alpha(w_1+w_2+w_3)\\)).</li>"+
+  "</ol>Procedural ⇒ no Anki; drill until the \\(f(1-f)\\) form and the \\(+2\\alpha w_i\\) delta are automatic.",
+ checks:[
+  "State \\(f(z)=1/(1+e^{-z})\\) and \\(f'(z)=f(z)(1-f(z))\\) cold",
+  "Write \\(df/dw_i=[1-f]f\\,x_i\\) and \\(df/db=[1-f]f\\) via explicit chain rule",
+  "Add the L2 delta \\(+2\\alpha w_i\\) to each weight derivative",
+  "State that the bias derivative gets no L2 term"
+ ]
+});
+
+/* ---- t6-lrcurves — Bank A — learning-rate loss curves ---- */
+RM.blocks.push({
+ id:"t6-lrcurves", tier:6, code:"T6", bank:"A",
+ title:"Learning-rate loss curves: draw high / good / low / zero",
+ exams:"2024 Q4",
+ points:"8 (four curves + one–two sentences each)",
+ primer:{
+  test:"Whether you can read/draw the shape of a training-loss-vs-iteration curve for four learning-rate regimes and say in a sentence why each looks that way. It probes intuition about how step size interacts with the loss surface: too big overshoots, too small crawls, zero does nothing, and the right size descends smoothly.",
+  idea:"Gradient descent updates weights by θ ← θ − η∇L, where η is the learning rate — the step size. Plotting the training loss against iterations reveals the learning rate immediately, because the step size controls how the loss moves. If η is <b>too high</b>, each step overshoots the minimum: the loss bounces around and can even increase or diverge, so the curve is erratic and may trend upward. If η is <b>good</b>, each step makes steady progress and the loss falls quickly and smoothly to a low value, then flattens — the classic healthy training curve. If η is <b>too low</b>, the steps are tiny: the loss still decreases smoothly but far too slowly, so within the iteration budget it is still high, well above the minimum. If η is <b>zero</b>, there is no update at all and the loss is a perfectly flat horizontal line at its initial value.<br><br>The exam draws the axes (iterations on x, loss on y) and asks you to sketch all four curves on them and justify each in one or two sentences. The marks are for the correct qualitative shape and the matching reason — you are not computing anything. The key contrasts to get right: high LR = non-monotonic / diverging (not just \"fast\"), good LR = fast smooth monotonic decrease to a low plateau, low LR = smooth but slow and still high at the end, zero LR = flat. A common trap is drawing the high-LR curve as simply the fastest smooth descent; the point of \"too high\" is that it is unstable and overshoots, so it must show oscillation or divergence rather than a clean fast drop."
+ },
+ lede:"Loss vs iterations, four learning rates. <b>High</b> \\(\\eta\\): overshoots the minimum → curve oscillates / can increase / diverges (unstable). <b>Good</b> \\(\\eta\\): fast, smooth, monotonic decrease to a low plateau. <b>Low</b> \\(\\eta\\): smooth but very slow decrease, still high at the end of the budget. <b>Zero</b> \\(\\eta\\): flat horizontal line at the initial loss (no update). Marks = correct shape + one-sentence reason each.",
+ why:"2024 Q4 (8p) hands you the loss-vs-iteration axes and asks for all four curves plus 1–2 sentences of justification each. It's pure shape+reason — the trap is drawing 'high LR' as merely the fastest smooth drop instead of an unstable/diverging curve.",
+ sections:[
+  {h:"The four shapes and the one-line reason for each", src:"tracker T6 · L4/L5 training · 2024 Q4",
+   note:{c:"warn",h:"The trap",b:"'High learning rate' does NOT mean 'fastest smooth descent'. Too-high η overshoots the minimum, so its curve is non-monotonic — it oscillates and can rise/diverge. The smooth fast drop is the <i>good</i> LR. Draw high-LR as unstable."},
+   body:"With axes = iterations (x) vs training loss (y):<ul>"+
+   "<li><b>High \\(\\eta\\) (too high).</b> Steps overshoot the minimum each time → loss jumps around, may increase, can diverge to infinity. <i>Reason:</i> the step is larger than the basin, so updates leap past the minimum and amplify.</li>"+
+   "<li><b>Good \\(\\eta\\).</b> Fast, smooth, monotonic decrease that levels off at a low loss. <i>Reason:</i> the step size matches the curvature — steady progress into the minimum.</li>"+
+   "<li><b>Low \\(\\eta\\) (too low).</b> Smooth decrease but very slow; within the same number of iterations the loss is still high / not converged. <i>Reason:</i> tiny steps make correct but minuscule progress per iteration.</li>"+
+   "<li><b>Zero \\(\\eta\\).</b> A flat horizontal line at the starting loss. <i>Reason:</i> \\(\\theta\\leftarrow\\theta-0\\cdot\\nabla L\\) never changes the weights, so the loss never moves.</li></ul>"}
+ ],
+ worked:[
+  {h:"WORKED — 2024 Q4 (8p) · draw all four curves on one loss-vs-iteration plot + justify",
+   q:"\\\"Graph with iterations on the x-axis, loss on the y-axis. Draw: (a) high learning rate, (b) good learning rate, (c) low learning rate, (d) zero learning rate, and write one to two sentences about why it is so.\\\" (Verbatim from 2024 OCR.)",
+   pre:
+"  loss\n"+
+"   ^\n"+
+"   |xx                         (a) HIGH: overshoots -> oscillates / diverges\n"+
+"   |  x   x   x  x   x  x       (jagged, may rise)\n"+
+"   |\\  x x   x  x  x            (d) ZERO: flat line, no change\n"+
+"   | \\____________________ (d)\n"+
+"   |  \\                         (c) LOW: smooth but barely moves\n"+
+"   |   \\\\......______________(c) still high at the end\n"+
+"   |    \\ \\\n"+
+"   |     \\_\\_____            (b) GOOD: fast smooth drop to low plateau\n"+
+"   |         \\______________(b)\n"+
+"   +--------------------------> iterations",
+   intro:"Draw one set of axes and four labelled curves. Each curve needs the right qualitative shape and a one-sentence reason. Work through them in order of shape.",
+   fwd:[["x-axis","iterations"],["y-axis","training loss"],["curves to draw","4 (high / good / low / zero)"]],
+   steps:[
+    ["(d) Zero LR — flat line.","Draw a horizontal line at the initial loss. <i>Reason to write:</i> with \\(\\eta=0\\) the update \\(\\theta\\leftarrow\\theta-0\\cdot\\nabla L\\) makes no change, so the loss stays constant."],
+    ["(c) Low LR — slow smooth decrease.","Draw a gently sloping line that decreases smoothly but is still high at the right edge. <i>Reason:</i> steps are correct in direction but tiny, so convergence is far too slow for the iteration budget."],
+    ["(b) Good LR — fast smooth decrease to a low plateau.","Draw a curve that drops quickly and smoothly, then flattens near the bottom. <i>Reason:</i> the step size matches the loss curvature, giving steady efficient descent to the minimum."],
+    ["(a) High LR — unstable / diverging.","Draw a jagged curve that jumps around and trends upward (or shoots to infinity). <i>Reason:</i> the step overshoots the minimum each update, so the loss oscillates and can diverge. <b>Do not draw this as a fast smooth drop</b> — that is the good LR."],
+    ["Label each curve.","Annotate a/b/c/d next to each curve. Marks are per curve + its reason; an unlabelled curve risks the reason mark."]
+   ],
+   answer:[["(a) high","jagged / rising / diverges — overshoots minimum"],["(b) good","fast smooth drop to low plateau — matched step size"],["(c) low","slow smooth decrease, still high — tiny steps"],["(d) zero","flat horizontal line — no weight update"]],
+   examwrite:"<div class='h'>On one axes (x=iterations, y=loss) draw + one sentence each:</div><div class='mono'>(a) HIGH  : jagged, oscillates, may rise/diverge — \"overshoots the minimum\"\n(b) GOOD  : fast smooth drop, then flat low  — \"step matches curvature\"\n(c) LOW   : smooth but slow, still high at end — \"steps too small\"\n(d) ZERO  : flat horizontal line at start loss — \"no update, eta=0\"</div><p style='margin:6px 0 0'>8 marks = 4 shapes + 4 reasons. The only real trap: high ≠ fastest-smooth; high = unstable/diverging.</p>"}
+ ],
+ variations:[
+  {ex:"2024 Q4 (8p)", d:"Draw high/good/low/zero learning-rate loss curves on a loss-vs-iteration plot with a one–two-sentence reason each. Worked in full above. WiSe/SoSe have an LR-curve reading flavour in their training questions but 2024 Q4 is the canonical drawing version."}
+ ],
+ drill:"<b>Draw all four on blank axes, then justify each in one sentence:</b><ol>"+
+  "<li>Sketch high / good / low / zero on the same loss-vs-iteration axes. Check: is your 'high' curve jagged/rising (not a smooth fast drop)?</li>"+
+  "<li>Write the one-line reason for each from \\(\\theta\\leftarrow\\theta-\\eta\\nabla L\\): zero ⇒ no change; low ⇒ tiny steps; good ⇒ matched; high ⇒ overshoot.</li>"+
+  "<li>Given an unlabelled curve, name the regime — e.g. a flat line ⇒ zero (or dead gradient); an oscillating/rising curve ⇒ too-high LR.</li>"+
+  "</ol>Procedural ⇒ no Anki; drill the four shapes until instant.",
+ checks:[
+  "Draw the four curves with correct shapes on one loss-vs-iteration plot",
+  "Give the one-sentence reason for each from the update rule",
+  "Avoid the trap: high LR = unstable/diverging, not fastest-smooth",
+  "Identify an LR regime from an unlabelled curve"
+ ]
+});
+
+/* ---- t6-earlystop — Bank B — overfitting + early stopping ---- */
+RM.blocks.push({
+ id:"t6-earlystop", tier:6, code:"T6", bank:"B",
+ title:"Overfitting + early stopping (train/val curves)",
+ exams:"SS21 Q9",
+ points:"6 (2 identify + 2 early-stopping + 2 alternatives)",
+ primer:{
+  test:"Whether you can read a train/validation-loss plot as overfitting, say the model won't generalise, define early stopping and mark the right epoch, and name a couple of alternative fixes. It tests the diagnostic reading of the two curves diverging and the standard remedies.",
+  idea:"When training loss keeps falling but validation loss stops falling and starts to rise, the model is fitting the training data ever better while getting worse on unseen data — this gap is <b>overfitting</b>, and it means the model will <i>not</i> generalise well. The validation curve is the honest estimate of generalisation, so its upturn is the signal to act on, not the still-decreasing training curve.<br><br><b>Early stopping</b> is the simplest remedy: monitor the validation loss during training and stop at the epoch where it is at its minimum, before it begins to rise, keeping the model parameters from that point. In a typical plot that is the trough of the validation curve (for the SS21 figure, around epoch 13). It works as an implicit regulariser — it limits how far the weights move from their small initial values, capping effective capacity — and it is essentially free because you are already tracking validation loss. Other standard techniques attack the same overfitting problem by reducing effective capacity or adding noise: L2 weight-decay regularisation (penalise large weights), dropout (randomly zero units so the net can't rely on any one feature), using a smaller/simpler model, and getting more data or augmenting it. The exam wants the diagnosis (overfitting, won't generalise), the definition and epoch for early stopping, and two of these alternatives — briefly, as a checklist."
+ },
+ lede:"Train loss ↓ while validation loss ↑ ⇒ <b>overfitting</b>; the model won't generalise (the val curve is the generalisation estimate). <b>Early stopping</b>: halt at the epoch where validation loss is minimised (≈epoch 13 in the SS21 figure), before it rises, and keep those weights. Alternatives to fight overfitting: dropout, L2/weight-decay regularisation, a simpler model (also more data / augmentation).",
+ why:"SS21 Q9: (a) name the phenomenon + will it generalise (2p); (b) define early stopping + mark the epoch (2p); (c) two alternative techniques (2p). Checklist answer — say overfitting/won't-generalise, define early stopping at the val-loss minimum, list two of {dropout, regularisation, simpler model}.",
+ sections:[
+  {h:"Reading the curves, early stopping, and the alternatives", src:"tracker T6 · L5 training · SS21 Q9",
+   note:{c:"good",h:"The three answers",b:"(a) Overfitting — won't generalise, shown by the rising validation loss. (b) Early stopping = stop where validation loss is minimal (before it rises); mark that epoch (≈13). (c) Two of: dropout, L2/weight-decay regularisation, simpler model, more data/augmentation."},
+   body:"<b>(a) Phenomenon.</b> Training loss decreasing while validation loss increases is the definition of <b>overfitting</b>: the model memorises training-specific detail that doesn't transfer. It will <i>not</i> generalise well — the rising validation curve is the evidence.<br><br>"+
+   "<b>(b) Early stopping.</b> Stop training at the epoch where the validation loss reaches its minimum, before it starts to rise, and keep the parameters from that epoch. In the SS21 figure that trough is around epoch 13. It's an implicit regulariser (limits how far weights drift) and costs nothing extra since you already track validation loss.<br><br>"+
+   "<b>(c) Alternatives.</b> Anything that lowers effective capacity or adds noise: <b>dropout</b>, <b>L2 / weight-decay regularisation</b>, a <b>simpler/smaller model</b>, and (not in the official key but valid) more training data or data augmentation. Name any two."}
+ ],
+ worked:[],
+ variations:[
+  {ex:"SS21 Q9", d:"(a) What phenomenon; will it generalise? → overfitting, no (rising val loss). (b) Define early stopping + indicate the epoch to stop → val-loss minimum, ≈epoch 13. (c) Two alternatives → dropout, regularisation, or simpler model. Straight checklist, 2p each."}
+ ],
+ anki:{
+  basic:[
+   ["Train loss falling but validation loss rising — what is it, and will the model generalise?","Overfitting; it will not generalise well — the rising validation loss shows performance on unseen data getting worse.","t6_earlystop"],
+   ["What is early stopping and at which epoch do you stop?","Stop training at the epoch where validation loss is at its minimum (before it starts rising) and keep those weights — an implicit regulariser.","t6_earlystop"],
+   ["Name two alternatives to early stopping for fighting overfitting.","Any two of: dropout, L2/weight-decay regularisation, a simpler/smaller model (also more data / augmentation).","t6_earlystop"]
+  ],
+  cloze:[
+   ["Training loss ↓ with validation loss ↑ is {{c1::overfitting}}; the model {{c2::won't generalise}}.","","t6_earlystop"],
+   ["Early stopping halts at the {{c1::minimum of the validation loss}}; alternatives include {{c2::dropout}} and {{c3::L2 regularisation}}.","","t6_earlystop"]
+  ]
+ },
+ drill:"",
+ checks:[
+  "Identify overfitting from diverging train/val curves and say it won't generalise",
+  "Define early stopping and mark the val-loss-minimum epoch",
+  "Name two alternatives (dropout / regularisation / simpler model)"
+ ]
+});
+
+/* ---- t6-dropout — Bank B — dropout ≈ bagging ---- */
+RM.blocks.push({
+ id:"t6-dropout", tier:6, code:"T6", bank:"B",
+ title:"Dropout ≈ bagging; dropout vs regularization",
+ exams:"2024 Q10d-e",
+ points:"— (multiple-choice: which ensemble method + the DO↔regularisation relationship)",
+ primer:{
+  test:"Whether you know that dropout is functionally most like bagging (an ensemble/variance-reduction method), and that a higher dropout rate means stronger regularisation. It probes the mechanism linking dropout to ensembling and to overfitting control.",
+  idea:"<b>Dropout</b> is a regularisation technique that, on each training forward pass, randomly sets a fraction of a layer's units to zero (each unit kept with some probability). Because a different random subset is dropped every pass, each update effectively trains a different <b>thinned sub-network</b>, and all these sub-networks share the same underlying weights. At test time no units are dropped and the weights are scaled to account for the change (or, equivalently, inverted-dropout scales during training), so the full network approximates the <i>average</i> of the exponentially many sub-networks that were trained.<br><br>That averaging of many models is exactly the logic of <b>bagging</b> (bootstrap aggregating), which trains many models on resampled data and averages them to reduce variance — so the exam's answer to \"dropout is functionally similar to bagging / boosting / stacking / none\" is <b>bagging</b>. The differences (worth a sentence): in true bagging the models are independent and each trained to convergence on its own bootstrap sample, whereas dropout's sub-networks share parameters and are each updated only briefly — but the variance-reduction-by-averaging intuition is the same, which is why the pairing is bagging and not boosting (which trains models sequentially to fix predecessors' errors) or stacking (which learns a meta-model over base models). The second part asks how dropout relates to regularisation strength: dropping more units (a higher dropout rate) forces the network to rely less on any single feature and lowers effective capacity, so <b>higher dropout ⇒ stronger regularisation</b> — up to a point, since too much dropout underfits."
+ },
+ lede:"<b>Dropout</b> randomly zeroes units each forward pass → each pass trains a different weight-sharing <b>thinned sub-network</b>; test time uses the full (weight-scaled) net ≈ averaging all sub-networks. That averaging-to-reduce-variance is the logic of <b>bagging</b> — so dropout is functionally most like <b>bagging</b> (not boosting/stacking). And a <b>higher dropout rate ⇒ stronger regularisation</b> (lower effective capacity), until too much causes underfitting.",
+ why:"2024 Q10 d/e (multiple choice): (d) dropout is functionally similar to Bagging/Boosting/Stacking/None → <b>Bagging</b>; (e) dropout↔regularisation relationship → higher dropout ⇒ higher regularisation. Know the mechanism so you can justify, not just tick.",
+ sections:[
+  {h:"Why bagging, and the regularisation relationship", src:"tracker T6 · L5 training / L2 ensembles · 2024 Q10d-e",
+   note:{c:"good",h:"The two answers + the one-line why",b:"(d) <b>Bagging</b>: dropout ≈ training an ensemble of thinned sub-networks (shared weights) and averaging them at test time — variance reduction by averaging, exactly bagging's logic (not boosting = sequential error-fixing, not stacking = meta-model). (e) Higher dropout rate ⇒ stronger regularisation (lower effective capacity); too high ⇒ underfitting."},
+   body:"<b>(d) Dropout ≈ bagging.</b> Each training pass drops a random subset of units, so it updates a different sub-network; all share one set of weights. At test time nothing is dropped and weights are scaled, so the network behaves like the average of the exponentially many sub-networks — the same variance-reduction-by-averaging that <b>bagging</b> achieves by training many models on resampled data and averaging. Hence the answer is <b>Bagging</b>. It is not <b>boosting</b> (models trained sequentially, each correcting the last) nor <b>stacking</b> (a meta-model combines base learners). Caveat to mention: dropout's sub-nets share parameters and aren't independently trained to convergence, so it's an <i>approximate</i>, cheap ensemble.<br><br>"+
+   "<b>(e) Dropout vs regularisation.</b> Dropping more units forces the network not to depend on any single feature and reduces its effective capacity, so a <b>higher dropout rate means stronger regularisation</b> — pushing against overfitting. But there is a limit: too high a rate removes so much signal that the model <b>underfits</b>."}
+ ],
+ worked:[],
+ variations:[
+  {ex:"2024 Q10d", d:"MC: 'Is dropout functionally similar to Bagging / Boosting / Stacking / None of the above?' → <b>Bagging</b> (ensemble of weight-sharing thinned sub-networks, averaged at test)."},
+  {ex:"2024 Q10e", d:"MC: relationship between dropout and regularisation → <b>higher dropout ⇒ higher regularisation</b> (lower effective capacity; too high ⇒ underfitting)."}
+ ],
+ anki:{
+  basic:[
+   ["Dropout is functionally most similar to which ensemble method, and why?","Bagging: each forward pass trains a different thinned sub-network (shared weights); test time averages them ≈ variance reduction by averaging, exactly bagging's logic. Not boosting (sequential) or stacking (meta-model).","t6_dropout"],
+   ["How does the dropout rate relate to regularisation strength?","Higher dropout rate ⇒ stronger regularisation (lower effective capacity, less reliance on any single feature); too high ⇒ underfitting.","t6_dropout"],
+   ["How does dropout differ from true bagging?","In bagging the models are independent and trained to convergence on bootstrap samples; dropout's sub-networks share parameters and are each updated only briefly — an approximate, cheap ensemble.","t6_dropout"]
+  ],
+  cloze:[
+   ["Dropout ≈ {{c1::bagging}}: it averages many {{c2::weight-sharing thinned sub-networks}} to reduce variance.","","t6_dropout"],
+   ["A {{c1::higher}} dropout rate gives {{c2::stronger}} regularisation, but too high causes {{c3::underfitting}}.","","t6_dropout"]
+  ]
+ },
+ drill:"",
+ checks:[
+  "Answer 'bagging' and explain the thinned-sub-network averaging mechanism",
+  "Distinguish it from boosting (sequential) and stacking (meta-model)",
+  "State higher dropout ⇒ stronger regularisation (and the underfitting limit)",
+  "Name how dropout differs from true bagging (shared params, not independent)"
+ ]
+});
+
 /* ==DLAM_SPLICE_BLOCKS==
    Later passes: add RM.blocks.push({...}) ABOVE this marker (Tier 3 → Pass 2,
    Tier 4 → Pass 3, Tier 5 → Pass 4-5, Tier 6 → Pass 6). Do NOT re-emit the file.
@@ -1875,7 +2094,9 @@ const CHEAT = {
   {c:"T5", t:"SiLU + BN backprop", w:"—", b:`Same T1 walk + 2 locals. SiLU=x·σ(x), deriv=σ(x)+x·σ(x)(1−σ(x)). BN node=γx̂+β, x̂=(x−μ)/√(σ²+ε); given batch stats, local wrt input = <code>γ/√(σ²+ε)</code>.`},
   {c:"T5", t:"MAX-GATE", w:"—", b:`Forward = max. Backward = full grad to arg-max input, 0 to rest (switch, no scaling). Same rule powers max-pool & ReLU.`},
   {c:"T5", t:"LSTM — fill gates", w:"—", b:`f,i,o = σ(·)∈(0,1) gates; g̃=tanh(·)∈(−1,1) candidate. <code>c_t=f⊙c_{t−1}+i⊙g̃</code>; <code>h_t=o⊙tanh(c_t)</code>. Long-range: cell update is ADDITIVE ⇒ grad highway (forget≈1 ⇒ no vanish).`},
-  {c:"ACT", t:"Activation derivs (lookup)", w:"7p", b:`σ=1/(1+e⁻ˣ), σ'=σ(1−σ), range (0,1), σ'≤0.25. LeakyReLU: x if x≥0 else αx; f'=1 (x>0)/α (x<0). <b>α=0.04 (2024/SoSe25), ε=0.01 (WiSe25/26) — cite per paper.</b> tanh∈(−1,1), tanh'=1−tanh², range (0,1], max 1 @0.`}
+  {c:"ACT", t:"Activation derivs (lookup)", w:"7p", b:`σ=1/(1+e⁻ˣ), σ'=σ(1−σ), range (0,1), σ'≤0.25. LeakyReLU: x if x≥0 else αx; f'=1 (x>0)/α (x<0). <b>α=0.04 (2024/SoSe25), ε=0.01 (WiSe25/26) — cite per paper.</b> tanh∈(−1,1), tanh'=1−tanh², range (0,1], max 1 @0.`},
+  {c:"T6", t:"SIGMOID NEURON df/dw (+L2)", w:"12p", b:`z=Σwᵢxᵢ+b, f=σ(z). <code>df/dwᵢ = f'(z)·dz/dwᵢ = [1−f(z)]f(z)·xᵢ</code>; <code>df/db=[1−f(z)]f(z)</code>. Add L2=α·Σw² ⇒ <code>+2αwᵢ</code> per weight (sum rule; bias gets NO L2 term). Show the df/dz·dz/dw split + the f(1−f) form — that's the marks.`},
+  {c:"T6", t:"LR CURVES (draw)", w:"8p", b:`Loss vs iters: <b>HIGH</b> η = jagged/oscillates/diverges (overshoots — NOT fast-smooth). <b>GOOD</b> = fast smooth drop → low plateau. <b>LOW</b> = smooth but slow, still high at end. <b>ZERO</b> = flat line (no update). 4 shapes + 1 reason each = 8p.`}
  ],
  side2:[
   {c:"T2", t:"RESNET", w:"4–6p · 5/6", b:`Block <code>out=F(x)+x</code>; skip edge adds input back → learns residual. Why: (1) +x add-gate passes grad ×1 → direct route to early layers → deep nets trainable; (2) identity easy (F→0) → depth never hurts. Draw 3-node graph (F, skip, +). Tie every advantage to the skip/gradient path.`},
@@ -1892,11 +2113,11 @@ const CHEAT = {
   {c:"T5", t:"BIDIRECTIONAL RNN", w:"—", b:`Two RNNs on same seq: forward + backward; per-position state <code>h_t=[→h_t ; ←h_t]</code> (concat) → each output sees past AND future. Use: NER/POS/speech. <b>Can't</b> stream or generate autoregressively (needs whole sequence).`},
   {c:"T5", t:"AUTOENCODER", w:"5p", b:`<code>x → encoder → z (bottleneck, ≪dim) → decoder → x̂</code>; unsupervised, minimise recon loss <code>‖x−x̂‖²</code>. Purpose: representation learning / dim-reduction. How: narrow z forces discarding redundancy (no bottleneck ⇒ trivial identity). SoSe25: n→10→n.`},
   {c:"T5", t:"VAE explicit vs implicit", w:"5p", b:`VAE = <b>EXPLICIT</b>: prior p(z)+decoder p(x|z) define <code>p(x)=∫p(x|z)p(z)dz</code>; train by maximising <b>ELBO</b> = <code>E_q[log p(x|z)] − KL(q(z|x)‖p(z))</code> (recon − KL). GAN = <b>IMPLICIT</b>: generator only a sampler (noise→img), adversarial, no p(x). Explicit=optimises likelihood; implicit=only samples.`},
-  {c:"T5", t:"REPARAM TRICK + ELBO", w:"5p", b:`Can't backprop through <code>z∼N(μ,σ²)</code> (sampling not differentiable in μ,σ). Trick: <code>z = μ + σ⊙ε, ε∼N(0,I)</code> — randomness in ε (no grad), μ,σ via +/× ⇒ ∂z/∂μ=1, ∂z/∂σ=ε → grads reach encoder. ELBO skeleton: <code>E_q[log p(x|z)] − KL(q(z|x)‖p(z))</code>.`}
+  {c:"T5", t:"REPARAM TRICK + ELBO", w:"5p", b:`Can't backprop through <code>z∼N(μ,σ²)</code> (sampling not differentiable in μ,σ). Trick: <code>z = μ + σ⊙ε, ε∼N(0,I)</code> — randomness in ε (no grad), μ,σ via +/× ⇒ ∂z/∂μ=1, ∂z/∂σ=ε → grads reach encoder. ELBO skeleton: <code>E_q[log p(x|z)] − KL(q(z|x)‖p(z))</code>.`},
+  {c:"T6", t:"OVERFIT + EARLY STOPPING", w:"6p", b:`Train loss ↓ while val loss ↑ = <b>overfitting</b> → won't generalise. <b>Early stopping</b>: halt at the val-loss minimum (before it rises), keep those weights (implicit regulariser). Alternatives: dropout, L2/weight-decay, simpler model, more data/augmentation.`},
+  {c:"T6", t:"DROPOUT ≈ BAGGING", w:"—", b:`Dropout zeroes random units each pass → trains weight-sharing thinned sub-nets; test = full net (scaled) ≈ averaging them → variance reduction = <b>bagging</b> (NOT boosting/stacking). Higher dropout rate ⇒ stronger regularisation (too high ⇒ underfit). Differs from true bagging: shared params, not independent.`}
  ],
- pending:`<b>Not yet on this sheet — build the block, then add its formulas here and tick it off:</b><br>
-  Tier-6 (1/6 sittings, Pass 6): sigmoid-neuron df/dw (+L2), overfitting/early-stopping, dropout≈bagging, LR curves. <br>
-  <b>All Tier-5 items are now on the sheet (Pass 5).</b> The sheet is complete once the four Tier-6 items above are folded in at Pass 6.`
+ pending:``
 };
 function cheatSide(items){
  return `<div class="cicols">`+items.map(i=>
@@ -1907,7 +2128,9 @@ function renderCheat(){
  let h=`<h1>Cheat sheet — double-sided A4</h1>
    <p class="sub">Consolidated formulas + procedures from every built block. Copy onto your allowed double-sided A4 (0.03 mm pen holds this density — see the DMML sheet). Put here what is expensive to recall; know the reflex rules cold.</p>
    <div class="note good"><div class="h">Survivor advice</div>The single biggest lever is that most students <b>underuse the cheat sheet</b>. Fill both sides. Formulas, gate rules, output-size formula, LSTM gates, attention, BatchNorm, ELBO skeleton go on the sheet; the +/×/max backprop reflexes and one-line theory you know cold.</div>
-   <div class="cheat-pending"><div class="h">⚠ Sheet is incomplete until Pass 5/6</div>${CHEAT.pending} <a href="#coverage">coverage →</a></div>
+   ${CHEAT.pending.trim()
+     ? `<div class="cheat-pending"><div class="h">⚠ Sheet is incomplete</div>${CHEAT.pending} <a href="#coverage">coverage →</a></div>`
+     : `<div class="note good"><div class="h">✓ Sheet complete — all 31 types folded in (pass6)</div>Every built block's formulas are on one of the two sides. Nothing pending. Transcribe onto your physical double-sided A4 and use <b>all</b> the space. <a href="#coverage">coverage →</a></div>`}
    <div class="cheat-side"><h2>Side 1 — Numerical procedures (Bank A)</h2>${cheatSide(CHEAT.side1)}</div>
    <div class="cheat-side"><h2>Side 2 — Theory (Bank B)</h2>${cheatSide(CHEAT.side2)}</div>`;
  return h;
