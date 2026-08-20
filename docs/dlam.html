@@ -146,7 +146,7 @@ th{background:var(--panel2);font-weight:600;color:var(--mut)}
    Self-contained. Model answers embedded. Anki = theory (Bank B) only.
    Later passes append via RM.blocks.push(...) above the SPLICE marker.
    ========================================================================= */
-const BUILD = "passR5 · 2026-08-13";
+const BUILD = "pass5 · 2026-08-20";
 const RM = { blocks: [] };
 
 /* ---- REGISTER (full, static, from tracker). blockId links to a block.
@@ -1346,6 +1346,321 @@ Object.keys(PRIMERS).forEach(function(k){
   if(blk) blk.primer = PRIMERS[k];
 });
 
+/* ================= PASS 5 (2026) — Tier-5 Bank B blocks =================
+   Seven remaining Tier-5 theory types. Real exam questions only, cited.
+   Bank B format: primer{test,idea} + lede + why + sections + variations + anki.
+   No worked[] (none of these ask a numeric compute — all explain/state-formula).
+   Each also folded into CHEAT.side2 and removed from CHEAT.pending. */
+
+/* ---- t5-optim — Bank B — Newton / AdaGrad / RMSprop directions ---- */
+RM.blocks.push({
+ id:"t5-optim", tier:5, code:"T5", bank:"B",
+ title:"Optimizer directions: gradient vs Newton vs AdaGrad/RMSprop",
+ exams:"MT22/23 Q10",
+ points:"— (identify/draw each method's step direction on a contour plot)",
+ primer:{
+  test:"Whether you can say what step direction each optimiser takes on a loss surface, and why they differ — vanilla gradient goes straight downhill (ignoring curvature), a second-order/adaptive method corrects that using curvature or per-axis gradient history. The exam draws a stretched quadratic bowl and asks which arrow belongs to which method.",
+  idea:"On an elongated (ill-conditioned) loss surface, plain gradient descent is inefficient: the negative gradient points perpendicular to the local contour line — the direction of steepest descent — which on a stretched bowl points mostly across the valley rather than along it toward the minimum, so the path zig-zags. The exam's picture is exactly this: a quadratic bowl whose gradient in one axis is several times larger than in the other.<br><br>The other methods fix the direction using information the raw gradient ignores. <b>Newton's method</b> is second-order: it rescales the step by the inverse Hessian, Δθ = −H⁻¹∇L, so it accounts for curvature. On a quadratic the Hessian is exact and Newton points essentially straight at the minimum in one step. <b>AdaGrad</b> and <b>RMSprop</b> are first-order but adaptive: they keep a running sum (AdaGrad) or exponentially-decayed average (RMSprop) of each parameter's squared gradients, then divide that parameter's step by the square root of it. This gives every dimension its own effective learning rate — axes with historically large gradients are damped, small-gradient axes are boosted — so a gradient whose components are in ratio about 3:1 gets normalised toward a roughly diagonal (≈45°) direction, much closer to the minimum than the raw gradient. RMSprop differs from AdaGrad only in using a decayed average, which stops the denominator growing without bound and stalling learning. All three share the goal of turning the naive downhill arrow into one that respects the geometry of the surface."
+ },
+ lede:"On a stretched quadratic bowl: the <b>plain gradient</b> is ⟂ to the contour (steepest descent) and zig-zags across the valley. <b>Newton</b> rescales by the inverse Hessian \\(\\Delta\\theta=-H^{-1}\\nabla L\\) — uses curvature, points ≈straight at the minimum. <b>AdaGrad/RMSprop</b> divide each parameter's step by the RMS of its past gradients, giving a per-axis learning rate; a 3:1 gradient ratio is normalised toward ≈45°.",
+ why:"MT22/23 Q10 shows a contour plot and asks you to draw/identify each method's arrow and justify it. Marks are for tying each direction to its mechanism: gradient = ⟂ contour; Newton = curvature/Hessian; AdaGrad/RMSprop = per-dimension RMS normalisation.",
+ sections:[
+  {h:"The three directions, and why each points where it does", src:"tracker T5 · L2 optimization · MT22/23 Q10",
+   note:{c:"good",h:"The sentence that earns the marks",b:"Vanilla GD ignores curvature, so on an ill-conditioned surface it steps ⟂ to the contour and zig-zags. Newton uses the Hessian (curvature) and, on a quadratic, points straight at the minimum. AdaGrad/RMSprop don't use curvature but normalise each axis by the RMS of its own past gradients — so a lopsided gradient is rebalanced toward the diagonal."},
+   body:"<b>Plain gradient (steepest descent).</b> Step \\(=-\\eta\\nabla L\\). The negative gradient is perpendicular to the local contour line and points to the negative of the direction of greatest increase. On a stretched bowl the large-curvature axis dominates, so the arrow points mostly <i>across</i> the valley → slow zig-zag.<br><br>"+
+   "<b>Newton / natural gradient (second-order).</b> \\(\\Delta\\theta=-H^{-1}\\nabla L\\), where \\(H\\) is the Hessian. Because it rescales by curvature, on a quadratic loss it approximates the surface exactly and the step points essentially directly to the minimum (the diagonal arrow to the minimum in the figure). Cost: forming/inverting \\(H\\) is \\(O(d^3)\\) per step — impractical for large nets, hence the first-order approximations below.<br><br>"+
+   "<b>AdaGrad / RMSprop (adaptive first-order).</b> Accumulate squared gradients per parameter — AdaGrad: \\(G_t=\\sum g^2\\); RMSprop: \\(G_t=\\rho G_{t-1}+(1-\\rho)g^2\\) (decayed). Step \\(=-\\eta\\,g/\\sqrt{G_t+\\varepsilon}\\), element-wise. This gives every dimension its own learning rate. In the figure the Y:X gradient magnitudes are about 3:1; dividing each component by its RMS rebalances them so the resulting vector sits at ≈45° — much closer to the minimum than the raw gradient. RMSprop's decay keeps \\(G_t\\) from growing forever (AdaGrad's flaw: denominator ↑ → step → 0 → premature stall)."}
+ ],
+ worked:[],
+ variations:[
+  {ex:"MT22/23 Q10", d:"Contour plot of a quadratic with a point marked; draw/identify the arrow for (i) the standard gradient (⟂ tangent, blue), (ii) Newton/natural gradient (diagonal to the minimum, green), (iii) AdaGrad/RMSprop (≈45° after normalising the ≈3:1 gradient, red), and justify each. Answer key ties Newton→curvature and AdaGrad/RMSprop→RMS normalisation."}
+ ],
+ anki:{
+  basic:[
+   ["Why does plain gradient descent zig-zag on a stretched (ill-conditioned) bowl?","The negative gradient is ⟂ to the contour (steepest descent) and ignores curvature, so on an elongated surface it points mostly across the valley, not toward the minimum.","t5_optim"],
+   ["What does Newton's method use, and what is its step?","Curvature via the Hessian: \\(\\Delta\\theta=-H^{-1}\\nabla L\\). On a quadratic it points ≈straight at the minimum. Cost \\(O(d^3)\\) to invert \\(H\\).","t5_optim"],
+   ["How do AdaGrad/RMSprop change the step direction?","They divide each parameter's step by the RMS of its own past squared gradients → per-axis learning rate. A lopsided (e.g. 3:1) gradient is normalised toward the diagonal (≈45°).","t5_optim"],
+   ["AdaGrad vs RMSprop — the one difference?","AdaGrad sums all past squared gradients (denominator grows → step → 0 → can stall); RMSprop uses an exponentially-decayed average, so learning doesn't die.","t5_optim"]
+  ],
+  cloze:[
+   ["The plain gradient is {{c1::perpendicular to the contour}} (steepest descent); Newton rescales by {{c2::the inverse Hessian \\(H^{-1}\\)}} to use curvature.","","t5_optim"],
+   ["AdaGrad/RMSprop divide each step by the {{c1::RMS of that parameter's past gradients}}, giving a {{c2::per-axis learning rate}}; RMSprop differs by using a {{c3::decayed average}}.","","t5_optim"]
+  ]
+ },
+ drill:"",
+ checks:[
+  "State the plain-gradient direction (⟂ contour) and why it zig-zags",
+  "Give Newton's step \\(-H^{-1}\\nabla L\\) and why it nails a quadratic",
+  "Explain AdaGrad/RMSprop as per-axis RMS normalisation of the gradient",
+  "Name AdaGrad's stall problem and RMSprop's decayed-average fix"
+ ]
+});
+
+/* ---- t5-search — Bank B — Grid vs random search ---- */
+RM.blocks.push({
+ id:"t5-search", tier:5, code:"T5", bank:"B",
+ title:"Grid search vs random search for hyperparameters",
+ exams:"MT22/23 Q11",
+ points:"— (state why random search beats grid search)",
+ primer:{
+  test:"Whether you can explain why random hyperparameter search usually beats grid search for the same budget. The key insight the examiner wants is that the loss depends strongly on only a few hyperparameters, and grid search wastes trials by repeating the same values of the important one.",
+  idea:"Hyperparameter search means picking values for things you don't learn by gradient descent — learning rate, number of units, regularisation strength — by trying combinations and keeping the best. <b>Grid search</b> lays a regular grid over the chosen ranges and evaluates every combination. <b>Random search</b> instead samples each hyperparameter independently from its range for each trial.<br><br>Random search tends to win for a subtle reason. In practice the loss depends strongly on only a <i>few</i> of the hyperparameters and is nearly flat in the others. With a grid, the distinct values you try of any single hyperparameter are limited: if the grid is k values per axis, you only ever test k distinct settings of the one that actually matters, because all the other grid points merely repeat those same k values while varying the unimportant axes — the points \"project onto each other\" and effective coverage of the important axis collapses. Random search, drawing every coordinate freshly, gives (almost) as many distinct values of the important hyperparameter as there are trials, so for the same budget it explores the axis that matters far more densely. The effect grows with dimensionality, which is why random search is the standard cheap baseline and grid search is reserved for very low-dimensional spaces (Bergstra & Bengio, 2012)."
+ },
+ lede:"The loss usually depends strongly on only a <b>few</b> hyperparameters. In <b>grid search</b> the points project onto each other, so you test only k distinct values of the important axis no matter how many trials you run. <b>Random search</b> draws each coordinate independently, so the same budget gives ≈one distinct value of the important hyperparameter <i>per trial</i> — far denser coverage of the axis that matters. Advantage grows with dimensionality.",
+ why:"MT22/23 Q11 asks directly why random search is preferable. Full marks: (1) loss depends on a subset of hyperparameters; (2) grid points project/collapse onto each other, reducing effective distinct values of the important one; (3) random keeps the distribution uniform per axis → higher effective point density.",
+ sections:[
+  {h:"Why random search covers the important axis better", src:"tracker T5 · L5 training2 · MT22/23 Q11",
+   note:{c:"good",h:"The exam's exact reasoning",b:"\"The loss depends on only a few hyperparameters. Grid search makes values project onto each other, reducing the effective number of points. Random search keeps the per-axis distribution uniform, so all points are used and density is much higher.\" State it in those terms."},
+   body:"Suppose two hyperparameters, one important (loss varies a lot along it) and one unimportant (loss ~flat along it), with a budget of 9 trials.<br><br>"+
+   "<b>Grid (3×3):</b> you test only <b>3</b> distinct values of the important hyperparameter — the other 6 trials just repeat those same 3 values at different settings of the unimportant one. Six of nine evaluations are effectively wasted on the axis that matters.<br><br>"+
+   "<b>Random (9 draws):</b> each trial has its own value of the important hyperparameter, so you sample ≈<b>9</b> distinct values of it. Same budget, 3× the resolution where it counts. Because each axis is sampled independently and uniformly, no coverage is thrown away on redundant projections.<br><br>"+
+   "This is why random search is the default cheap tuner and its advantage <i>increases</i> with the number of hyperparameters (grid cost is exponential in dimension; random is not). Grid search is only reasonable in 1–2 well-understood dimensions."}
+ ],
+ worked:[],
+ variations:[
+  {ex:"MT22/23 Q11", d:"Explain why random search is preferable to grid search for hyperparameter optimisation. Expected: loss depends on a few hyperparameters → grid points project onto each other (redundant) → random search gives uniform per-axis coverage and higher effective point density for the same budget."}
+ ],
+ anki:{
+  basic:[
+   ["Why is random search usually better than grid search for hyperparameters?","The loss depends strongly on only a few hyperparameters; grid points project onto each other so you test few distinct values of the important one, while random search samples ≈one distinct value per trial → denser coverage of the axis that matters, for the same budget.","t5_search"],
+   ["When is grid search still fine, and why does random's edge grow with dimension?","Grid is fine in 1–2 well-understood dimensions. Grid cost is exponential in the number of hyperparameters; random search isn't, so its relative advantage grows as dimensionality rises.","t5_search"]
+  ],
+  cloze:[
+   ["The loss depends on only a {{c1::few}} hyperparameters; grid search makes values {{c2::project onto each other}}, so random search gives higher {{c3::effective point density}} on the important axis.","","t5_search"]
+  ]
+ },
+ drill:"",
+ checks:[
+  "State that the loss depends on only a few hyperparameters",
+  "Explain the grid 'projection' / redundant-coverage problem",
+  "Explain why random search gives denser per-axis coverage for the same budget",
+  "Note the advantage grows with dimensionality"
+ ]
+});
+
+/* ---- t5-init — Bank B — Weight init: the flat-loss 'prime suspect' ---- */
+RM.blocks.push({
+ id:"t5-init", tier:5, code:"T5", bank:"B",
+ title:"Flat training loss: weight initialization as prime suspect",
+ exams:"MT22/23 Q7",
+ points:"— (pick the causes of an ~flat loss curve + justify)",
+ primer:{
+  test:"Given a training-loss curve that stays almost totally flat from the start, which causes are plausible. The answer the exam wants is a learning rate that is too low and/or a badly-scaled (or symmetric) weight initialisation — and, crucially, why over-strong regularisation is NOT the culprit.",
+  idea:"A loss that barely moves means almost no useful gradient signal is reaching the weights, or the steps taken with it are negligibly small. Two mechanisms produce this. First, the <b>learning rate too low</b>: the gradients may be fine, but each update is so tiny that the loss decreases imperceptibly. Second, and the slide-worthy answer here, a <b>bad weight initialisation</b>. If the initial weight scale is wrong the activations saturate (all in the flat tails of sigmoid/tanh) so their derivatives are ≈0 and gradients vanish; or if the weights are initialised all-equal (e.g. all zeros), every neuron in a layer computes the same thing and receives the same gradient — the <b>symmetry</b> is never broken, so the units stay identical and the network cannot learn. Either way the loss is flat because there is effectively no gradient to descend.<br><br>The distractor is <b>regularisation strength too high</b>. Strong L2 does push weights toward zero, but that only flattens the <i>regularisation</i> term of the loss; the <i>data</i> term still depends on the weights and will still change as training proceeds, so the total loss would not be dead-flat. Hence over-regularisation is not a correct explanation for a totally flat curve. The standard fix for the real culprit is proper random initialisation — Xavier/Glorot for tanh/sigmoid, He for ReLU — scaled to keep activation variance stable across layers, together with a sensibly larger learning rate."
+ },
+ lede:"A dead-flat loss ⇒ no useful gradient is moving the weights. Correct suspects: <b>learning rate too low</b> and/or <b>weight-init scale wrong</b> (saturated activations → vanishing gradient, or all-equal init → symmetry never broken → all neurons identical). <b>Not</b> \"regularisation too strong\": that flattens only the reg term; the data-loss term still changes, so total loss wouldn't be dead-flat. Fix: proper random init (Xavier/He) + a larger LR.",
+ why:"MT22/23 Q7 is a pick-the-cause question with a fixed trap. The lecture literally captions a flat curve \"weight initialization a prime suspect.\" Marks: name LR-too-low and bad init, and explain why over-regularisation is <i>not</i> a valid cause.",
+ sections:[
+  {h:"Why the loss is flat — and why regularisation isn't the reason", src:"tracker T5 · L4/L5 training · MT22/23 Q7",
+   note:{c:"warn",h:"The trap",b:"Regularisation strength too high is a tempting wrong answer. Strong L2 pushes weights → 0, so the <i>regularisation</i> loss goes flat — but the <i>data</i> loss still depends on the weights and keeps changing, so the total loss is not dead-flat. Don't pick it."},
+   body:"<b>Cause 1 — learning rate too low.</b> Gradients exist but the update \\(-\\eta\\nabla L\\) is so small the loss decreases imperceptibly → a near-horizontal curve.<br><br>"+
+   "<b>Cause 2 — weight-init scale wrong (\"prime suspect\").</b> Two failure modes: (a) badly-scaled weights saturate the activations (sigmoid/tanh sit in the flat tails), so activation derivatives ≈0 → gradients vanish → no learning; (b) <b>symmetric init</b> (all zeros / all identical) makes every unit in a layer compute the same output and receive the same gradient → symmetry never breaks → the units stay identical and the layer learns nothing.<br><br>"+
+   "<b>Why not regularisation-too-strong.</b> \\(L=L_\\text{data}+\\lambda\\lVert w\\rVert^2\\). Large \\(\\lambda\\) drives \\(w\\to0\\), flattening the \\(\\lambda\\lVert w\\rVert^2\\) term — but \\(L_\\text{data}\\) still varies with \\(w\\), so the total is not flat. Regularisation harms generalisation-vs-fit, not the ability of the loss to move at all.<br><br>"+
+   "<b>Fix.</b> Random init with the right scale — Xavier/Glorot (tanh/sigmoid) or He (ReLU) — to keep activation variance stable across depth, and raise the learning rate to a sensible value."}
+ ],
+ worked:[],
+ variations:[
+  {ex:"MT22/23 Q7", d:"Training loss is almost totally flat; select the plausible cause(s) and justify. Correct: learning rate too low and/or weight-init scale incorrectly set (the slide's \"weight initialization a prime suspect\"). Explain why \"regularisation strength too high\" is not valid — it flattens only the reg term, not the data term."}
+ ],
+ anki:{
+  basic:[
+   ["Training loss is almost totally flat from the start — the two prime suspects?","Learning rate too low (updates negligibly small) and/or weight-init scale wrong (saturated activations → vanishing gradients, or all-equal init → symmetry never broken).","t5_init"],
+   ["Why is 'regularisation strength too high' NOT a valid cause of a dead-flat loss?","Strong L2 pushes weights → 0, flattening only the regularisation term; the data-loss term still depends on the weights and keeps changing, so the total loss wouldn't be dead-flat.","t5_init"],
+   ["Why does all-zero / identical weight initialisation prevent learning?","Every neuron in a layer computes the same output and gets the same gradient → the symmetry is never broken → all units stay identical. Fix: random (Xavier/He) init.","t5_init"]
+  ],
+  cloze:[
+   ["A dead-flat loss points to {{c1::learning rate too low}} and/or {{c2::wrong weight-init scale}}; the lecture captions it \"weight initialization a {{c3::prime suspect}}\".","","t5_init"],
+   ["Symmetric (all-equal) init means every unit gets the {{c1::same gradient}} so the {{c2::symmetry is never broken}}; fix with {{c3::random Xavier/He}} init.","","t5_init"]
+  ]
+ },
+ drill:"",
+ checks:[
+  "Name LR-too-low and bad-init as the flat-loss causes",
+  "Explain saturated-activation vanishing gradient AND symmetric-init failure",
+  "Explain why over-regularisation is not a valid cause (data term still moves)",
+  "State the fix: Xavier/He random init + larger LR"
+ ]
+});
+
+/* ---- t5-birnn — Bank B — Bidirectional RNN ---- */
+RM.blocks.push({
+ id:"t5-birnn", tier:5, code:"T5", bank:"B",
+ title:"Bidirectional RNN",
+ exams:"MT22/23 Q13",
+ points:"— (identify/describe the architecture)",
+ primer:{
+  test:"Whether you know what a bidirectional RNN is and when to use it: two RNNs run over the sequence in opposite directions and their hidden states are combined, so every position sees both past and future context — usable only when the whole sequence is available in advance.",
+  idea:"A plain RNN processes a sequence left-to-right, so its hidden state at position t summarises only the inputs up to and including t — it has no information about what comes later. For many tasks that is a real limitation: the correct label for a word often depends on words after it (\"bank\" as riverbank vs. money-bank is disambiguated by the rest of the sentence). A <b>bidirectional RNN</b> removes the limitation by running <i>two</i> independent RNNs over the same sequence: a forward RNN that reads left-to-right and a backward RNN that reads right-to-left. At each position t the two hidden states — one summarising the past, one summarising the future — are combined, usually by <b>concatenation</b>, into a single representation that carries context from both directions.<br><br>The output at each timestep is therefore a function of the entire sequence, not just its prefix, which typically improves accuracy on labelling and understanding tasks such as named-entity recognition, POS tagging, and speech recognition. The cost is that the whole input sequence must be available before you can compute the backward pass, so a bidirectional RNN <i>cannot</i> be used for online/streaming settings or for autoregressive generation, where future tokens don't exist yet. In short: two RNNs in opposite directions, hidden states concatenated per position, giving full-context representations at the price of needing the complete sequence up front."
+ },
+ lede:"Two RNNs over the same sequence: one reads <b>forward</b> (left→right), one reads <b>backward</b> (right→left). At each position their hidden states are <b>concatenated</b>, so every timestep's representation carries context from <i>both</i> past and future. Helps labelling/understanding tasks (NER, POS, speech); can't be used for streaming or autoregressive generation (needs the whole sequence first).",
+ why:"MT22/23 Q13's answer key is literally \"bidirectional rnn\" — you must name the architecture and describe its mechanism (two directions, concatenated states, full-context per position) and its constraint (whole sequence required).",
+ sections:[
+  {h:"Mechanism and when it applies", src:"tracker T5 · L8 RNNs / L11 DeepNLP · MT22/23 Q13",
+   note:{c:"good",h:"State it crisply",b:"Forward RNN + backward RNN over the same input; per-position hidden state \\(h_t=[\\overrightarrow{h_t}\\,;\\,\\overleftarrow{h_t}]\\) (concatenation). Gives each output access to both left and right context. Requires the full sequence up front → no streaming / no generation."},
+   body:"A forward RNN computes \\(\\overrightarrow{h_t}\\) from \\(x_1{\\dots}x_t\\); a separate backward RNN computes \\(\\overleftarrow{h_t}\\) from \\(x_T{\\dots}x_t\\). The combined state at position t is the concatenation \\(h_t=[\\overrightarrow{h_t};\\overleftarrow{h_t}]\\) (fed to the output layer). So the representation at every position depends on the <i>entire</i> sequence, not just the prefix.<br><br>"+
+   "<b>Use it</b> when the whole sequence is known and each position's label benefits from later context — named-entity recognition, part-of-speech tagging, speech recognition, sequence labelling generally.<br><br>"+
+   "<b>Don't use it</b> for real-time/streaming inputs or autoregressive generation: the backward pass needs tokens that haven't arrived (or don't exist) yet. This is the standard trade-off to state alongside the definition."}
+ ],
+ worked:[],
+ variations:[
+  {ex:"MT22/23 Q13", d:"Name/describe the architecture that lets each position use context from both directions. Answer: bidirectional RNN — two RNNs (forward + backward), hidden states concatenated per timestep; note it requires the full sequence so it can't stream or generate autoregressively."}
+ ],
+ anki:{
+  basic:[
+   ["What is a bidirectional RNN and what does it give you?","Two RNNs over the same sequence — one forward, one backward — with per-position hidden states concatenated, so each output uses context from both past and future.","t5_birnn"],
+   ["What is the key limitation of a bidirectional RNN?","It needs the entire input sequence before the backward pass, so it can't be used for streaming/online input or autoregressive generation.","t5_birnn"],
+   ["Name two tasks where a bidirectional RNN helps.","Sequence-labelling / understanding tasks where later context matters: NER, POS tagging, speech recognition.","t5_birnn"]
+  ],
+  cloze:[
+   ["A bidirectional RNN runs a {{c1::forward}} and a {{c2::backward}} RNN over the same sequence and {{c3::concatenates}} their hidden states at each position.","","t5_birnn"],
+   ["Bidirectional RNNs can't be used for {{c1::streaming/online input or autoregressive generation}} because they need the {{c2::whole sequence}} first.","","t5_birnn"]
+  ]
+ },
+ drill:"",
+ checks:[
+  "Define it: forward + backward RNN, hidden states concatenated per position",
+  "State that each output then sees both past and future context",
+  "Name the limitation (needs full sequence → no streaming/generation)",
+  "Give an applicable task (NER / POS / speech)"
+ ]
+});
+
+/* ---- t5-ae — Bank B — Autoencoder: architecture + purpose ---- */
+RM.blocks.push({
+ id:"t5-ae", tier:5, code:"T5", bank:"B",
+ title:"Autoencoder: architecture + purpose",
+ exams:"SS21 Q11 · SoSe25 Q8a",
+ points:"5p (SS21: 2 sketch + 3 justify) · 4p (SoSe25, latent z dim 10)",
+ primer:{
+  test:"Whether you can sketch the encoder→bottleneck→decoder architecture and state, in one or two lines, what an autoencoder is for and how the design achieves it — compress input to a low-dimensional latent code, then reconstruct, learning by minimising reconstruction error.",
+  idea:"An <b>autoencoder</b> is a neural network trained to copy its input to its output through a deliberate <b>bottleneck</b>. It has two halves: an <b>encoder</b> that maps the input x down to a low-dimensional <b>latent code</b> z (in SoSe25, dim 10), and a <b>decoder</b> that maps z back up to a reconstruction x̂ of the original. Training is unsupervised — no labels — and the loss is the <b>reconstruction error</b>, typically ‖x − x̂‖² (or cross-entropy for binary inputs); the network's parameters are adjusted so its output matches its input as closely as possible.<br><br>The purpose follows from the bottleneck. Because z has far fewer dimensions than x, the network cannot simply pass the input through; it is forced to discard redundancy and keep only the most informative structure — so z becomes a compressed, learned <b>representation</b> of the data. That makes autoencoders useful for unsupervised representation learning, non-linear dimensionality reduction (a more powerful cousin of PCA), denoising, and pretraining. The mechanism — \"how is it achieved\" — is exactly this: force the data through a narrow latent layer and minimise reconstruction loss, so the only way to reconstruct well is to have learned an efficient encoding of the input. The sketch the exam wants is x → encoder → z (narrow) → decoder → x̂, with the loss comparing x̂ to x."
+ },
+ lede:"<b>Encoder → bottleneck z → decoder → reconstruction.</b> The encoder compresses input x to a low-dimensional latent code z (SoSe25: dim 10); the decoder reconstructs x̂ from z. Trained unsupervised to minimise reconstruction loss \\(\\lVert x-\\hat x\\rVert^2\\). <b>Purpose:</b> unsupervised representation learning / dimensionality reduction. <b>How achieved:</b> the narrow z forces the net to discard redundancy and keep only informative structure, so reconstructing well requires an efficient encoding.",
+ why:"SS21 Q11 = sketch (2p) + justify purpose & mechanism (3p); SoSe25 Q8a = same, 4p, with latent z of dim 10 called out. Marks: correct three-part diagram, name the purpose (representation learning / dim-reduction), and the mechanism (bottleneck + reconstruction loss).",
+ sections:[
+  {h:"The sketch and the justification", src:"tracker T5 · L7 HW7 · SS21 Q11 / SoSe25 Q8a",
+   note:{c:"good",h:"Exam-write (node/edge form)",b:"node(x, input n-dim) → node(enc, encoder) → node(z, latent 10-dim) → node(dec, decoder) → node(xh, reconstruction n-dim); loss compares xh to x. Draw z visibly narrower than x and x̂."},
+   body:"<b>Architecture.</b> \\(x\\;\\xrightarrow{\\text{encoder }f}\\;z\\;\\xrightarrow{\\text{decoder }g}\\;\\hat x\\), with \\(\\dim(z)\\ll\\dim(x)\\) (SoSe25: \\(n\\to10\\to n\\)). Encoder and decoder are (usually symmetric) neural nets; z is the bottleneck / code layer.<br><br>"+
+   "<b>Objective.</b> Unsupervised — minimise reconstruction loss \\(\\mathcal L=\\lVert x-\\hat x\\rVert^2\\) (MSE), or cross-entropy for binary inputs. No labels are used.<br><br>"+
+   "<b>Purpose (what it's for).</b> Learn a compact, informative representation of the data: unsupervised representation learning and non-linear dimensionality reduction (generalises PCA), also denoising and pretraining.<br><br>"+
+   "<b>How it's achieved (the mechanism the marks want).</b> The bottleneck z is too small to copy the input verbatim, so to reconstruct accurately the encoder must throw away redundancy and encode only the essential structure — that forced compression is what makes z a useful representation. Without the bottleneck the network could learn a trivial identity and learn nothing."}
+ ],
+ worked:[],
+ variations:[
+  {ex:"SS21 Q11", d:"Sketch the AE architecture (2p) and justify: what is the purpose of an AE and how is it achieved (3p). Answer: encoder→z→decoder; purpose = representation learning / dim-reduction; achieved via bottleneck + reconstruction loss."},
+  {ex:"SoSe25 Q8a", d:"Same question, 4p, with the latent z explicitly of dimension 10 — show input n-dim → 10-dim → n-dim. Mechanically identical to SS21 Q11; just annotate the bottleneck size."}
+ ],
+ anki:{
+  basic:[
+   ["Draw/describe an autoencoder's architecture.","x → encoder → latent code z (narrow bottleneck) → decoder → reconstruction x̂, with dim(z) ≪ dim(x). Trained to minimise reconstruction loss ‖x−x̂‖².","t5_ae"],
+   ["What is an autoencoder for, and how does its design achieve it?","Purpose: unsupervised representation learning / non-linear dimensionality reduction. Achieved: the narrow bottleneck forces the net to discard redundancy and encode only informative structure, so good reconstruction requires an efficient code.","t5_ae"],
+   ["Why does an autoencoder need a bottleneck (why not equal-size z)?","Without a bottleneck the network could learn a trivial identity mapping and learn nothing useful; the narrow z forces meaningful compression.","t5_ae"]
+  ],
+  cloze:[
+   ["An autoencoder maps input x through an {{c1::encoder}} to a low-dim latent {{c2::z (bottleneck)}} then a {{c3::decoder}} back to a reconstruction x̂, minimising {{c4::reconstruction loss ‖x−x̂‖²}}.","","t5_ae"],
+   ["The purpose of an AE is {{c1::unsupervised representation learning / dimensionality reduction}}; it works because the {{c2::bottleneck}} forces it to keep only informative structure.","","t5_ae"]
+  ]
+ },
+ drill:"",
+ checks:[
+  "Sketch encoder → narrow z → decoder → x̂ (node/edge form)",
+  "State the unsupervised reconstruction-loss objective",
+  "Name the purpose: representation learning / dimensionality reduction",
+  "Explain the bottleneck mechanism (forces compression; identity would be trivial)"
+ ]
+});
+
+/* ---- t5-vae — Bank B — VAE: explicit vs implicit (vs GAN) ---- */
+RM.blocks.push({
+ id:"t5-vae", tier:5, code:"T5", bank:"B",
+ title:"VAE: explicit vs implicit probabilistic model (vs GAN)",
+ exams:"SS21 Q12 · SoSe25 Q8b",
+ points:"5p (SS21) · 4p (SoSe25)",
+ primer:{
+  test:"Whether you can classify a VAE as an explicit probabilistic model and justify it by contrast with a GAN. The mark hinges on the definition of explicit vs implicit: explicit models define and optimise a likelihood/density over the data; implicit models only define a sampling procedure.",
+  idea:"The explicit-vs-implicit distinction is about whether a generative model gives you an actual probability density for the data. An <b>explicit</b> probabilistic model defines a parametric likelihood p(x) (or a tractable bound on it) and is trained by optimising that likelihood; you can, at least approximately, evaluate how probable a data point is. An <b>implicit</b> model never writes down a density — it only specifies a procedure for drawing samples, and is trained so those samples match the data distribution, without ever computing p(x).<br><br>A <b>VAE is explicit.</b> It assumes a prior p(z) over latent variables (typically standard Gaussian) and a decoder p(x|z), which together define an explicit generative density p(x) = ∫ p(x|z)p(z) dz. Because that integral is intractable, the VAE introduces an approximate posterior q(z|x) and maximises the <b>ELBO</b>, a tractable lower bound on log p(x): ELBO = 𝔼_{q(z|x)}[log p(x|z)] − KL(q(z|x) ‖ p(z)) — a reconstruction term minus a term pulling the latent distribution toward the prior. So a VAE explicitly optimises (a bound on) a likelihood. A <b>GAN is implicit</b>: its generator defines only how to turn noise into samples, trained by an adversarial game against a discriminator; it never defines or evaluates p(x). That contrast — VAE optimises an explicit likelihood via the ELBO, GAN only learns to sample — is exactly the justification the exam asks for."
+ },
+ lede:"A <b>VAE is an explicit</b> probabilistic model: prior p(z) + decoder p(x|z) define a density \\(p(x)=\\int p(x|z)p(z)\\,dz\\), and training <b>maximises the ELBO</b>, a tractable lower bound on \\(\\log p(x)\\). A <b>GAN is implicit</b>: its generator only defines how to <i>sample</i> (noise → image), trained by an adversarial game, and never writes down or evaluates \\(p(x)\\). Explicit = optimises a likelihood; implicit = only a sampler.",
+ why:"SS21 Q12 (5p) / SoSe25 Q8b (4p) ask: are VAEs explicit or implicit, justify by contrasting with GANs. Marks: answer <b>explicit</b>; define explicit (has/optimises a likelihood — the ELBO) vs implicit (only a sampling procedure); place GAN as the implicit contrast.",
+ sections:[
+  {h:"Explicit vs implicit, and where VAE and GAN sit", src:"tracker T5 · L9/L10 generative · SS21 Q12 / SoSe25 Q8b",
+   note:{c:"good",h:"The contrast that earns the marks",b:"VAE = explicit: defines p(x) via p(z) and p(x|z) and optimises a bound on log p(x) (the ELBO), so it can (approximately) assign likelihoods. GAN = implicit: only a generator that maps noise → samples, trained adversarially; no density is ever defined or evaluated."},
+   body:"<b>Definitions.</b> An <b>explicit</b> model specifies a parametric density \\(p_\\theta(x)\\) (or a tractable bound) and trains by maximising likelihood. An <b>implicit</b> model specifies only a way to generate samples and trains so they match the data distribution — no \\(p(x)\\) is written down.<br><br>"+
+   "<b>VAE = explicit.</b> Prior \\(p(z)=\\mathcal N(0,I)\\), decoder \\(p_\\theta(x|z)\\); together \\(p_\\theta(x)=\\int p_\\theta(x|z)p(z)\\,dz\\). The integral is intractable, so a VAE introduces an encoder \\(q_\\phi(z|x)\\) and maximises the <b>ELBO</b>:<br>\\[\\mathcal L=\\mathbb E_{q_\\phi(z|x)}[\\log p_\\theta(x|z)]-\\mathrm{KL}\\big(q_\\phi(z|x)\\,\\Vert\\,p(z)\\big)\\le\\log p_\\theta(x).\\]"+
+   "Reconstruction term + a KL term pulling the latent posterior toward the prior. So a VAE explicitly optimises a lower bound on the data likelihood.<br><br>"+
+   "<b>GAN = implicit.</b> Generator \\(G\\) maps noise \\(z\\) to samples; discriminator \\(D\\) is trained to tell real from fake; \\(G\\) is trained to fool \\(D\\) (minimax game). \\(G\\) defines only a sampling procedure — you can draw \\(x\\sim G(z)\\) but you cannot evaluate \\(p(x)\\). Hence implicit.<br><br>"+
+   "<b>Answer to state:</b> VAEs are <b>explicit</b> probabilistic models (they define and optimise a likelihood via the ELBO), in contrast to GANs, which are implicit (adversarial sampler, no density)."}
+ ],
+ worked:[],
+ variations:[
+  {ex:"SS21 Q12", d:"Are VAEs explicit or implicit probabilistic models? Justify, e.g. by contrasting with GANs (5p). Answer: explicit — defines p(x) via p(z),p(x|z) and optimises the ELBO; GAN is the implicit contrast (adversarial sampler, no likelihood)."},
+  {ex:"SoSe25 Q8b", d:"Identical question, 4p. Same answer: explicit (ELBO-optimising likelihood) vs GAN implicit. No numeric compute — pure justification."}
+ ],
+ anki:{
+  basic:[
+   ["Are VAEs explicit or implicit probabilistic models, and why?","Explicit: a VAE defines a density p(x) via prior p(z) and decoder p(x|z) and trains by maximising the ELBO, a tractable lower bound on log p(x) — so it optimises a likelihood.","t5_vae"],
+   ["Why is a GAN an implicit probabilistic model?","Its generator only defines a sampling procedure (noise → sample), trained by an adversarial game; it never defines or evaluates a data density p(x).","t5_vae"],
+   ["Write the VAE ELBO and name its two terms.","\\(\\mathcal L=\\mathbb E_{q(z|x)}[\\log p(x|z)]-\\mathrm{KL}(q(z|x)\\Vert p(z))\\): a reconstruction term minus a KL term pulling the posterior toward the prior.","t5_vae"]
+  ],
+  cloze:[
+   ["A VAE is an {{c1::explicit}} model (defines/optimises a likelihood via the {{c2::ELBO}}); a GAN is {{c3::implicit}} (only a sampler, no density).","","t5_vae"],
+   ["Explicit models define a {{c1::density p(x)}} and train by {{c2::maximising likelihood}}; implicit models define only a {{c3::sampling procedure}}.","","t5_vae"]
+  ]
+ },
+ drill:"",
+ checks:[
+  "State VAEs are explicit probabilistic models",
+  "Define explicit (optimises a likelihood) vs implicit (only a sampler)",
+  "Justify VAE-explicit via the ELBO (bound on log p(x))",
+  "Place GAN as the implicit contrast (adversarial sampler, no p(x))"
+ ]
+});
+
+/* ---- t5-reparam — Bank B — Reparameterization trick ---- */
+RM.blocks.push({
+ id:"t5-reparam", tier:5, code:"T5", bank:"B",
+ title:"Reparameterization trick (VAE)",
+ exams:"SS21 Q13 · WiSe25/26 Q7-VAE",
+ points:"5p (SS21: 2 explain + 3 state form) · 3p (WiSe25/26: state form)",
+ primer:{
+  test:"Whether you can explain why sampling blocks backpropagation in a VAE and how the reparameterization trick fixes it, and then state the resulting reparametrized form. The 3 marks for the form are for writing z = μ + σ⊙ε with ε ~ N(0, I).",
+  idea:"Training a VAE needs gradients of the loss with respect to the encoder parameters, which produce the mean μ and standard deviation σ of the latent distribution. But the latent code is <b>sampled</b>: z ~ N(μ, σ²). A sampling operation is stochastic and not a differentiable function of μ and σ — there is no well-defined derivative of \"draw a random number\" with respect to the parameters of the distribution you drew from — so gradients cannot flow back through the sampling node to the encoder, and ordinary backpropagation stalls.<br><br>The <b>reparameterization trick</b> removes the randomness from the path that needs gradients. Instead of sampling z directly, you sample a parameter-free noise variable ε ~ N(0, I) from a fixed standard normal, and then compute z deterministically as z = μ + σ⊙ε (⊙ is element-wise multiplication). This is an exact re-expression: μ + σ⊙ε with ε ~ N(0,1) has the same distribution N(μ, σ²) as before. The crucial change is structural: the only stochastic node is now ε, which carries no learnable parameters and needs no gradient, while μ and σ enter z through the plain differentiable operations of addition and multiplication. So the gradient can flow through z back into μ, σ and hence into the encoder, and the whole VAE becomes trainable end-to-end by backpropagation. The resulting reparametrized form the exam asks you to state is exactly z = μ + σ⊙ε, ε ~ N(0, I)."
+ },
+ lede:"You can't backprop through a sampling node \\(z\\sim\\mathcal N(\\mu,\\sigma^2)\\): sampling isn't a differentiable function of \\(\\mu,\\sigma\\). The <b>trick</b>: sample a parameter-free \\(\\varepsilon\\sim\\mathcal N(0,I)\\) and set \\(z=\\mu+\\sigma\\odot\\varepsilon\\). Same distribution, but now the randomness sits in \\(\\varepsilon\\) (no gradient needed) while \\(\\mu,\\sigma\\) enter through +/× — so gradients flow back to the encoder and the VAE trains end-to-end.",
+ why:"SS21 Q13 = explain the trick (2p) + state the reparametrized form (3p); WiSe25/26 Q7 = state the form (3p). The 3 form-marks are for \\(z=\\mu+\\sigma\\odot\\varepsilon,\\ \\varepsilon\\sim\\mathcal N(0,I)\\). The explain-marks are for: sampling isn't differentiable → move the randomness into ε → μ,σ stay differentiable.",
+ sections:[
+  {h:"The problem, the trick, and the form to write", src:"tracker T5 · L10 generative · SS21 Q13 / WiSe25/26 Q7",
+   note:{c:"good",h:"The 3-mark form — write it exactly",b:"\\(z=\\mu+\\sigma\\odot\\varepsilon,\\quad \\varepsilon\\sim\\mathcal N(0,I)\\). μ, σ come from the encoder; ε is fresh standard-normal noise. This has distribution \\(\\mathcal N(\\mu,\\sigma^2)\\) but is differentiable in μ, σ."},
+   body:"<b>The problem.</b> A VAE's encoder outputs \\(\\mu,\\sigma\\) and the latent is drawn \\(z\\sim\\mathcal N(\\mu,\\sigma^2)\\). Backprop needs \\(\\partial\\mathcal L/\\partial\\mu,\\ \\partial\\mathcal L/\\partial\\sigma\\), but a <i>sampling</i> operation is stochastic and not a differentiable function of its distribution's parameters — so the gradient cannot pass through the sample node to the encoder.<br><br>"+
+   "<b>The trick.</b> Move the randomness off the gradient path. Sample a fixed, parameter-free noise \\(\\varepsilon\\sim\\mathcal N(0,I)\\) and build z deterministically:<br>\\[z=\\mu+\\sigma\\odot\\varepsilon,\\qquad \\varepsilon\\sim\\mathcal N(0,I).\\]"+
+   "This is an exact re-expression — \\(\\mu+\\sigma\\odot\\varepsilon\\) is distributed \\(\\mathcal N(\\mu,\\sigma^2)\\) — so nothing about the model changes. But now the only stochastic node, \\(\\varepsilon\\), carries no learnable parameters and needs no gradient, while \\(\\mu\\) and \\(\\sigma\\) enter z through plain addition and multiplication.<br><br>"+
+   "<b>Result.</b> \\(\\partial z/\\partial\\mu=1\\) and \\(\\partial z/\\partial\\sigma=\\varepsilon\\), so gradients flow through z into \\(\\mu,\\sigma\\) and back into the encoder — the VAE is trainable end-to-end by backprop. State both the explanation and the boxed form to collect all marks."}
+ ],
+ worked:[],
+ variations:[
+  {ex:"SS21 Q13", d:"Explain the re-parametrization trick (2p) and state the resulting re-parametrized form for the VAE (3p). Form: \\(z=\\mu+\\sigma\\odot\\varepsilon,\\ \\varepsilon\\sim\\mathcal N(0,I)\\)."},
+  {ex:"WiSe25/26 Q7-VAE", d:"Same, condensed to stating the form (3p): \\(z=\\mu+\\sigma\\odot\\varepsilon\\) with \\(\\varepsilon\\sim\\mathcal N(0,I)\\) — noted in the solution as \"this allows backpropagation.\""}
+ ],
+ anki:{
+  basic:[
+   ["Why can't you backpropagate through a VAE's sampling node z ~ N(μ,σ²)?","Sampling is stochastic and not a differentiable function of μ, σ, so there's no gradient to pass through the sample node back to the encoder.","t5_reparam"],
+   ["State the reparameterization trick and its form.","Sample parameter-free ε ~ N(0,I) and set z = μ + σ⊙ε. Same distribution N(μ,σ²), but randomness now sits in ε (no gradient needed) and μ,σ enter via +/× so gradients flow.","t5_reparam"],
+   ["After reparameterization, what are ∂z/∂μ and ∂z/∂σ?","∂z/∂μ = 1 and ∂z/∂σ = ε, so gradients flow through z into μ and σ, making the VAE trainable end-to-end.","t5_reparam"]
+  ],
+  cloze:[
+   ["Reparameterization rewrites \\(z\\sim\\mathcal N(\\mu,\\sigma^2)\\) as {{c1::\\(z=\\mu+\\sigma\\odot\\varepsilon\\)}} with {{c2::\\(\\varepsilon\\sim\\mathcal N(0,I)\\)}}.","","t5_reparam"],
+   ["The trick works because the randomness moves into {{c1::ε (no gradient needed)}} while {{c2::μ and σ}} enter through differentiable {{c3::+ and ×}} operations.","","t5_reparam"]
+  ]
+ },
+ drill:"",
+ checks:[
+  "Explain why sampling blocks backprop (not differentiable in μ,σ)",
+  "State the trick: move randomness into ε ~ N(0,I)",
+  "Write the form z = μ + σ⊙ε exactly (the 3-mark answer)",
+  "Note ∂z/∂μ=1, ∂z/∂σ=ε → gradients reach the encoder"
+ ]
+});
+
 /* ==DLAM_SPLICE_BLOCKS==
    Later passes: add RM.blocks.push({...}) ABOVE this marker (Tier 3 → Pass 2,
    Tier 4 → Pass 3, Tier 5 → Pass 4-5, Tier 6 → Pass 6). Do NOT re-emit the file.
@@ -1570,11 +1885,18 @@ const CHEAT = {
   {c:"T3", t:"ETHICS of LLMs", w:"~5p · 4/6", b:`Name 3–4 DISTINCT, 1 line each: bias/toxicity (amplifies data); misinfo/hallucination (fluent-but-false, disinfo); privacy (memorise/leak); env & compute cost + power concentration; misuse/accountability (fraud, unclear responsibility). Breadth > depth; checklist not essay.`},
   {c:"T4", t:"BATCHNORM", w:"4–5p", b:`Def <code>hᵢ=gᵢ·(aᵢ−μᵢ)/σᵢ+bᵢ</code>: standardise over mini-batch (μ,σ), then <b>learned scale g + shift b</b> (don't drop them). Adv+mechanism: stable activation distribution → faster/stable training, higher LR, less init-sensitive, mild regularisation.`},
   {c:"T4", t:"BIAS–VARIANCE (hidden units)", w:"3p", b:`Fewer units → simpler → bias↑ variance↓ (underfit). More → bias↓ variance↑ (overfit). Feature extractor (SoSe25 Q4b): hidden layers learn representation, final layer = simple classifier on it.`},
-  {c:"T5", t:"BATCH vs MINIBATCH GD", w:"—", b:`Batch: whole set, exact grad, smooth, slow/costly, memory-heavy, can stall at saddles. Minibatch (SGD=1): random subset, noisy grad, many cheap steps, fits memory, noise escapes saddles/sharp minima → generalises better. Axes: accuracy / cost&freq / memory / convergence.`}
+  {c:"T5", t:"BATCH vs MINIBATCH GD", w:"—", b:`Batch: whole set, exact grad, smooth, slow/costly, memory-heavy, can stall at saddles. Minibatch (SGD=1): random subset, noisy grad, many cheap steps, fits memory, noise escapes saddles/sharp minima → generalises better. Axes: accuracy / cost&freq / memory / convergence.`},
+  {c:"T5", t:"OPTIMIZER DIRECTIONS", w:"—", b:`Plain grad = ⟂ contour (steepest descent) → zig-zags on stretched bowl. Newton: <code>Δθ=−H⁻¹∇L</code> uses curvature → ≈straight to min on a quadratic (cost O(d³)). AdaGrad/RMSprop: step = <code>−η·g/√(G+ε)</code>, G = Σg² (AdaGrad) or decayed avg (RMSprop) → per-axis LR; 3:1 grad → ≈45°. RMSprop decay stops AdaGrad's stall.`},
+  {c:"T5", t:"GRID vs RANDOM SEARCH", w:"—", b:`Loss depends on only a FEW hyperparams. Grid: points project onto each other → only k distinct values of the important axis (rest redundant). Random: each trial = new value per axis → ≈1 distinct important value per trial → denser coverage, same budget. Edge grows with dimension; grid ok only in 1–2 dims.`},
+  {c:"T5", t:"FLAT LOSS → WEIGHT INIT", w:"—", b:`Dead-flat loss = no useful gradient. Suspects: <b>LR too low</b> and/or <b>bad init scale</b> (saturated acts → vanish; all-equal init → symmetry unbroken → all units identical). <b>NOT</b> reg-too-strong (flattens only reg term; data term still moves). Fix: random Xavier/He init + bigger LR.`},
+  {c:"T5", t:"BIDIRECTIONAL RNN", w:"—", b:`Two RNNs on same seq: forward + backward; per-position state <code>h_t=[→h_t ; ←h_t]</code> (concat) → each output sees past AND future. Use: NER/POS/speech. <b>Can't</b> stream or generate autoregressively (needs whole sequence).`},
+  {c:"T5", t:"AUTOENCODER", w:"5p", b:`<code>x → encoder → z (bottleneck, ≪dim) → decoder → x̂</code>; unsupervised, minimise recon loss <code>‖x−x̂‖²</code>. Purpose: representation learning / dim-reduction. How: narrow z forces discarding redundancy (no bottleneck ⇒ trivial identity). SoSe25: n→10→n.`},
+  {c:"T5", t:"VAE explicit vs implicit", w:"5p", b:`VAE = <b>EXPLICIT</b>: prior p(z)+decoder p(x|z) define <code>p(x)=∫p(x|z)p(z)dz</code>; train by maximising <b>ELBO</b> = <code>E_q[log p(x|z)] − KL(q(z|x)‖p(z))</code> (recon − KL). GAN = <b>IMPLICIT</b>: generator only a sampler (noise→img), adversarial, no p(x). Explicit=optimises likelihood; implicit=only samples.`},
+  {c:"T5", t:"REPARAM TRICK + ELBO", w:"5p", b:`Can't backprop through <code>z∼N(μ,σ²)</code> (sampling not differentiable in μ,σ). Trick: <code>z = μ + σ⊙ε, ε∼N(0,I)</code> — randomness in ε (no grad), μ,σ via +/× ⇒ ∂z/∂μ=1, ∂z/∂σ=ε → grads reach encoder. ELBO skeleton: <code>E_q[log p(x|z)] − KL(q(z|x)‖p(z))</code>.`}
  ],
  pending:`<b>Not yet on this sheet — build the block, then add its formulas here and tick it off:</b><br>
-  Tier-5 Bank B: optimizers (Newton/AdaGrad/RMSprop directions), grid vs random search, weight-init (flat-loss suspect), bidirectional RNN, autoencoder, <b>VAE (explicit vs implicit vs GAN)</b>, <b>reparameterization trick + ELBO skeleton</b>. &nbsp; Tier-6: sigmoid-neuron df/dw (+L2), overfitting/early-stopping, dropout≈bagging, LR curves. <br>
-  <b>The sheet is NOT complete until every item above is on it.</b> When you reach any of these blocks (or land back on this page), come here and fold its formulas in.`
+  Tier-6 (1/6 sittings, Pass 6): sigmoid-neuron df/dw (+L2), overfitting/early-stopping, dropout≈bagging, LR curves. <br>
+  <b>All Tier-5 items are now on the sheet (Pass 5).</b> The sheet is complete once the four Tier-6 items above are folded in at Pass 6.`
 };
 function cheatSide(items){
  return `<div class="cicols">`+items.map(i=>
