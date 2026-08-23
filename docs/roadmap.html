@@ -2505,152 +2505,32 @@ done</code></pre>
 <!-- ============================== PHASE 10 ============================== -->
 <section class="phase" id="p10">
 <div class="phase-head">
-  <div class="phase-tag"><span class="chip">Phase 10</span><span class="chip time">Days 26–33 · runs in parallel</span><span>the report</span></div>
+  <div class="phase-tag"><span class="chip">Phase 10</span><span class="chip time">runs in parallel · target 31 Aug</span><span>the report</span></div>
   <h2>Write the report</h2>
-  <p class="lede" style="font-size:17px;margin-top:8px">4–6 pages excluding references. The good news: with Phases 4–7 done, <strong>almost the whole report can be written now</strong> &mdash; every number already exists. A complete, compilable <code>report.tex</code>, pre-filled with your real results, is in the <b>Code</b> tab (<a href="#f-reporttex"><code>report/report.tex</code></a>). This phase is: stand up the shared LaTeX, paste it in, and refine section by section. Target: submit by <strong>31 August</strong>.</p>
+  <p class="lede" style="font-size:17px;margin-top:8px">4–6 pages, graded at equal weight. The full guidance now lives in the dedicated <b>Report</b> tab &mdash; section-by-section worked examples, figures, tables, failure modes, and a self-assessment rubric &mdash; alongside a complete, pre-filled <a href="#f-reporttex"><code>report.tex</code></a> in the <b>Code</b> tab. This phase is just the roadmap milestone. Most of it can be written now; only figures, contributions, and the final number wait.</p>
 </div>
 
 <div class="step" id="s10-1"><div class="step-head"><input type="checkbox" class="tick" id="c10-1"><div class="step-num">10.1</div><div class="step-body">
-<h3>What a machine learning report is for</h3>
-<div class="why"><b>Why</b><p>It is not a diary of what you did. It is an argument: <em>here is a problem, here is what others tried, here is what we tried and why, here is evidence it worked (or didn't), here is what we learned.</em> Every sentence should serve that argument.</p></div>
-<p>The reader is a marker with fifteen minutes and thirty reports. They are scanning for: does this person understand the problem? Did they compare against something honest? Do the numbers support the claims? Can they tell what mattered from what didn't?</p>
-<div class="think"><b>Write it in this order, not top to bottom</b><p>Experiments → Method → Related Work → Introduction → Conclusion → Abstract. The Experiments section is fixed by your data, so write it first; everything else is then shaped to lead into it. Writing the introduction first means rewriting it three times. (The master in the Code tab is already ordered as a reader sees it, but drafted in this order.)</p></div>
+<h3>The report has its own tab &mdash; write it there</h3>
+<div class="why"><b>Why here</b><p>The report is graded at equal weight and runs in parallel with Phases 8.5/9. To keep one source of truth, all the report guidance lives in the dedicated <b>Report</b> tab (top of the page, next to <b>Code</b>). This phase is just the roadmap milestone that tracks it.</p></div>
+<p>Open the <b>Report</b> tab. It has the shared-LaTeX setup, links to the pre-filled <a href="#f-reporttex"><code>report/report.tex</code></a> + <a href="#f-reportbib"><code>references.bib</code></a> in the Code tab, section-by-section guidance with worked examples, the figures, the tables, the six failure modes, and a self-assessment rubric &mdash; everything to get from the shipped draft to a submittable PDF.</p>
+<div class="think"><b>Most of it is already written</b><p>With Phases 4&ndash;7 done, the draft carries your real numbers (WAPE 0.169, baselines, ablation, ETT). Only three things wait: the <b>figures</b>, the <b>contributions split</b>, and the <b>final leaderboard number</b> (after Phase 9). Start now &mdash; don't block on Phase 9.</p></div>
 </div></div></div>
 
-<div class="step" id="s10-6"><div class="step-head"><input type="checkbox" class="tick" id="c10-6"><div class="step-num">10.2</div><div class="step-body">
-<h3>Stand up the shared LaTeX &mdash; all four of you in one document</h3>
-<div class="why"><b>Why</b><p>One shared source, four editors, no emailing <code>.tex</code> files around. TU&nbsp;Darmstadt's shared LaTeX (Overleaf) gives live co-editing and one-click compile with <code>bibtex</code> handled for you.</p></div>
-<ol>
-<li>One person creates a <b>Blank Project</b> in the TU&nbsp;Darmstadt Overleaf, names it <code>dlam-group38-report</code>, and shares edit access with the other three (Share &rarr; add their TU emails).</li>
-<li>Create this file tree in the project:
-<pre><code>report/
-  report.tex       &lt;- master file (paste from the Code tab)
-  references.bib    &lt;- the 6 citations (paste from the Code tab)
-  figures/          &lt;- your PNG/PDF figures go here</code></pre></li>
-<li>Open the <b>Code</b> tab of this roadmap, copy <a href="#f-reporttex"><code>report/report.tex</code></a> and <a href="#f-reportbib"><code>report/references.bib</code></a> in whole, paste them into the two files, and hit <b>Recompile</b>.</li>
-</ol>
-<div class="note"><b>If the course hands you a template</b><p>Some DLAM iterations provide a LaTeX template. If so, keep its <code>\documentclass</code> + preamble and paste only the master's <b>body</b> (everything between <code>\begin{document}</code> and <code>\end{document}</code>). Otherwise the generic <code>article</code> preamble in the master is fine.</p></div>
-<div class="check"><b>Done when</b><p>It compiles to a ~3&ndash;4 page PDF with a title, abstract, five sections, two results tables, and numbered citations &mdash; already carrying your real numbers. Everything below is refinement.</p></div>
-<div class="think"><b>What you can already write today</b><p>Because Phases 4&ndash;7 are done, <b>every section but two lines is already fillable</b>: Abstract, Introduction, Related Work, Method, Experiments (both tables) and Conclusion are all in the master. The only things still pending are the <b>figures</b>, the <b>contributions split</b>, and the <b>final leaderboard number</b> (after Phase 9). Don't wait on Phase 9 &mdash; write everything else now.</p></div>
-</div></div></div>
-
-<div class="step" id="s10-2"><div class="step-head"><input type="checkbox" class="tick" id="c10-2"><div class="step-num">10.3</div><div class="step-body">
-<h3>Section by section</h3>
-<table>
-<tr><th>Section</th><th>Length</th><th>What must be in it</th></tr>
-<tr><td><strong>Abstract</strong></td><td>~120 words</td><td>Problem in one sentence, method in two, headline number in one. Include an actual WAPE figure — abstracts without numbers read as evasive.</td></tr>
-<tr><td><strong>1 Introduction</strong></td><td>~0.5 page</td><td>The task with concrete numbers: 96 series, 336-hour horizon, WAPE. Why long-horizon multivariate forecasting is hard. Your contributions as three bullets.</td></tr>
-<tr><td><strong>2 Related Work</strong></td><td>~0.75 page</td><td>Four threads: classical (ARIMA/seasonal), RNN/LSTM, transformer forecasters (Informer, PatchTST), <strong>and the linear-model critique (Zeng et al.)</strong>. That fourth one is what makes the section look current rather than assembled from the first page of search results.</td></tr>
-<tr><td><strong>3 Method</strong></td><td>~1.5 pages</td><td>Problem formalisation with symbols. Preprocessing (two-level normalisation, NaN handling). Architecture with a figure. Loss and its WAPE justification. Direct-multi-step reasoning.</td></tr>
-<tr><td><strong>4 Experiments</strong></td><td>~2 pages</td><td>Setup (splits, seeds, hardware, hyperparameters). Table 1 model comparison. Table 2 ablations. A qualitative forecast plot. Discussion of what the numbers mean.</td></tr>
-<tr><td><strong>5 Conclusion</strong></td><td>~0.3 page</td><td>What you found, honestly. Limitations. One concrete next step.</td></tr>
-<tr><td><strong>Contributions</strong></td><td>3 lines</td><td>Required. Name each member and what they did.</td></tr>
-</table>
-</div></div></div>
-
-<div class="step" id="s10-7"><div class="step-head"><input type="checkbox" class="tick" id="c10-7"><div class="step-num">10.4</div><div class="step-body">
-<h3>Refine each section (it's already drafted &mdash; polish, don't write from scratch)</h3>
-<div class="why"><b>Why</b><p>The master <code>report.tex</code> already contains a complete draft of every section with your real numbers. Your job is to verify each claim against <code>runs.csv</code>, tighten the prose, and drop in the figures &mdash; not to start from a blank page.</p></div>
-<table>
-<tr><th>Section</th><th>State in the master</th><th>What you do</th></tr>
-<tr><td>Abstract</td><td>Written, headline WAPE 0.169.</td><td>Read once; adjust only if a number changes.</td></tr>
-<tr><td>Introduction</td><td>Task, 96 series, H=336, WAPE, 3 contributions.</td><td>Confirm dataset numbers match your diagnostics.</td></tr>
-<tr><td>Related Work</td><td>Four threads, all five <code>\cite</code>s wired.</td><td>Add a sentence if you read a paper worth citing.</td></tr>
-<tr><td>Method</td><td>Data, normalization, 4 models, covariate head, validation.</td><td>Insert the architecture figure (10.6).</td></tr>
-<tr><td>Experiments</td><td>Setup + both tables + discussion.</td><td>Verify every cell vs <code>runs.csv</code>; add forecast + lookback figures.</td></tr>
-<tr><td>Conclusion</td><td>Finding, limitations, ensemble next step.</td><td>Leave as is unless results change.</td></tr>
-<tr><td>Contributions</td><td>Four names, dots for roles.</td><td><b>Fill in who did what</b> &mdash; required, graded.</td></tr>
-</table>
-<div class="gotcha"><b>Keep the two tables in sync with the data</b><p>The master has both tables hand-written with your current numbers. If you re-run anything, regenerate instead: <code>scripts/tables.py</code> writes <code>report/tables.tex</code>, and you can <code>\input{tables.tex}</code> in place of the hand-written blocks. Either way, <b>every number in the prose must match the table</b>.</p></div>
-<div class="note"><b>Adding a citation</b><p>Paste a BibTeX block into <code>references.bib</code> (same format as the six there), then cite it with <code>\citep{key}</code> (parenthetical) or <code>\citet{key}</code> (inline, "Zeng et al. show&hellip;"). Overleaf reruns <code>bibtex</code> for you; locally, use the 4-command sequence in 10.5.</p></div>
-</div></div></div>
-
-<div class="step" id="s10-3"><div class="step-head"><input type="checkbox" class="tick" id="c10-3"><div class="step-num">10.5</div><div class="step-body">
-<h3>Fix these things carried over from the exposé</h3>
-<div class="why"><b>Why</b><p>The exposé has specific weaknesses that will cost marks if they survive into the report. Each of these is a small edit.</p></div>
-<table>
-<tr><th>In the exposé</th><th>Change to</th></tr>
-<tr><td>"using 24 features"</td><td>22 feature columns. Count them. Getting your own dataset's shape wrong is an easy, avoidable ding.</td></tr>
-<tr><td>"over a horizon H"</td><td>State H = 336 explicitly, and give your lookback L. Unspecified symbols read as undecided.</td></tr>
-<tr><td>"we mathematically standardize the large, continuous numbers"</td><td>Name the actual scheme: per-feature standardisation fitted on training hours only, plus RevIN per window. Cite Kim et al. 2022. The vague version signals you hadn't decided yet.</td></tr>
-<tr><td>"LSTM will serve as a strong baseline"</td><td>Keep the LSTM, but add the linear model and say why: Zeng et al. showed simple linear forecasters beat many transformers, so it is the more demanding baseline.</td></tr>
-<tr><td>Related work has no linear-model critique</td><td>Add Zeng et al. (AAAI 2023). It is the central debate about the exact model family you chose. Omitting it is the most visible gap in the exposé.</td></tr>
-<tr><td>No mention of missing data</td><td>Ten columns have NaNs. Say how you handled them and show the ablation.</td></tr>
-</table>
-<div class="codeblock"><div class="code-head"><span class="code-caret">&#9656;</span><span class="code-file">report/references.bib · the template has only Vaswani; add these five</span><span class="code-tag">bibtex</span><button class="code-copy" type="button">copy</button></div><div class="code-wrap"><pre><code>@inproceedings{nie2023patchtst,
-  title={A Time Series is Worth 64 Words: Long-term Forecasting with Transformers},
-  author={Nie, Yuqi and Nguyen, Nam H. and Sinthong, Phanwadee and Kalagnanam, Jayant},
-  booktitle={ICLR}, year={2023}}
-
-@inproceedings{zeng2023dlinear,
-  title={Are Transformers Effective for Time Series Forecasting?},
-  author={Zeng, Ailing and Chen, Muxi and Zhang, Lei and Xu, Qiang},
-  booktitle={AAAI}, year={2023}}
-
-@inproceedings{kim2022revin,
-  title={Reversible Instance Normalization for Accurate Time-Series
-         Forecasting against Distribution Shift},
-  author={Kim, Taesung and Kim, Jinhee and Tae, Yunwon and Park, Cheonbok
-          and Choi, Jang-Ho and Choo, Jaegul},
-  booktitle={ICLR}, year={2022}}
-
-@inproceedings{vaswani2017attention,
-  title={Attention Is All You Need},
-  author={Vaswani, Ashish and others},
-  booktitle={NeurIPS}, year={2017}}</code></pre></div></div>
-<div class="gotcha"><b>Compile it the way the README says</b><p>Four commands, with <code>bibtex</code> in the middle. Skip it and every citation renders as <code>[?]</code> &mdash; which people discover an hour before the deadline.</p>
-<pre><code>pdflatex report.tex
-bibtex report
-pdflatex report.tex
-pdflatex report.tex</code></pre>
-<p>Overleaf handles this automatically, so if you draft there and compile locally at the end, run the full sequence before you look at the PDF.</p></div>
-</div></div></div>
-
-<div class="step" id="s10-4"><div class="step-head"><input type="checkbox" class="tick" id="c10-4"><div class="step-num">10.6</div><div class="step-body">
-<h3>Make four figures</h3>
-<div class="why"><b>Why</b><p>Figures are read before text. Four good ones carry more of your argument than a page of prose, and you already have the material.</p></div>
-<ol>
-<li><strong>Architecture diagram.</strong> Boxes and arrows: input window → RevIN → patchify → embed + positional → transformer encoder ×N → flatten → linear head → denorm. Draw it in <a href="https://excalidraw.com">Excalidraw</a> or TikZ. Do not skip this — every marker looks for it.</li>
-<li><strong>Data character.</strong> Two panels: one unit over three weeks (showing daily/weekly cycles), and the mean load-by-hour profile per weekday. Straight from step 1.6.</li>
-<li><strong>Qualitative forecast.</strong> One unit's 336-hour prediction against ground truth, with seasonal-mean plotted as a dashed line. This is the figure that shows you whether your model has learned shape or just level.</li>
-<li><strong>Lookback sweep.</strong> WAPE against lookback for PatchTST and for linear on the same axes. Directly tests PatchTST's central claim.</li>
-</ol>
-<div class="note"><b>Figure hygiene</b><p>Axis labels with units. Legible font sizes (they shrink in a two-column layout). A caption that states the finding, not just the contents — "PatchTST improves monotonically with lookback while the linear model saturates at 512" beats "WAPE vs lookback."</p></div>
-</div></div></div>
-
-<div class="step" id="s10-8"><div class="step-head"><input type="checkbox" class="tick" id="c10-8"><div class="step-num">10.7</div><div class="step-body">
-<h3>The 7-day plan (submit by 31 August)</h3>
-<div class="why"><b>Why</b><p>The hard deadline is 4 September; you want it done by 31 August. Seven days, and most of the report already exists &mdash; so parallelize: the report and Phases 8.5/9 run at the same time.</p></div>
-<table>
-<tr><th>Day</th><th>Report</th><th>Code (in parallel)</th></tr>
-<tr><td>1</td><td>Set up shared LaTeX, paste the master, get it compiling (10.2).</td><td>Start Phase 8.5 (inference plumbing).</td></tr>
-<tr><td>2</td><td>Verify the Experiments tables vs <code>runs.csv</code>; write the discussion (10.4).</td><td>Finish 8.5; run the validation smoke test (8.5.5).</td></tr>
-<tr><td>3</td><td>Architecture + data-character figures (10.6).</td><td>Phase 9: write / verify <code>predict.py</code>.</td></tr>
-<tr><td>4</td><td>Forecast + lookback figures; slot all four in.</td><td>Phase 9: clean-venv test, build the zip.</td></tr>
-<tr><td>5</td><td>Tighten Intro + Related Work + Method; apply exposé fixes (10.5).</td><td>Submit the final model; record the leaderboard number.</td></tr>
-<tr><td>6</td><td>Drop in the final number; fill Contributions; full read-through.</td><td>README: training + inference commands.</td></tr>
-<tr><td>7</td><td>Final checklist (10.8); compile clean; buffer.</td><td>Buffer.</td></tr>
-</table>
-<div class="check"><b>Done when</b><p>By end of Day 6 the PDF is complete &mdash; real numbers, figures, contributions. Day 7 is polish + the checklist. Submit 31 Aug, five days early.</p></div>
-</div></div></div>
-
-<div class="step" id="s10-5"><div class="step-head"><input type="checkbox" class="tick" id="c10-5"><div class="step-num">10.8</div><div class="step-body">
-<h3>Final checklist before you submit</h3>
-<div class="check"><b>Tick every one of these</b>
+<div class="step" id="s10-5"><div class="step-head"><input type="checkbox" class="tick" id="c10-5"><div class="step-num">10.2</div><div class="step-body">
+<h3>Milestone: submittable report by 31 August</h3>
+<div class="check"><b>Tick every one of these (full guidance + rubric in the Report tab)</b>
 <ul>
-<li>Report PDF is 4–6 pages excluding references</li>
+<li>Shared Overleaf set up; <code>report.tex</code> + <code>references.bib</code> pasted and compiling</li>
+<li>Report PDF is 4&ndash;6 pages excluding references</li>
 <li>Every number in the text matches <code>runs.csv</code></li>
-<li>Both baseline rows present: naive last-value and seasonal mean</li>
-<li>Final results reported as mean ± std over 3 seeds</li>
-<li>Seed noise floor stated, and inconclusive ablations described as inconclusive</li>
-<li>All four citations present and actually referenced in the text</li>
-<li>Contributions section names all four members</li>
-<li>Repo <code>README.md</code> documents training <em>and</em> inference commands</li>
-<li>Seeds fixed and stated; all hyperparameters listed</li>
-<li><code>final_submission.zip</code> tested in a clean venv (step 9.3)</li>
-<li>Archive model name matches the validation leaderboard row</li>
-<li>No training data, no <code>.venv</code>, no caches inside the zip</li>
-<li>Uploaded to Moodle <em>and</em> the Hugging Face Space</li>
+<li>Baselines (naive + seasonal mean), model comparison, and ablation tables all present</li>
+<li>Seed-noise floor stated; inconclusive ablations labelled inconclusive</li>
+<li>Four figures made and each referenced by number from the text</li>
+<li>All six citations present and referenced; Contributions names all four members</li>
+<li>Final leaderboard number dropped in (after Phase 9)</li>
+<li><code>README.md</code> documents training <em>and</em> inference commands</li>
+<li>Passed the self-assessment rubric in the Report tab; read aloud once</li>
 </ul></div>
 </div></div></div>
 </section>
@@ -4356,7 +4236,7 @@ the covariate-augmented models, which our harness already supports.
   </div>
 
 <div id="view-report" class="view" hidden>
-<p class="eyebrow">Equal weight · 4–6 pages · start writing 17 August</p>
+<p class="eyebrow">Equal weight · 4–6 pages · start now · target submit 31 August</p>
 <h1>The report</h1>
 <p class="lede">You have not written one of these before, so here is the honest framing: the report is not documentation of your project. It is the project's <em>argument</em>, and it is marked as such. A mediocre model described precisely outscores a good model described vaguely — every time, in every course.</p>
 
@@ -4366,18 +4246,31 @@ the covariate-augmented models, which our harness already supports.
   <div class="fact"><b>4</b><span>figures</span></div>
   <div class="fact"><b>2</b><span>results tables</span></div>
   <div class="fact"><b>6+</b><span>citations</span></div>
-  <div class="fact"><b>18 d</b><span>until first draft</span></div>
+  <div class="fact"><b>8 d</b><span>to 31 Aug submit</span></div>
 </div>
 
-<div class="gotcha"><b>Work inside the template you were given</b>
-<p>Your repo ships <code>report/report.tex</code> and the accompanying README calls it "a starting point", so you may adapt it &mdash; but stay close, because a marker opening your PDF expects to recognise it.</p>
+<div class="gotcha" style="border-left-width:4px"><b>Start here &mdash; you already have a complete draft</b>
+<p>The <b>Code</b> tab ships a full, compilable <a href="#f-reporttex"><code>report/report.tex</code></a> and <a href="#f-reportbib"><code>report/references.bib</code></a>, <b>pre-filled with your real results</b> (WAPE 0.169, the baselines, both ablation findings, ETT, all six citations). So this page is not "write from scratch" &mdash; it is <b>how to refine each shipped section into your own voice</b>.</p>
+<ol>
+<li><b>Set up the shared LaTeX.</b> One person makes a Blank Project in the TU&nbsp;Darmstadt Overleaf (name it <code>dlam-group38-report</code>) and shares edit access with the other three.</li>
+<li><b>Paste the two Code-tab files</b> into this tree, then Recompile:
+<pre><code>report/
+  report.tex      &lt;- paste report/report.tex
+  references.bib   &lt;- paste report/references.bib
+  figures/         &lt;- your figures go here</code></pre></li>
+<li>You now have a ~3&ndash;4 page PDF with real numbers. <b>Refine it section by section using the guidance below</b>, add the four figures, and fill Contributions.</li>
+</ol>
+<p style="margin-bottom:0"><b>Timeline (target: submit 31 Aug, in parallel with Phases 8.5/9):</b> Days&nbsp;1&ndash;2 verify Experiments + write the discussion &middot; Days&nbsp;3&ndash;4 make the figures &middot; Day&nbsp;5 tighten Intro / Related Work / Method &middot; Day&nbsp;6 final leaderboard number + Contributions + read-through &middot; Day&nbsp;7 checklist + buffer.</p></div>
+
+<div class="gotcha"><b>What the shipped <code>report.tex</code> already gives you</b>
+<p>It is not a bare skeleton &mdash; the preamble, author line, six sections, and three tables are done. Adapt the prose, don't rebuild the scaffold.</p>
 <table style="margin:10px 0 0">
 <tr><th>Fixed by the template</th><th>What that means for you</th></tr>
 <tr><td><code>\documentclass[11pt]{article}</code>, <code>margin=1in</code>, <strong>single column</strong></td><td>Roughly 2,300 words fills 4&ndash;6 pages, not the ~2,800 a two-column layout holds. Budget accordingly.</td></tr>
 <tr><td>Sections: Introduction, Related Work, Method, Experiments, Conclusion, Contributions</td><td>Use exactly these. Put Limitations inside Conclusion rather than adding a section.</td></tr>
-<tr><td>One results table: Method / Validation Metric / Notes</td><td>Extend it; don't replace it. Add a second table for ablations.</td></tr>
+<tr><td>Three tables already filled: baselines, model comparison, ablation</td><td>Real numbers are in place. Regenerate via <code>scripts/tables.py</code> if you re-run anything.</td></tr>
 <tr><td>Packages already loaded: <code>amsmath booktabs graphicx hyperref</code></td><td>Everything you need. Add <code>siunitx</code> only if you want aligned decimals.</td></tr>
-<tr><td><code>references.bib</code> contains only Vaswani</td><td>You must add the other five yourself.</td></tr>
+<tr><td><code>references.bib</code> ships with all six citations</td><td>Already wired via <code>\cite</code> in the draft. Add more only if you read further.</td></tr>
 </table>
 <p style="margin-top:10px">Build with the four-command sequence from the README &mdash; <code>pdflatex</code>, <code>bibtex</code>, <code>pdflatex</code>, <code>pdflatex</code>. On Overleaf this happens automatically, but run it locally once before submitting so a missing citation surfaces as an error rather than a <strong>[?]</strong> in the PDF.</p></div>
 
@@ -4387,13 +4280,13 @@ the covariate-augmented models, which our harness already supports.
 <p>Not front to back. The Experiments section is fixed by your data — everything else is shaped to lead into it, so it goes first.</p>
 <table>
 <tr><th>Order</th><th>Section</th><th>When</th><th>Why here</th></tr>
-<tr><td class="num">1</td><td>Experiments — setup + tables</td><td>17–20 Aug</td><td>Your numbers exist by then. Writing this first tells you what the rest of the paper has to argue.</td></tr>
-<tr><td class="num">2</td><td>Method</td><td>21–23 Aug</td><td>Describe exactly what produced those numbers. Writing it second stops you describing things you didn't run.</td></tr>
-<tr><td class="num">3</td><td>Related Work</td><td>24–25 Aug</td><td>Now you know which prior work your results speak to.</td></tr>
-<tr><td class="num">4</td><td>Introduction</td><td>26 Aug</td><td>Written last-but-two so the contribution bullets match what you actually found.</td></tr>
-<tr><td class="num">5</td><td>Conclusion + Limitations</td><td>27 Aug</td><td>Short. Honest. Concrete next step.</td></tr>
-<tr><td class="num">6</td><td>Abstract</td><td>28 Aug</td><td>Always last. It is a compression of a finished argument.</td></tr>
-<tr><td class="num">7</td><td>Polish, figures, refs</td><td>29 Aug–2 Sep</td><td>Buffer.</td></tr>
+<tr><td class="num">1</td><td>Experiments — setup + tables</td><td>Day 1</td><td>Your numbers already exist. Verifying this first tells you what the rest of the paper has to argue.</td></tr>
+<tr><td class="num">2</td><td>Method</td><td>Day 2</td><td>Describe exactly what produced those numbers. Writing it second stops you describing things you didn't run.</td></tr>
+<tr><td class="num">3</td><td>Related Work</td><td>Day 3</td><td>Now you know which prior work your results speak to.</td></tr>
+<tr><td class="num">4</td><td>Introduction</td><td>Day 4</td><td>Written last-but-two so the contribution bullets match what you actually found.</td></tr>
+<tr><td class="num">5</td><td>Conclusion + Limitations</td><td>Day 5</td><td>Short. Honest. Concrete next step.</td></tr>
+<tr><td class="num">6</td><td>Abstract</td><td>Day 6</td><td>Always last. It is a compression of a finished argument.</td></tr>
+<tr><td class="num">7</td><td>Polish, figures, refs</td><td>Day 7</td><td>Buffer before the 31 Aug target.</td></tr>
 </table>
 
 <hr class="tick24">
@@ -4409,7 +4302,7 @@ the covariate-augmented models, which our harness already supports.
 <div class="gotcha"><b>Three ways abstracts go wrong</b><ul>
 <li>No number. "We achieve strong performance" tells the marker nothing.</li>
 <li>Promises the paper doesn't keep. If ETT got cut, delete that last sentence.</li>
-<li>Written first and never updated. Write it on 28 August, not 17 August.</li>
+<li>Written first and never updated. Write it on Day 6, not Day 1.</li>
 </ul></div>
 </div></div></div>
 
@@ -4544,8 +4437,8 @@ the covariate-augmented models, which our harness already supports.
 <li>Figures 2 and 3 can share a row with <code>subcaption</code> to save a third of a page &mdash; worth it at this length.</li>
 </ul></div>
 
-<h2 style="margin-top:38px">What to change in <code>report.tex</code></h2>
-<p>Keep the preamble the template gives you. These are the only edits it needs &mdash; everything else is filling in the <code>TODO</code>s.</p>
+<h2 style="margin-top:38px">Optional upgrades to <code>report.tex</code></h2>
+<p>The shipped file already compiles with its preamble, author line and six sections filled in &mdash; you do <em>not</em> need to rebuild any of this. The block below is optional polish: add <code>\subsection</code> structure for readability, and two packages if you want subfigures and aligned decimals.</p>
 <div class="codeblock"><div class="code-head"><span class="code-caret">&#9656;</span><span class="code-file">report/report.tex &middot; the diff, not the whole file</span><span class="code-tag">latex</span><button class="code-copy" type="button">copy</button></div><div class="code-wrap"><pre><code><span class="c">% keep exactly as shipped:</span>
 <span class="c">%   \documentclass[11pt]{article}</span>
 <span class="c">%   \usepackage[margin=1in]{geometry}</span>
@@ -4579,8 +4472,8 @@ the covariate-augmented models, which our harness already supports.
   \subsection{Discussion}</code></pre></div></div>
 <div class="note"><b>Do not add a Limitations section</b><p>The template has no slot for one and adding sections to a provided skeleton reads as not having looked at it. Put limitations in the last paragraph of Conclusion, which is where the template's own TODO tells you to put them.</p></div>
 
-<h2 style="margin-top:38px">The two tables</h2>
-<p>The template hands you a three-column table. Widen it rather than throwing it away &mdash; the columns it names (Method / metric / Notes) are exactly right, and the Notes column is where you put the training cost.</p>
+<h2 style="margin-top:38px">The tables (already filled)</h2>
+<p>The shipped <code>report.tex</code> already contains three tables with your real numbers &mdash; baselines (seasonal mean 0.326), model comparison (LSTM+cov 0.169), and the ablation (covariates the only above-noise factor, floor 0.045). The reference snippets below show the structure and the two things that matter &mdash; a training-cost column and <code>[t]</code> placement &mdash; in case you regenerate them via <code>scripts/tables.py</code>.</p>
 <div class="codeblock"><div class="code-head"><span class="code-caret">&#9656;</span><span class="code-file">Table 1 &mdash; extend the provided one</span><span class="code-tag">snippet</span><button class="code-copy" type="button">copy</button></div><div class="code-wrap"><pre><code>\begin{table}[t]
 \centering
 \begin{tabular}{lrrrrl}
@@ -4593,8 +4486,8 @@ Seasonal mean         &amp; TODO &amp; TODO &amp; TODO &amp; TODO &amp; stronger
 \midrule
 Linear (DLinear-style)&amp; TODO &amp; TODO &amp; TODO &amp; TODO &amp; 2 min \\
 MLP                   &amp; TODO &amp; TODO &amp; TODO &amp; TODO &amp; 5 min \\
-LSTM                  &amp; TODO &amp; TODO &amp; TODO &amp; TODO &amp; 34 min \\
-\textbf{PatchTST}     &amp; TODO &amp; TODO &amp; TODO &amp; TODO &amp; 18 min \\
+LSTM                  &amp; TODO &amp; TODO &amp; TODO &amp; TODO &amp; 40 min \\
+\textbf{PatchTST}     &amp; TODO &amp; TODO &amp; TODO &amp; TODO &amp; 260 min \\
 \bottomrule
 \end{tabular}
 \caption{Validation results, mean over three rolling-origin folds.
@@ -4638,7 +4531,7 @@ Channels        &amp; mixing               &amp; TODO &amp; TODO \\
 </table>
 
 <h2 style="margin-top:38px">Mark yourself before you submit</h2>
-<p>Go through this honestly on 2 September. Anything you can't tick is a concrete thing to fix in the buffer days.</p>
+<p>Go through this honestly on the last day, before you submit. Anything you can't tick is a concrete thing to fix in the buffer time.</p>
 <div class="step" id="r-rubric"><div class="step-head"><input type="checkbox" class="tick" id="cr-7"><div class="step-num">✓</div><div class="step-body">
 <h3>Self-assessment</h3>
 <table>
