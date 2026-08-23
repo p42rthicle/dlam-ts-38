@@ -1976,6 +1976,135 @@ done</code></pre>
 </section>
 
 <!-- ============================== PHASE 9 ============================== -->
+<!-- ============================== PHASE 8.5 (REMEDIAL) ============================== -->
+<section class="phase" id="p8b">
+<div class="phase-head">
+  <div class="phase-tag"><span class="chip">Phase 8.5</span><span class="chip time">~1 hour of edits + a ~40&nbsp;min retrain</span><span class="pill" style="background:var(--warn-soft,#fdf0d5);color:var(--warn,#8a5a00);border:1px solid var(--warn,#8a5a00);vertical-align:middle">REMEDIAL &middot; do before Phase 9</span></div>
+  <h2>Make the inference path actually exist</h2>
+  <p class="lede" style="font-size:17px;margin-top:8px">Phases 0&ndash;8 trained and compared models &mdash; but the code that turns a trained checkpoint into a submission does not fully exist yet. I read the codebase line by line; three concrete pieces are missing or broken, and <code>predict.py</code> cannot run until they're fixed. This phase is those fixes, with the code written out. Do it on a fresh branch, merge to <code>main</code>, and Phase 9 becomes turnkey.</p>
+</div>
+
+<div class="step" id="s85-0"><div class="step-head"><input type="checkbox" class="tick" id="c85-0"><div class="step-num">8.5.0</div><div class="step-body">
+<h3>What's broken right now (verified against the code)</h3>
+<div class="why"><b>Why this exists</b><p>The Phase 9 <code>predict.py</code> template imports functions and reads checkpoint keys that the current repo does not provide. If you skip this, you hit an <code>ImportError</code>, then a <code>ValueError</code>, and even after patching those the model still can't run because it has no past-target history to read. All three are fixed below.</p></div>
+<table>
+<tr><th>File / symbol</th><th>State right now</th><th>Fixed in</th></tr>
+<tr><td><code>build_model_from_config</code> (<code>src/models/models.py</code>)</td><td>Only handles <code>linear</code> + <code>patchtst</code>; passes <code>use_covariates</code> to <em>neither</em>. Raises <code>ValueError: Unknown model: lstm</code>.</td><td>8.5.1</td></tr>
+<tr><td>checkpoint history (<code>src/train.py</code>)</td><td>Saves no past-target window. The graded input has <b>no target column</b> and the offline env has no <code>train.csv</code>, so the model has nothing to read as history.</td><td>8.5.2</td></tr>
+<tr><td><code>prepare_inference_cube</code> (<code>src/data.py</code>)</td><td><b>Does not exist.</b> <code>predict.py</code>'s import line fails immediately.</td><td>8.5.3</td></tr>
+</table>
+<p>Best model to ship: <strong>LSTM + covariates</strong> (validation WAPE 0.169). Everything below targets that checkpoint.</p>
+</div></div></div>
+
+<div class="step" id="s85-1"><div class="step-head"><input type="checkbox" class="tick" id="c85-1"><div class="step-num">8.5.1</div><div class="step-body">
+<h3>Make <code>build_model_from_config</code> covariate-aware</h3>
+<p>In <code>src/models/models.py</code>, replace the whole <code>build_model_from_config</code> function with this. It mirrors <code>build_model</code> (which already works), but reads from the saved <code>cfg</code> dict and covers all four architectures + the covariate head. <code>MLPForecaster</code> and <code>LSTMForecaster</code> are already imported at the top of the file.</p>
+<pre><code>def build_model_from_config(cfg, n_feat, n_series, L, H):
+    """Rebuild a model from a saved config dict (used by predict.py)."""
+    use_revin = bool(cfg.get("revin", 1))
+    use_cov   = bool(cfg.get("covariates", 0))
+    common = dict(L=L, H=H, n_feat=n_feat,
+                  use_revin=use_revin, use_covariates=use_cov)
+    if cfg["model"] == "linear":
+        return LinearForecaster(**common)
+    if cfg["model"] == "mlp":
+        return MLPForecaster(**common)
+    if cfg["model"] == "lstm":
+        return LSTMForecaster(**common)
+    if cfg["model"] == "patchtst":
+        return PatchTST(**common,
+            patch_len=cfg.get("patch_len", 16),
+            stride=cfg.get("stride", 8),
+            d_model=cfg.get("d_model", 128),
+            layers=cfg.get("layers", 3),
+            n_heads=cfg.get("n_heads", 8),
+            d_ff=cfg.get("d_ff", 256),
+            dropout=cfg.get("dropout", 0.2),
+            channel_mixing=bool(cfg.get("channel_mixing", False)),
+            target_only=bool(cfg.get("target_only", False)))
+    raise ValueError(f"Unknown model: {cfg['model']}")</code></pre>
+<div class="check"><b>Done when</b><p>Nothing to run yet &mdash; it's checked at the smoke test (8.5.5). Just make sure the <code>lstm</code> branch passes <code>use_covariates</code> (the covariate head must be present, or the checkpoint won't load).</p></div>
+</div></div></div>
+
+<div class="step" id="s85-2"><div class="step-head"><input type="checkbox" class="tick" id="c85-2"><div class="step-num">8.5.2</div><div class="step-body">
+<h3>Bake the past-target history into the checkpoint</h3>
+<div class="why"><b>Why</b><p>Confirmed by inspecting the data: <code>validation_input.csv</code> (and the graded <code>test_input.csv</code>) contain <b>covariates only, no target</b> &mdash; 336 forecast hours per series. The LSTM still needs the last <code>L</code> real target hours as history, and the offline grading machine has no training data. So the history has to travel <em>inside</em> the checkpoint. The window <code>[train_end-L : train_end]</code> with <code>gap=336</code> makes the model forecast exactly the hours right after training &mdash; the validation/test window.</p></div>
+<p>In <code>src/train.py</code>, add three keys to the existing <code>torch.save({...})</code> call (the dict already has <code>state_dict, config, scaler, series, features, L, H</code>):</p>
+<pre><code>        "L": L, "H": H,
+        "history_x": Xs[:, train_end-L:train_end].tolist(),   # scaled covariates, last L hrs
+        "history_y": Y[:, train_end-L:train_end].tolist(),    # RAW target, last L hrs
+        "history_end": str(hours[train_end-1]),               # informational</code></pre>
+<div class="gotcha"><b>Scaled vs raw — get this right or predictions come out wrong</b><p><code>Xs</code> is the scaled feature cube; <code>Y</code> is the raw target (this matches how <code>WindowDataset</code> is built in training: scaled features + raw target, the model's RevIN normalizes the target itself). <code>Xs</code>, <code>Y</code>, <code>train_end</code>, <code>hours</code>, and <code>L</code> are all already in scope where <code>torch.save</code> is called.</p></div>
+</div></div></div>
+
+<div class="step" id="s85-3"><div class="step-head"><input type="checkbox" class="tick" id="c85-3"><div class="step-num">8.5.3</div><div class="step-body">
+<h3>Write <code>prepare_inference_cube</code></h3>
+<p>Add this function to <code>src/data.py</code> (it needs the <code>np</code>, <code>pd</code> already imported at the top). It builds the two tensors <code>predict.py</code> feeds the model: history from the baked checkpoint tail, future covariates from the input file.</p>
+<pre><code>def prepare_inference_cube(inp_path, fi, features, series_order, scaler, L, H,
+                           fallback_x=None, fallback_y=None, fallback_end=None):
+    """Inference tensors. The graded input is covariates-only (no target),
+    so the past-target history comes from the baked checkpoint tail."""
+    df = pd.read_csv(inp_path, parse_dates=["timestamp"])
+    df = df.sort_values(["series_id", "timestamp"])
+    S = len(series_order)
+
+    # future covariates -> (S, H, F) in the saved feature order, then scaled
+    fut = np.sort(pd.to_datetime(fi.timestamp).unique())[-H:]
+    Xf = np.zeros((S, H, len(features)), "float32")
+    for i, sid in enumerate(series_order):
+        d = df[df.series_id == sid].set_index("timestamp").reindex(fut)
+        Xf[i] = d[features].to_numpy("float32")
+    Xf = scaler.transform(Xf).astype("float32")
+
+    # history -> (S, L, F+1): baked scaled covariates + baked raw target
+    assert fallback_x is not None, ("checkpoint has no baked history; "
+        "retrain after step 8.5.2")
+    hx = np.asarray(fallback_x, "float32")             # (S, L, F) scaled
+    hy = np.asarray(fallback_y, "float32")[..., None]  # (S, L, 1) raw
+    Xh = np.concatenate([hx, hy], 2).astype("float32")
+    return Xh, Xf, list(series_order)</code></pre>
+<div class="check"><b>Done when</b><p>The import <code>from src.data import prepare_inference_cube</code> in <code>predict.py</code> resolves. Real check is the smoke test (8.5.5).</p></div>
+</div></div></div>
+
+<div class="step" id="s85-4"><div class="step-head"><input type="checkbox" class="tick" id="c85-4"><div class="step-num">8.5.4</div><div class="step-body">
+<h3>Retrain the LSTM+cov checkpoint (so it carries the baked history)</h3>
+<p>The existing <code>lstm_f0_s0_L336_huber_revin_cov.pt</code> was trained <em>before</em> 8.5.2, so it has no <code>history_*</code> keys and is unusable for submission. Retrain once &mdash; same config, same 0.169 model, now with history baked in:</p>
+<pre><code>python -m src.train --model lstm --fold 0 --seed 0 \
+    --lookback 336 --gap 336 --loss huber --revin 1 --covariates 1</code></pre>
+<div class="check"><b>Done when</b><p>It finishes (~40&nbsp;min on the Mac; ~2&ndash;3&times; faster on a Colab T4) and overwrites <code>experiments/checkpoints/lstm_f0_s0_L336_huber_revin_cov.pt</code>. Sanity-check it loaded the new keys:</p>
+<pre><code>python -c "import torch; k=torch.load('experiments/checkpoints/lstm_f0_s0_L336_huber_revin_cov.pt', map_location='cpu', weights_only=False); print('history_x' in k, len(k['history_y']), len(k['history_y'][0]))"</code></pre>
+<p>Expect <code>True 96 336</code> (96 series, 336 history hours).</p>
+</div></div></div></div>
+
+<div class="step" data-gate="g85" id="s85-5"><div class="step-head"><input type="checkbox" class="tick" id="c85-5"><div class="step-num">8.5.5</div><div class="step-body">
+<h3>Smoke-test: run <code>predict.py</code> against the validation input</h3>
+<div class="why"><b>Why</b><p>This is the payoff and the proof. <code>data/raw/</code> already holds <code>validation_input.csv</code> + <code>forecast_index_validation.csv</code> &mdash; the exact shape the graders use. If <code>predict.py</code> runs against it and the numbers are sane, the whole path works.</p></div>
+<p>First create <code>predict.py</code> from the full template in Phase 9.2 (scroll down &mdash; it's copy-paste). Then run it against your real validation files:</p>
+<pre><code>python predict.py \
+  --input_dir  data/raw \
+  --output_file /tmp/val_pred.csv \
+  --checkpoint experiments/checkpoints/lstm_f0_s0_L336_huber_revin_cov.pt
+
+wc -l /tmp/val_pred.csv        # expect 32257  (32256 rows + header)
+head -3 /tmp/val_pred.csv      # series_id,timestamp,prediction</code></pre>
+<div class="check"><b>Done when</b><p>It writes 32,256 prediction rows, one per forecast-index row, no <code>NaN</code>. To confirm the model is actually good (not just running), submit <code>/tmp/val_pred.csv</code> to the public "Submit Validation Predictions" tab &mdash; expect a WAPE around <strong>17&ndash;20</strong> (&times;100), a big drop from the ~34 baseline. If it's garbage (&gt;50), the scaling or the history offset is off &mdash; recheck 8.5.2/8.5.3 before moving on.</p></div>
+</div></div></div>
+
+<div class="step" id="s85-6"><div class="step-head"><input type="checkbox" class="tick" id="c85-6"><div class="step-num">8.5.6</div><div class="step-body">
+<h3>Ship it to <code>main</code></h3>
+<p>Branch from an up-to-date <code>main</code>, commit the three code edits, open a PR:</p>
+<pre><code>git switch main
+git pull origin main
+git switch -c fix/inference-plumbing
+git add src/models/models.py src/data.py src/train.py
+git commit -m "inference plumbing: covariate-aware build_model_from_config, prepare_inference_cube, bake history into checkpoint"
+git push -u origin fix/inference-plumbing</code></pre>
+<p>Then open a PR <code>fix/inference-plumbing &rarr; main</code> and merge it. <b>Don't commit the <code>.pt</code> checkpoint</b> (it's a multi-MB binary and it's regenerated by the 8.5.4 command) &mdash; keep it locally for Phase 9 packaging, or hand it to whoever zips the submission.</p>
+<div class="check"><b>Done when</b><p>The PR is merged. <code>main</code> now has a working inference path, and Phase 9 is just packaging. Pull <code>main</code> before starting it.</p></div>
+</div></div></div>
+</section>
+
+<!-- ============================== PHASE 9 ============================== -->
 <section class="phase" id="p9">
 <div class="phase-head">
   <div class="phase-tag"><span class="chip">Phase 9</span><span class="chip time">Days 27–29 · ~6 hours</span><span>submission</span></div>
@@ -1996,7 +2125,7 @@ cat requirements.txt</code></pre></div>
 
 <div class="step" data-revisit="s9-2" id="s9-2"><div class="step-head"><input type="checkbox" class="tick" id="c9-2"><div class="step-num">9.2</div><div class="step-body">
 <h3>Write <code>predict.py</code></h3>
-<div class="gotcha"><b>First fix <code>build_model_from_config</code> &mdash; it can't rebuild your submission model yet</b><p>Your best model is <strong>LSTM+covariates</strong>, but <code>build_model_from_config</code> (which <code>predict.py</code> imports below) currently only handles <code>linear</code> and <code>patchtst</code>, and passes <code>use_covariates</code> to <em>neither</em>. As written it raises <code>ValueError: Unknown model: lstm</code>, or silently drops the covariate head so the checkpoint won't load. Before <code>predict.py</code> works, extend it in <code>src/models/models.py</code>: add <code>mlp</code> and <code>lstm</code> branches, and pass <code>n_feat=cfg.get("n_feat")</code> + <code>use_covariates=bool(cfg.get("covariates"))</code> to every model (mirror what <code>build_model</code> already does). Instructors run <em>your</em> <code>predict.py</code> on the private test set, so it must reconstruct the exact trained model from the saved config.</p></div>
+<div class="gotcha"><b>Prerequisite: Phase 8.5 must be merged to <code>main</code> first</b><p>This <code>predict.py</code> imports <code>build_model_from_config</code> (made covariate-aware in <a href="#p8b">8.5.1</a>) and <code>prepare_inference_cube</code> (written in <a href="#p8b">8.5.3</a>), and reads the baked <code>history_x</code>/<code>history_y</code> keys (added in <a href="#p8b">8.5.2</a>). If Phase 8.5 isn't done, this file raises <code>ImportError</code> / <code>ValueError</code> and cannot run &mdash; stop and finish 8.5 first. If 8.5 is merged and you passed its smoke test (8.5.5), this file already works; the steps below are just the exact contract and packaging.</p></div>
 <div class="codeblock"><div class="code-head"><span class="code-caret">&#9656;</span><span class="code-file">predict.py</span><span class="code-tag">python</span><button class="code-copy" type="button">copy</button></div><div class="code-wrap"><pre><code><span class="k">import</span> argparse, numpy <span class="k">as</span> np, pandas <span class="k">as</span> pd, torch
 <span class="k">from</span> pathlib <span class="k">import</span> Path
 <span class="k">from</span> src.models <span class="k">import</span> build_model_from_config
@@ -2080,7 +2209,7 @@ cp data/raw/metadata.json /tmp/fakein/
 <span class="c"># 2. build the archive from scratch in a temp dir</span>
 rm -rf /tmp/sub && mkdir /tmp/sub
 cp predict.py requirements.txt /tmp/sub/
-cp runs/&lt;your-best-run&gt;.pt /tmp/sub/checkpoint.pt
+cp experiments/checkpoints/lstm_f0_s0_L336_huber_revin_cov.pt /tmp/sub/checkpoint.pt
 cp -r src /tmp/sub/
 
 <span class="c"># 3. a completely fresh environment</span>
@@ -2138,9 +2267,9 @@ python -m scripts.test_pipeline
 # baselines, scored on 3 rolling-origin folds
 python -m scripts.score_baselines
 
-# the reported model
-python -m src.train --model patchtst --fold 0 --seed 0 \
-    --lookback 512 --patch-len 16 --loss huber --revin 1 --covariates 1
+# the reported model (best WAPE 0.169 — LSTM + covariates)
+python -m src.train --model lstm --fold 0 --seed 0 \
+    --lookback 336 --loss huber --revin 1 --covariates 1
 
 # every table in the report
 ./scripts/ablate.sh
@@ -2157,10 +2286,10 @@ and trains only on hours before that. No training window&#x27;s target reaches
 into a scored region (asserted in src/data.py).
 
 ## Final configuration
-model=patchtst  lookback=512  patch_len=16  stride=8  d_model=128
-layers=3  heads=8  d_ff=256  dropout=0.2  loss=huber  lr=1e-3
-batch=64  revin=on  covariates=on  series_id=static
-Reported as mean +/- std over seeds 0,1,2.
+model=lstm  lookback=336  d_model=128  layers=2  dropout=0.2
+loss=huber  lr=1e-3  revin=on  covariates=on
+Best validation WAPE 0.169 (gap=336), ahead of patchtst+cov 0.188.
+Exact values live in the checkpoint's config dict. Mean +/- std over seeds 0,1,2.
 
 ## Repository layout
 src/          model, data, training, inference code
@@ -4698,7 +4827,7 @@ Ticks are stored in this browser. Moving the file or switching browser loses the
   // Once it has run, the flag is set for good, so every later edit wins:
   // un-checking any of 0-4, or a full Reset, is never redone on the next load.
   // Bump the flag's version suffix if a future build needs to re-run this.
-  var DONE04_FLAG = '__done0865v1';
+  var DONE04_FLAG = '__done0865v2';
   var DONE_BY_DEFAULT = ['c0-1','c0-2','c0-3','c0-4','c0-5','c0-6','c0-7',
     'c1-1','c1-2','c1-3','c1-4','c1-5','c1-6','c1-7','c1-8','c1-9',
     'c2-1','c2-2','c2-3','c2-4','c2-5','c2-6',
@@ -4708,7 +4837,7 @@ Ticks are stored in this browser. Moving the file or switching browser loses the
     'c6-1','c6-2','c6-3','c6-4',
     'c8-1','c8-2','c8-3','c8-4',
     'c6b-1','c6b-2','c6b-3',
-    'c7-0'];
+    'c7-0','c7-1','c7-2','c7-3'];
 
   store.get().then(function(raw){
     try{ mem = raw?JSON.parse(raw):{}; }catch(e){ mem={}; }
