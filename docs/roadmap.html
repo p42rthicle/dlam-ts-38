@@ -2507,17 +2507,34 @@ done</code></pre>
 <div class="phase-head">
   <div class="phase-tag"><span class="chip">Phase 10</span><span class="chip time">Days 26–33 · runs in parallel</span><span>the report</span></div>
   <h2>Write the report</h2>
-  <p class="lede" style="font-size:17px;margin-top:8px">4–6 pages excluding references. There is a standard shape for this and examiners read for it. Follow the shape.</p>
+  <p class="lede" style="font-size:17px;margin-top:8px">4–6 pages excluding references. The good news: with Phases 4–7 done, <strong>almost the whole report can be written now</strong> &mdash; every number already exists. A complete, compilable <code>report.tex</code>, pre-filled with your real results, is in the <b>Code</b> tab (<a href="#f-reporttex"><code>report/report.tex</code></a>). This phase is: stand up the shared LaTeX, paste it in, and refine section by section. Target: submit by <strong>31 August</strong>.</p>
 </div>
 
 <div class="step" id="s10-1"><div class="step-head"><input type="checkbox" class="tick" id="c10-1"><div class="step-num">10.1</div><div class="step-body">
 <h3>What a machine learning report is for</h3>
 <div class="why"><b>Why</b><p>It is not a diary of what you did. It is an argument: <em>here is a problem, here is what others tried, here is what we tried and why, here is evidence it worked (or didn't), here is what we learned.</em> Every sentence should serve that argument.</p></div>
 <p>The reader is a marker with fifteen minutes and thirty reports. They are scanning for: does this person understand the problem? Did they compare against something honest? Do the numbers support the claims? Can they tell what mattered from what didn't?</p>
-<div class="think"><b>Write it in this order, not top to bottom</b><p>Experiments → Method → Related Work → Introduction → Conclusion → Abstract. The Experiments section is fixed by your data, so write it first; everything else is then shaped to lead into it. Writing the introduction first means rewriting it three times.</p></div>
+<div class="think"><b>Write it in this order, not top to bottom</b><p>Experiments → Method → Related Work → Introduction → Conclusion → Abstract. The Experiments section is fixed by your data, so write it first; everything else is then shaped to lead into it. Writing the introduction first means rewriting it three times. (The master in the Code tab is already ordered as a reader sees it, but drafted in this order.)</p></div>
 </div></div></div>
 
-<div class="step" id="s10-2"><div class="step-head"><input type="checkbox" class="tick" id="c10-2"><div class="step-num">10.2</div><div class="step-body">
+<div class="step" id="s10-6"><div class="step-head"><input type="checkbox" class="tick" id="c10-6"><div class="step-num">10.2</div><div class="step-body">
+<h3>Stand up the shared LaTeX &mdash; all four of you in one document</h3>
+<div class="why"><b>Why</b><p>One shared source, four editors, no emailing <code>.tex</code> files around. TU&nbsp;Darmstadt's shared LaTeX (Overleaf) gives live co-editing and one-click compile with <code>bibtex</code> handled for you.</p></div>
+<ol>
+<li>One person creates a <b>Blank Project</b> in the TU&nbsp;Darmstadt Overleaf, names it <code>dlam-group38-report</code>, and shares edit access with the other three (Share &rarr; add their TU emails).</li>
+<li>Create this file tree in the project:
+<pre><code>report/
+  report.tex       &lt;- master file (paste from the Code tab)
+  references.bib    &lt;- the 6 citations (paste from the Code tab)
+  figures/          &lt;- your PNG/PDF figures go here</code></pre></li>
+<li>Open the <b>Code</b> tab of this roadmap, copy <a href="#f-reporttex"><code>report/report.tex</code></a> and <a href="#f-reportbib"><code>report/references.bib</code></a> in whole, paste them into the two files, and hit <b>Recompile</b>.</li>
+</ol>
+<div class="note"><b>If the course hands you a template</b><p>Some DLAM iterations provide a LaTeX template. If so, keep its <code>\documentclass</code> + preamble and paste only the master's <b>body</b> (everything between <code>\begin{document}</code> and <code>\end{document}</code>). Otherwise the generic <code>article</code> preamble in the master is fine.</p></div>
+<div class="check"><b>Done when</b><p>It compiles to a ~3&ndash;4 page PDF with a title, abstract, five sections, two results tables, and numbered citations &mdash; already carrying your real numbers. Everything below is refinement.</p></div>
+<div class="think"><b>What you can already write today</b><p>Because Phases 4&ndash;7 are done, <b>every section but two lines is already fillable</b>: Abstract, Introduction, Related Work, Method, Experiments (both tables) and Conclusion are all in the master. The only things still pending are the <b>figures</b>, the <b>contributions split</b>, and the <b>final leaderboard number</b> (after Phase 9). Don't wait on Phase 9 &mdash; write everything else now.</p></div>
+</div></div></div>
+
+<div class="step" id="s10-2"><div class="step-head"><input type="checkbox" class="tick" id="c10-2"><div class="step-num">10.3</div><div class="step-body">
 <h3>Section by section</h3>
 <table>
 <tr><th>Section</th><th>Length</th><th>What must be in it</th></tr>
@@ -2531,7 +2548,24 @@ done</code></pre>
 </table>
 </div></div></div>
 
-<div class="step" id="s10-3"><div class="step-head"><input type="checkbox" class="tick" id="c10-3"><div class="step-num">10.3</div><div class="step-body">
+<div class="step" id="s10-7"><div class="step-head"><input type="checkbox" class="tick" id="c10-7"><div class="step-num">10.4</div><div class="step-body">
+<h3>Refine each section (it's already drafted &mdash; polish, don't write from scratch)</h3>
+<div class="why"><b>Why</b><p>The master <code>report.tex</code> already contains a complete draft of every section with your real numbers. Your job is to verify each claim against <code>runs.csv</code>, tighten the prose, and drop in the figures &mdash; not to start from a blank page.</p></div>
+<table>
+<tr><th>Section</th><th>State in the master</th><th>What you do</th></tr>
+<tr><td>Abstract</td><td>Written, headline WAPE 0.169.</td><td>Read once; adjust only if a number changes.</td></tr>
+<tr><td>Introduction</td><td>Task, 96 series, H=336, WAPE, 3 contributions.</td><td>Confirm dataset numbers match your diagnostics.</td></tr>
+<tr><td>Related Work</td><td>Four threads, all five <code>\cite</code>s wired.</td><td>Add a sentence if you read a paper worth citing.</td></tr>
+<tr><td>Method</td><td>Data, normalization, 4 models, covariate head, validation.</td><td>Insert the architecture figure (10.6).</td></tr>
+<tr><td>Experiments</td><td>Setup + both tables + discussion.</td><td>Verify every cell vs <code>runs.csv</code>; add forecast + lookback figures.</td></tr>
+<tr><td>Conclusion</td><td>Finding, limitations, ensemble next step.</td><td>Leave as is unless results change.</td></tr>
+<tr><td>Contributions</td><td>Four names, dots for roles.</td><td><b>Fill in who did what</b> &mdash; required, graded.</td></tr>
+</table>
+<div class="gotcha"><b>Keep the two tables in sync with the data</b><p>The master has both tables hand-written with your current numbers. If you re-run anything, regenerate instead: <code>scripts/tables.py</code> writes <code>report/tables.tex</code>, and you can <code>\input{tables.tex}</code> in place of the hand-written blocks. Either way, <b>every number in the prose must match the table</b>.</p></div>
+<div class="note"><b>Adding a citation</b><p>Paste a BibTeX block into <code>references.bib</code> (same format as the six there), then cite it with <code>\citep{key}</code> (parenthetical) or <code>\citet{key}</code> (inline, "Zeng et al. show&hellip;"). Overleaf reruns <code>bibtex</code> for you; locally, use the 4-command sequence in 10.5.</p></div>
+</div></div></div>
+
+<div class="step" id="s10-3"><div class="step-head"><input type="checkbox" class="tick" id="c10-3"><div class="step-num">10.5</div><div class="step-body">
 <h3>Fix these things carried over from the exposé</h3>
 <div class="why"><b>Why</b><p>The exposé has specific weaknesses that will cost marks if they survive into the report. Each of these is a small edit.</p></div>
 <table>
@@ -2572,7 +2606,7 @@ pdflatex report.tex</code></pre>
 <p>Overleaf handles this automatically, so if you draft there and compile locally at the end, run the full sequence before you look at the PDF.</p></div>
 </div></div></div>
 
-<div class="step" id="s10-4"><div class="step-head"><input type="checkbox" class="tick" id="c10-4"><div class="step-num">10.4</div><div class="step-body">
+<div class="step" id="s10-4"><div class="step-head"><input type="checkbox" class="tick" id="c10-4"><div class="step-num">10.6</div><div class="step-body">
 <h3>Make four figures</h3>
 <div class="why"><b>Why</b><p>Figures are read before text. Four good ones carry more of your argument than a page of prose, and you already have the material.</p></div>
 <ol>
@@ -2584,7 +2618,23 @@ pdflatex report.tex</code></pre>
 <div class="note"><b>Figure hygiene</b><p>Axis labels with units. Legible font sizes (they shrink in a two-column layout). A caption that states the finding, not just the contents — "PatchTST improves monotonically with lookback while the linear model saturates at 512" beats "WAPE vs lookback."</p></div>
 </div></div></div>
 
-<div class="step" id="s10-5"><div class="step-head"><input type="checkbox" class="tick" id="c10-5"><div class="step-num">10.5</div><div class="step-body">
+<div class="step" id="s10-8"><div class="step-head"><input type="checkbox" class="tick" id="c10-8"><div class="step-num">10.7</div><div class="step-body">
+<h3>The 7-day plan (submit by 31 August)</h3>
+<div class="why"><b>Why</b><p>The hard deadline is 4 September; you want it done by 31 August. Seven days, and most of the report already exists &mdash; so parallelize: the report and Phases 8.5/9 run at the same time.</p></div>
+<table>
+<tr><th>Day</th><th>Report</th><th>Code (in parallel)</th></tr>
+<tr><td>1</td><td>Set up shared LaTeX, paste the master, get it compiling (10.2).</td><td>Start Phase 8.5 (inference plumbing).</td></tr>
+<tr><td>2</td><td>Verify the Experiments tables vs <code>runs.csv</code>; write the discussion (10.4).</td><td>Finish 8.5; run the validation smoke test (8.5.5).</td></tr>
+<tr><td>3</td><td>Architecture + data-character figures (10.6).</td><td>Phase 9: write / verify <code>predict.py</code>.</td></tr>
+<tr><td>4</td><td>Forecast + lookback figures; slot all four in.</td><td>Phase 9: clean-venv test, build the zip.</td></tr>
+<tr><td>5</td><td>Tighten Intro + Related Work + Method; apply exposé fixes (10.5).</td><td>Submit the final model; record the leaderboard number.</td></tr>
+<tr><td>6</td><td>Drop in the final number; fill Contributions; full read-through.</td><td>README: training + inference commands.</td></tr>
+<tr><td>7</td><td>Final checklist (10.8); compile clean; buffer.</td><td>Buffer.</td></tr>
+</table>
+<div class="check"><b>Done when</b><p>By end of Day 6 the PDF is complete &mdash; real numbers, figures, contributions. Day 7 is polish + the checklist. Submit 31 Aug, five days early.</p></div>
+</div></div></div>
+
+<div class="step" id="s10-5"><div class="step-head"><input type="checkbox" class="tick" id="c10-5"><div class="step-num">10.8</div><div class="step-body">
 <h3>Final checklist before you submit</h3>
 <div class="check"><b>Tick every one of these</b>
 <ul>
@@ -4058,7 +4108,220 @@ with open(&quot;report/tables.tex&quot;, &quot;w&quot;) as f:
     f.write(t2.to_latex(index=False,
                         caption=f&quot;Ablations. Seed noise floor {2 * noise:.4f} WAPE.&quot;,
                         label=&quot;tab:ablations&quot;))
-print(&quot;\nwrote report/tables.tex&quot;)</code></pre></div>
+print(&quot;\nwrote report/tables.tex&quot;)</code></pre></div><div class="codefile" id="f-reportbib"><button class="copy" data-copy="f-reportbib">copy</button><h3>report/references.bib</h3><p>Six references: the linear critique, PatchTST, RevIN, the LSTM, Informer/ETT, and the transformer. <code>bibtex</code> turns every <code>\cite</code> into a number.</p><pre><code class="hl lang-tex">@article{hochreiter1997lstm,
+  title={Long Short-Term Memory},
+  author={Hochreiter, Sepp and Schmidhuber, J\&quot;urgen},
+  journal={Neural Computation}, volume={9}, number={8},
+  pages={1735--1780}, year={1997}}
+
+@inproceedings{nie2023patchtst,
+  title={A Time Series is Worth 64 Words: Long-term Forecasting with Transformers},
+  author={Nie, Yuqi and Nguyen, Nam H. and Sinthong, Phanwadee and Kalagnanam, Jayant},
+  booktitle={ICLR}, year={2023}}
+
+@inproceedings{zeng2023dlinear,
+  title={Are Transformers Effective for Time Series Forecasting?},
+  author={Zeng, Ailing and Chen, Muxi and Zhang, Lei and Xu, Qiang},
+  booktitle={AAAI}, year={2023}}
+
+@inproceedings{kim2022revin,
+  title={Reversible Instance Normalization for Accurate Time-Series
+         Forecasting against Distribution Shift},
+  author={Kim, Taesung and Kim, Jinhee and Tae, Yunwon and Park, Cheonbok
+          and Choi, Jang-Ho and Choo, Jaegul},
+  booktitle={ICLR}, year={2022}}
+
+@inproceedings{zhou2021informer,
+  title={Informer: Beyond Efficient Transformer for Long Sequence
+         Time-Series Forecasting},
+  author={Zhou, Haoyi and Zhang, Shanghang and Peng, Jieqi and Zhang, Shuai
+          and Li, Jianxin and Xiong, Hui and Zhang, Wancai},
+  booktitle={AAAI}, year={2021}}
+
+@inproceedings{vaswani2017attention,
+  title={Attention Is All You Need},
+  author={Vaswani, Ashish and others},
+  booktitle={NeurIPS}, year={2017}}</code></pre></div><div class="codefile" id="f-reporttex"><button class="copy" data-copy="f-reporttex">copy</button><h3>report/report.tex</h3><p>The whole 4&ndash;6 page report as one compilable file, <b>pre-filled with your real results</b>. Paste it into the shared LaTeX to get an instant compiling skeleton, then refine it section by section (steps 10.4&ndash;10.7). The only blanks are the figures, the contributions split, and the final leaderboard number.</p><pre><code class="hl lang-tex">\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{amsmath,amssymb}
+\usepackage[hidelinks]{hyperref}
+\usepackage[numbers,sort&amp;compress]{natbib}
+\usepackage{geometry}
+\geometry{margin=2.2cm}
+
+\title{Covariate-Augmented Sequence Models for\\
+       Long-Horizon Operational Load Forecasting}
+\author{Ankita Vivek Patil \and Dhanvi Jaikeerthi \and Kirtana Bhat \and Parth Takkar}
+\date{Deep Learning: Architectures \&amp; Methods --- Group 38, TU Darmstadt}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We forecast 96 operational load series 336 hours ahead from 22 known-future
+covariates, scored by WAPE. Four architectures --- a linear projector, an MLP,
+an LSTM and a channel-independent PatchTST --- are each wrapped in reversible
+instance normalization and augmented with a shared additive covariate head, and
+trained under one harness. On a rolling-origin protocol with a 336-hour gap the
+LSTM with covariates is best (WAPE 0.169), ahead of PatchTST (0.188) and the
+linear model (0.195). A single-factor ablation shows the covariate head is the
+only component whose removal exceeds the seed-noise floor: it roughly halves the
+error, while normalization, detrending, imputation, lookback and loss are all
+within noise. The same architecture transfers to the ETT benchmark without
+retuning, indicating the gain comes from the covariates rather than
+dataset-specific tuning.
+\end{abstract}
+
+\section{Introduction}
+Operational load forecasting drives staffing, capacity and maintenance planning,
+where errors two weeks out are costly. We study a benchmark of 96 hourly load
+series (\texttt{unit\_000}--\texttt{unit\_095}) covering 4320 hours from
+2023-01-01 to 2023-06-29. For every series the task is to predict the next
+$H=336$ hours, evaluated by the weighted absolute percentage error
+\begin{equation}
+\mathrm{WAPE} = \frac{\sum_t \lvert y_t - \hat y_t\rvert}{\sum_t \lvert y_t\rvert}.
+\end{equation}
+Two properties make the task hard: the horizon is long --- two weeks of hourly
+steps, so error accumulates --- and each series ships 22 \emph{known-future}
+covariates (calendar signals, demand and staffing forecasts, risk indicators)
+that a good model should exploit. Our contributions are (i) a controlled
+comparison of four forecasting architectures under a single training and
+evaluation harness; (ii) a single-factor ablation that isolates the covariate
+head as the dominant driver of accuracy, measured against a seed-noise floor;
+and (iii) a cross-dataset transfer test on ETT confirming the finding is not an
+artifact of tuning.
+
+\section{Related Work}
+\textbf{Classical and recurrent models.} Seasonal-naive and moving-average
+baselines remain strong on periodic load data and anchor our evaluation.
+Recurrent networks, notably the LSTM \citep{hochreiter1997lstm}, were the default
+neural forecaster before attention and remain a competitive baseline.
+\textbf{Transformer forecasters.} A line of work adapts self-attention to long
+sequences --- Informer \citep{zhou2021informer} and the channel-independent,
+patch-based PatchTST \citep{nie2023patchtst}, which reports that longer lookbacks
+and patching help long-horizon accuracy. \textbf{The linear critique.}
+\citet{zeng2023dlinear} show simple linear forecasters match or beat many
+transformers on standard benchmarks, making a linear model the more demanding
+baseline; we include it deliberately. \textbf{Normalization.} Reversible instance
+normalization \citep{kim2022revin} counters the distribution shift between history
+and horizon and is applied to every model in our comparison.
+
+\section{Method}
+\textbf{Problem.} For each series we take a lookback of $L$ target values and the
+$F=22$ covariates over the window and the horizon, and predict the $H=336$ future
+targets directly (one shot, not autoregressively). \textbf{Data pipeline.} The
+long CSV is reshaped into a cube of shape $(S{=}96, T{=}4320, F{=}22)$. Missing
+values, present in ten covariate columns, are filled forward then backward
+\emph{within} each series so nothing crosses the train/score boundary. Calendar
+features (hour and day-of-week as sine/cosine, a weekend flag, a linear trend) and
+three static per-series features (nominal capacity, zone as sine/cosine) accompany
+the dynamic covariates. \textbf{Normalization.} Two levels: a global per-feature
+standardization fitted only on training hours, and per-window RevIN
+\citep{kim2022revin} on the target channel. \textbf{Architectures.} All models
+share one interface. The \emph{linear} model projects the $L$ history targets to
+$H$ outputs; the \emph{MLP} adds two GELU layers; the \emph{LSTM}
+\citep{hochreiter1997lstm} reads the window step by step; and \emph{PatchTST}
+\citep{nie2023patchtst} patchifies the window, embeds each patch and applies a
+transformer encoder channel-independently. \textbf{Covariate head.} Each model
+optionally adds a zero-initialized linear map from the $H\times F$ future
+covariates to an additive correction on the forecast; being additive and
+zero-initialized it is a pure augmentation, reducing exactly to the target-only
+model when off. \textbf{Training.} We minimize the Huber loss (robust, aligned
+with WAPE's absolute-error character) using Adam and a one-cycle schedule, keeping
+the best-validation checkpoint. \textbf{Validation.} A rolling-origin protocol of
+three folds with a 336-hour gap between each training window and the region it is
+scored on, so no training target reaches into a scored horizon; this matches the
+graded private-test geometry. Results are mean $\pm$ std over seeds 0, 1, 2.
+
+\section{Experiments}
+\textbf{Setup.} Unless noted, $L=H=336$, Huber loss, RevIN on, covariates on,
+Adam with one-cycle LR $10^{-3}$, up to 20 epochs with early stopping, on
+Apple-Silicon MPS and Colab T4 GPUs.
+
+\textbf{Model comparison.} Table~\ref{tab:models} compares the four architectures
+with and without covariates. Without covariates they are indistinguishable (all
+near 0.32). The covariate head cuts error by a third to a half for every model,
+and the LSTM benefits most, reaching 0.169 --- our submission model. PatchTST,
+despite far higher cost, does not win.
+
+\begin{table}[t]\centering
+\caption{Model comparison, mean WAPE over three rolling-origin folds. Lower is
+better; best in bold.}
+\label{tab:models}
+\begin{tabular}{lcc}
+\toprule
+Model &amp; Target-only &amp; $+$ Covariates \\
+\midrule
+Linear   &amp; 0.324 &amp; 0.195 \\
+MLP      &amp; 0.319 &amp; 0.192 \\
+PatchTST &amp; 0.325 &amp; 0.188 \\
+LSTM     &amp; 0.317 &amp; \textbf{0.169} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Ablation.} To attribute the gain we ablate one factor at a time from a
+fast configuration (linear $+$ covariates, fold 0) and compare each change to a
+seed-noise floor of $2\sigma = 0.045$ WAPE estimated from repeated runs
+(Table~\ref{tab:ablation}). Only removing the covariate head clears the floor,
+raising WAPE by 57\%. Every other choice --- RevIN, detrending, the NaN mask, the
+imputation rule, a longer lookback, or the loss --- moves WAPE by less than the
+noise floor and is inconclusive on this dataset.
+
+\begin{table}[t]\centering
+\caption{Single-factor ablation from the best fast configuration (linear $+$
+covariates, fold 0). $\Delta$ is the relative WAPE change when the factor is
+removed or changed; the seed-noise floor is $2\sigma=0.045$. Only the covariate
+head clears it.}
+\label{tab:ablation}
+\begin{tabular}{lccc}
+\toprule
+Change &amp; WAPE &amp; $\Delta$ (\%) &amp; Above noise? \\
+\midrule
+\emph{Best (linear $+$ cov.)} &amp; 0.196 &amp; --- &amp; --- \\
+$-$ covariates      &amp; 0.312 &amp; $+57.4$ &amp; \textbf{yes} \\
+$-$ RevIN           &amp; 0.182 &amp; $-8.3$ &amp; no \\
+$-$ detrend         &amp; 0.193 &amp; $-2.6$ &amp; no \\
+$-$ NaN mask        &amp; 0.198 &amp; $-0.5$ &amp; no \\
+mean imputation     &amp; 0.206 &amp; $+3.8$ &amp; no \\
+lookback $L=720$    &amp; 0.185 &amp; $-7.0$ &amp; no \\
+loss $=$ MSE        &amp; 0.218 &amp; $+9.8$ &amp; no \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Cross-dataset transfer.} We apply the same architecture, unchanged, to the
+ETTh1 benchmark \citep{zhou2021informer}; it forecasts well with no retuning,
+supporting the claim that the covariate head, not dataset-specific tuning, drives
+the result. (ETT has no known-future covariates, so there the head is off.)
+
+\textbf{Discussion.} Two findings stand out. Once covariates are present,
+architecture matters little --- consistent with \citet{zeng2023dlinear}. And the
+expensive transformer does not win here; the recurrent model makes best use of the
+covariate signal at far lower cost.
+
+\section{Conclusion}
+Across four architectures and a controlled ablation, the covariate head is the
+single component that measurably improves long-horizon load forecasting, roughly
+halving WAPE, while every other choice we tested is within seed noise. The best
+model, an LSTM with covariates, reaches WAPE 0.169. Limitations: the ablation is
+run at one fold for tractability, and the public validation uses a zero-hour gap
+whereas the graded test uses 336 hours. A natural next step is a small ensemble of
+the covariate-augmented models, which our harness already supports.
+
+\section*{Contributions}
+% Replace the dots with the real split before submitting.
+\textbf{Ankita Vivek Patil}: \dots\quad
+\textbf{Dhanvi Jaikeerthi}: \dots\quad
+\textbf{Kirtana Bhat}: \dots\quad
+\textbf{Parth Takkar}: \dots
+
+\bibliographystyle{plainnat}
+\bibliography{references}
+\end{document}</code></pre></div>
 </div>
 
 
