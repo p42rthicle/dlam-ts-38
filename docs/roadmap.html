@@ -4167,7 +4167,8 @@ an LSTM and a channel-independent PatchTST --- are each wrapped in reversible
 instance normalization and augmented with a shared additive covariate head, and
 trained under one harness. On a rolling-origin protocol with a 336-hour gap the
 LSTM with covariates is best (WAPE 0.169), ahead of PatchTST (0.188) and the
-linear model (0.195). A single-factor ablation shows the covariate head is the
+linear model (0.195), roughly half the strongest baseline (seasonal mean, 0.326).
+A single-factor ablation shows the covariate head is the
 only component whose removal exceeds the seed-noise floor: it roughly halves the
 error, while normalization, detrending, imputation, lookback and loss are all
 within noise. The same architecture transfers to the ETT benchmark without
@@ -4234,17 +4235,40 @@ with WAPE's absolute-error character) using Adam and a one-cycle schedule, keepi
 the best-validation checkpoint. \textbf{Validation.} A rolling-origin protocol of
 three folds with a 336-hour gap between each training window and the region it is
 scored on, so no training target reaches into a scored horizon; this matches the
-graded private-test geometry. Results are mean $\pm$ std over seeds 0, 1, 2.
+graded private-test geometry. The model comparison reports the mean over three
+folds; seed variability, estimated by repeating the final configuration across
+seeds 0--2, gives a noise floor of $0.045$ WAPE ($2\sigma$) that we use to judge
+which ablations are conclusive.
 
 \section{Experiments}
 \textbf{Setup.} Unless noted, $L=H=336$, Huber loss, RevIN on, covariates on,
 Adam with one-cycle LR $10^{-3}$, up to 20 epochs with early stopping, on
 Apple-Silicon MPS and Colab T4 GPUs.
 
+\textbf{Baselines.} We score four reference forecasters on the same folds
+(Table~\ref{tab:baselines}). The strongest, a per-hour seasonal mean, reaches
+WAPE 0.326; naive last-value (0.494) and lag-repeat baselines (0.425--0.435) are
+weaker. Every covariate-augmented model clears this bar, and our best halves it.
+
+\begin{table}[t]\centering
+\caption{Baseline forecasters, mean WAPE over three rolling-origin folds.}
+\label{tab:baselines}
+\begin{tabular}{lc}
+\toprule
+Baseline &amp; WAPE \\
+\midrule
+Naive last value &amp; 0.494 \\
+Lag-24 repeat    &amp; 0.435 \\
+Lag-168 repeat   &amp; 0.425 \\
+Seasonal mean    &amp; 0.326 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 \textbf{Model comparison.} Table~\ref{tab:models} compares the four architectures
 with and without covariates. Without covariates they are indistinguishable (all
 near 0.32). The covariate head cuts error by a third to a half for every model,
-and the LSTM benefits most, reaching 0.169 --- our submission model. PatchTST,
+and the LSTM benefits most, reaching 0.169 --- our best model. PatchTST,
 despite far higher cost, does not win.
 
 \begin{table}[t]\centering
@@ -4294,14 +4318,17 @@ loss $=$ MSE        &amp; 0.218 &amp; $+9.8$ &amp; no \\
 \end{table}
 
 \textbf{Cross-dataset transfer.} We apply the same architecture, unchanged, to the
-ETTh1 benchmark \citep{zhou2021informer}; it forecasts well with no retuning,
-supporting the claim that the covariate head, not dataset-specific tuning, drives
-the result. (ETT has no known-future covariates, so there the head is off.)
+ETTh1 benchmark \citep{zhou2021informer}. With no retuning it forecasts well ---
+WAPE 0.176 (linear), 0.180 (MLP), 0.181 (PatchTST), 0.181 (LSTM), mean over three
+folds --- again tightly clustered, with the linear model marginally best. This
+supports the claim that the covariate head, not dataset-specific tuning, drives
+our main result. (ETT ships no known-future covariates, so the head is off there,
+which is also why absolute WAPE is not directly comparable across the two tasks.)
 
 \textbf{Discussion.} Two findings stand out. Once covariates are present,
 architecture matters little --- consistent with \citet{zeng2023dlinear}. And the
 expensive transformer does not win here; the recurrent model makes best use of the
-covariate signal at far lower cost.
+covariate signal at far lower cost (about 40 versus 260 minutes per fold).
 
 \section{Conclusion}
 Across four architectures and a controlled ablation, the covariate head is the
