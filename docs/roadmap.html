@@ -4091,6 +4091,19 @@ normalization \citep{kim2022revin} counters the distribution shift between histo
 and horizon and is applied to every model in our comparison.
 
 \section{Method}
+\begin{figure}[t]\centering
+\includegraphics[width=\linewidth]{figures/fig1_architecture}
+\caption{Model architecture. RevIN-normalised history feeds one of four encoders; a
+zero-initialised covariate head adds a correction from the known-future covariates
+before denormalisation.}
+\label{fig:arch}
+\end{figure}
+\begin{figure}[t]\centering
+\includegraphics[width=\linewidth]{figures/fig2_data_character}
+\caption{Load shows a strong diurnal cycle with a weekday/weekend split (right),
+motivating a week-scale lookback and the use of calendar covariates.}
+\label{fig:data}
+\end{figure}
 \textbf{Problem.} For each series we take a lookback of $L$ target values and the
 $F=22$ covariates over the window and the horizon, and predict the $H=336$ future
 targets directly (one shot, not autoregressively). \textbf{Data pipeline.} The
@@ -4099,10 +4112,11 @@ values, present in ten covariate columns, are filled forward then backward
 \emph{within} each series so nothing crosses the train/score boundary. Calendar
 features (hour and day-of-week as sine/cosine, a weekend flag, a linear trend) and
 three static per-series features (nominal capacity, zone as sine/cosine) accompany
-the dynamic covariates. \textbf{Normalization.} Two levels: a global per-feature
+the dynamic covariates; the target's strong diurnal structure is shown in
+Figure~\ref{fig:data}. \textbf{Normalization.} Two levels: a global per-feature
 standardization fitted only on training hours, and per-window RevIN
 \citep{kim2022revin} on the target channel. \textbf{Architectures.} All models
-share one interface. The \emph{linear} model projects the $L$ history targets to
+share one interface (Figure~\ref{fig:arch}). The \emph{linear} model projects the $L$ history targets to
 $H$ outputs; the \emph{MLP} adds two GELU layers; the \emph{LSTM}
 \citep{hochreiter1997lstm} reads the window step by step; and \emph{PatchTST}
 \citep{nie2023patchtst} patchifies the window, embeds each patch and applies a
@@ -4121,6 +4135,19 @@ seeds 0--2, gives a noise floor of $0.045$ WAPE ($2\sigma$) that we use to judge
 which ablations are conclusive.
 
 \section{Experiments}
+\begin{figure}[t]\centering
+\includegraphics[width=\linewidth]{figures/fig3_forecast}
+\caption{336-hour forecast for one unit (fold 0). The LSTM$+$covariates model
+recovers the diurnal shape and amplitude and clearly improves on the seasonal mean,
+though it underestimates the sharpest peak.}
+\label{fig:forecast}
+\end{figure}
+\begin{figure}[t]\centering
+\includegraphics[width=0.92\linewidth]{figures/fig4_ablation}
+\caption{Single-factor ablation. Only removing the covariate head ($+57\%$) exceeds
+the $\pm 23\%$ seed-noise floor; every other design choice is within noise.}
+\label{fig:ablation}
+\end{figure}
 \textbf{Setup.} Unless noted, $L=H=336$, Huber loss, RevIN on, covariates on,
 Adam with one-cycle LR $10^{-3}$, up to 20 epochs with early stopping, on
 Apple-Silicon MPS and Colab T4 GPUs.
@@ -4148,7 +4175,7 @@ Seasonal mean    &amp; 0.326 \\
 \textbf{Model comparison.} Table~\ref{tab:models} compares the four architectures
 with and without covariates. Without covariates they are indistinguishable (all
 near 0.32). The covariate head cuts error by a third to a half for every model,
-and the LSTM benefits most, reaching 0.169 --- our best model. PatchTST,
+and the LSTM benefits most, reaching 0.169 --- our best model (Figure~\ref{fig:forecast}). PatchTST,
 despite far higher cost, does not win.
 
 \begin{table}[t]\centering
@@ -4170,7 +4197,7 @@ LSTM     &amp; 0.317 &amp; \textbf{0.169} \\
 \textbf{Ablation.} To attribute the gain we ablate one factor at a time from a
 fast configuration (linear $+$ covariates, fold 0) and compare each change to a
 seed-noise floor of $2\sigma = 0.045$ WAPE estimated from repeated runs
-(Table~\ref{tab:ablation}). Only removing the covariate head clears the floor,
+(Table~\ref{tab:ablation}, Figure~\ref{fig:ablation}). Only removing the covariate head clears the floor,
 raising WAPE by 57\%. Every other choice --- RevIN, detrending, the NaN mask, the
 imputation rule, a longer lookback, or the loss --- moves WAPE by less than the
 noise floor and is inconclusive on this dataset.
