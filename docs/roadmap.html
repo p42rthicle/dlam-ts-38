@@ -4043,13 +4043,12 @@ print(&quot;\nwrote report/tables.tex&quot;)</code></pre></div><div class="codef
 \begin{abstract}
 We forecast 96 operational load series 336 hours ahead from 22 known-future
 covariates, scored by WAPE. Four architectures --- a linear projector, an MLP,
-an LSTM and a channel-independent PatchTST --- are each wrapped in reversible
-instance normalization and augmented with a shared additive covariate head, and
-trained under one harness. On a rolling-origin protocol with a 336-hour gap the
-LSTM with covariates is best (WAPE 0.169), ahead of PatchTST (0.188) and the
+an LSTM and a channel-independent PatchTST --- each model uses reversible instance normalization and the 
+same additive covariate head, and all are trained with the same setup. On a rolling-origin protocol with 
+a 336-hour gap the LSTM with covariates is best (WAPE 0.169), ahead of PatchTST (0.188) and the
 linear model (0.195), roughly half the strongest baseline (seasonal mean, 0.326).
-A single-factor ablation shows the covariate head is the
-only component whose removal exceeds the seed-noise floor: it roughly halves the
+The ablation study shows that the covariate head is the main source of improvement,
+whose removal exceeds the seed-noise floor: it roughly halves the
 error, while normalization, detrending, imputation, lookback and loss are all
 within noise. The same architecture transfers to the ETT benchmark without
 retuning, indicating the gain comes from the covariates rather than
@@ -4072,8 +4071,8 @@ that a good model should exploit. Our contributions are (i) a controlled
 comparison of four forecasting architectures under a single training and
 evaluation harness; (ii) a single-factor ablation that isolates the covariate
 head as the dominant driver of accuracy, measured against a seed-noise floor;
-and (iii) a cross-dataset transfer test on ETT confirming the finding is not an
-artifact of tuning.
+and (iii) a cross-dataset transfer test on ETT confirming that the results hold 
+beyond the original dataset.
 
 \section{Related Work}
 \textbf{Classical and recurrent models.} Seasonal-naive and moving-average
@@ -4277,16 +4276,17 @@ the covariate-augmented models, which our harness already supports.
 \section*{Contributions}
 \textbf{Parth Takkar} built the data diagnostics, the rolling-origin validation
 protocol, the training and ablation framework, and ran the full experimental sweep;
-he also led integration and the report. \textbf{Dhanvi Jaikeerthi} implemented the
+he also led integration and the report.\\ \textbf{Dhanvi Jaikeerthi} implemented the
 linear, MLP and LSTM architectures with the shared covariate head and authored the
-inference entrypoint (\texttt{predict.py}). \textbf{Ankita Patil} contributed the
+inference entrypoint (\texttt{predict.py}).\\ \textbf{Ankita Patil} contributed the
 baseline forecasters and evaluation metrics, the PatchTST model, and the
-inference-plumbing integration. \textbf{Kirtana Bhat} built the data-loading and
+inference-plumbing integration.\\ \textbf{Kirtana Bhat} built the data-loading and
 preprocessing pipeline. All authors reviewed and edited the final report.
 
 \bibliographystyle{plainnat}
 \bibliography{references}
-\end{document}</code></pre></div>
+\end{document}
+</code></pre></div>
 </div>
 
 
